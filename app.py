@@ -1,14 +1,15 @@
 # Imports from Flask
-from flask import Flask, render_template, abort
+from flask import Flask, render_template, abort, url_for, redirect
 from flask_wtf import Form
 from wtforms import TextField, StringField, DateTimeField, BooleanField, SubmitField, IntegerField, DateField
-from wtforms.validators import InputRequired, Length
+from wtforms import validators
+from wtforms.validators import DataRequired, Length
 from flask_bootstrap import Bootstrap
 
 # Initialize flask application
 app = Flask(__name__)
 Bootstrap(app)
-app.config['SECRET_KEY'] = ''
+app.config['SECRET_KEY'] = 'hellohellohello'
 
 
 class ImpfnachweisForm (Form):
@@ -19,7 +20,7 @@ class ImpfnachweisForm (Form):
     date_of_vaccination= DateField("Datum der Impfung: ")
     disease = StringField("Impfung für folgende Krankheit: ")
     vaccine = StringField("Impfstoff: ")
-    medicinal_product = StringField("Name des Impfstoffes: ") # was war medicinal_product?
+    #medicinal_product = StringField("Name des Impfstoffes: ") # was war medicinal_product?
     vaccine_marketing_authorization_holder = TextField("Hersteller: ")
     batch_number = StringField("Chargennummer: ")
     number_of_doses_expected = IntegerField("Nötige Impfdosen: ")     
@@ -41,9 +42,11 @@ def home():
 def issuer_create_qr():
     #fields = NONE
     form = ImpfnachweisForm()
-    return render_template("issuer_create_qr.html", title = "Impfnachweis erstellen",form=form)
+    if form.validate_on_submit():
+        return redirect(url_for('home'))
+    return render_template("/issuer/issuer_create_qr.html", title = "Impfnachweis erstellen",form=form)
 
 # Run application with debug console
-    if __name__ == "__main__":
-        app.run(debug=True, host="0.0.0.0", port=3000)
+if __name__ == "__main__":
+    app.run(debug=True, host="0.0.0.0", port=3000)
 
