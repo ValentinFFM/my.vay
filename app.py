@@ -2,14 +2,12 @@
 from flask import Flask, render_template, abort, url_for, redirect
 from flask_wtf import Form
 from wtforms import TextField, StringField, DateTimeField, BooleanField, SubmitField, IntegerField, DateField
-from wtforms import validators
-from wtforms.validators import DataRequired, Length
-from flask_bootstrap import Bootstrap
 
 # Initialize flask application
 app = Flask(__name__)
-Bootstrap(app)
-app.config['SECRET_KEY'] = 'hellohellohello'
+# Bootstrap(app)
+app.config['SECRET_KEY'] = 'test'
+
 
 
 class ImpfnachweisForm (Form):
