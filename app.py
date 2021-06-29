@@ -3,11 +3,11 @@ from flask import Flask, render_template, abort
 from flask_wtf import Form
 from wtforms import TextField, StringField, DateTimeField, BooleanField, SubmitField, IntegerField, DateField
 from wtforms.validators import InputRequired, Length
-from flask_bootstrap import Bootstrap
+# from flask_bootstrap import Bootstrap
 
 # Initialize flask application
 app = Flask(__name__)
-Bootstrap(app)
+# Bootstrap(app)
 app.config['SECRET_KEY'] = ''
 
 
@@ -44,6 +44,6 @@ def issuer_create_qr():
     return render_template("issuer_create_qr.html", title = "Impfnachweis erstellen",form=form)
 
 # Run application with debug console
-    if __name__ == "__main__":
-        app.run(debug=True, host="0.0.0.0", port=3000)
+if __name__ == "__main__":
+    app.run(debug=True, host="0.0.0.0", port=3000)
 
