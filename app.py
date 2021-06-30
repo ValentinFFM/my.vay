@@ -8,6 +8,7 @@ app = Flask(__name__)
 def home():
     return render_template("landing.html")
 
+# Patient routes
 @app.route("/patient")
 def patient_home():
     return render_template("/patient/patient_vaccination_certificate.html")
@@ -27,6 +28,20 @@ def patient_scan():
 @app.route("/patient/profil")
 def patient_profil():
     return render_template("/patient/patient_profile.html")
+
+# Issuer routes
+@app.route("/issuer")
+def issuer_home():
+    return render_template("/issuer/issuer_create_qr.html")
+
+@app.route("/issuer/impfwissen")   
+def issuer_impfwissen():
+    return render_template("issuer/issuer_vaccination_knowledge.html")
+
+@app.route("/issuer/profil")
+def issuer_profil():
+    return render_template("/issuer/issuer_profile.html")
+
 
 # Run application with debug console
 if __name__ == "__main__":
