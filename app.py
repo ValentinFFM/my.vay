@@ -3,10 +3,14 @@ from flask import Flask, render_template, abort, url_for, redirect
 from flask_wtf import Form
 from wtforms import TextField, StringField, DateTimeField, BooleanField, SubmitField, IntegerField, DateField
 
+
+
 # Initialize flask application
 app = Flask(__name__)
 # Bootstrap(app)
 app.config['SECRET_KEY'] = 'test'
+
+
 
 
 
