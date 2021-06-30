@@ -5,11 +5,11 @@ from flask import Flask, render_template, abort
 from flask_wtf import Form
 from wtforms import TextField, StringField, DateTimeField, BooleanField, SubmitField, IntegerField, DateField
 from wtforms.validators import InputRequired, Length
-from flask_bootstrap import Bootstrap
+# from flask_bootstrap import Bootstrap
 
 # Initialize flask application
 app = Flask(__name__)
-Bootstrap(app)
+# Bootstrap(app)
 app.config['SECRET_KEY'] = ''
 
 
@@ -35,24 +35,50 @@ class ImpfnachweisForm (Form):
 
 
 
-# class Impfung(db.Model):
-#     Impfdatum = db.Column(db.String(100))
-#     Impfstoff = db.Column(db.String(100))
-#     Chargennummer = db.Column(db.String(100), primary_key=True)
-#     Impfkategorie = db.Column(db.String(100))
-#     Medizinische_Einrichtung = db.Column(db.String(100))
+class vaccination(db.Model):
+    #brauchen wir noch mehr Infos ausgegeben?
+    date_of_vaccination = db.Column(db.String(100))
+    vaccine = db.Column(db.String(100))
+    batch_number = db.Column(db.String(100), primary_key=True)
+    vaccination_category = db.Column(db.String(100))
+    certificate_issuer = db.Column(db.String(100))
 
-#     def __init__(self, Impfdatum, Impfstoff, Chargennummer, Impfkategorie, Medizinische_Einrichtung):
-#         self.Impfdatum = Impfdatum
-#         self.Impfstoff = Impfstoff
-#         self.Chargennummer = Chargennummer
-#         self.Impfkategorie = Impfkategorie
-#         self.Medizinische_Einrichtung = Medizinische_Einrichtung
+    def __init__(self, date_of_vaccination, vaccine, batch_number, vaccination_category, certificate_issuer):
+        self.date_of_vaccination = date_of_vaccination
+        self.vaccine = vaccine
+        self.batch_number = batch_number
+        self.vaccination_category = vaccination_category
+        self.certificate_issuer = certificate_issuer
     
-#     def __repr__(self):
-#         return '<Impfung:%r>' % self.Impfdatum % self.Impfstoff % self.Chargennummer % self.Impfkategorie %self.Medizinische_Einrichtung
+    def __repr__(self):
+        return '<Impfung:%r>' % self.date_of_vaccination % self.vaccine % self.batch_number % self.vaccination_category %self.certificate_issuer
 
+class AddVaccination(FlaskForm):
 
+    # Creation of all inputfields and the submit button
+    date_of_vaccination = DateField('Datum (*)', validators=[DataRequired(), Length(max=30)])
+    vaccine = StringField('Impfstoff (*)', validators=[DataRequired(), Length(max=30)])
+    batch_number = StringField('Chargennummer(*)',  validators=[DataRequired()])
+    vaccination_category = StringField('Impfkategorie(*)', validators=[Email(), Length(max=60)])
+    certificate_issuer = StringField('Medizinische Einrichtung', validators=[Length(max=30)])
+    submit = SubmitField('Speichern')
+
+@app.route("/vaccination/add", methods=['POST', 'GET'])
+#@login_required
+def addPatient():
+
+    form = AddVaccination()
+
+    if form.validate_on_submit():
+     # Inserts a patient and a relative to the patient the SQL databs
+        patient = vaccination(date_of_vaccination=form.date_of_vaccination.data, vaccine=form.vaccine.data, batch_number=form.batch_number.data, vaccination_category=form.vaccination_category.data, certificate_issuer=form.certificate_issuer.data)
+        db.session.add(vaccination)
+        db.session.commit()
+
+        flash('Impfeintrag erstellt!')
+        return redirect(url_for('patient_vaccination_certificate'))
+
+    return render_template('patient/patient_vaccination_vaccination_entry.html', form=form)
 
 @app.route("/")
 def home():
@@ -95,6 +121,8 @@ def patient_vaccination_entry():
 #         branch = Impfung.query.all()
 #         return render_template('patient_vaccination_certificate.html', branch = branch)
 
+
+
 @app.route("/patient/impfwissen")
 def patient_impfwissen():
     return render_template("/patient/patient_vaccination_knowledge.html")
@@ -118,6 +146,6 @@ def issuer_create_qr():
     return render_template("issuer_create_qr.html", title = "Impfnachweis erstellen",form=form)
 
 # Run application with debug console
-    if __name__ == "__main__":
-        app.run(debug=True, host="0.0.0.0", port=3000)
+if __name__ == "__main__":
+    app.run(debug=True, host="0.0.0.0", port=3000)
 

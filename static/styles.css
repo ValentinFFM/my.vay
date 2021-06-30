@@ -1,10 +1,24 @@
+<<<<<<< HEAD
 /* body{
     text-align: center;
 } */
 
+=======
+body{
+    text-align: center;
+}
+
+.test{
+    text-align: left;
+}
+>>>>>>> origin/page_impfpass
 
  .form-control{
     border: 1px solid;
     border-color:rgb(24, 119, 163);
+<<<<<<< HEAD
  }
 
+=======
+ }
+>>>>>>> origin/page_impfpass
