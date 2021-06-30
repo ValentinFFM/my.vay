@@ -1,12 +1,10 @@
-body{
+/* body{
     text-align: center;
-}
+} */
 
-.test{
-    text-align: left;
-}
 
  .form-control{
     border: 1px solid;
     border-color:rgb(24, 119, 163);
  }
+
