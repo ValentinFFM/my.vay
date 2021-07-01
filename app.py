@@ -1,8 +1,16 @@
 # Imports from Flask
 from flask import Flask, render_template, abort
+from flask_sqlalchemy import SQLAlchemy
 
 # Initialize flask application
 app = Flask(__name__)
+
+# Location of the database 
+app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://postgres:Master123@localhost:5432/vaccination_database'
+app.config['SQLALCHEMY_ECHO'] = True
+
+# Initializing database with SQLAlchemy
+db = SQLAlchemy(app)
 
 @app.route("/")
 def home():
