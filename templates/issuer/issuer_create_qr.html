@@ -5,9 +5,6 @@
 {% endblock %}
 
 {% block page_content %}
-{% if  issuer_create_cr%}
-    <h1> Impfnachweis für {{f_name,l_name}} erfolgreich ausgestellt</h1>   
-{% else %}
     <div class = "container w-50">
         <form method="POST" action = "">
             {{form.hidden_tag()}}
@@ -16,24 +13,23 @@
                 <div class = "form-group">
 
                     {{form.f_name.label(class="form-control-label")}}
+
                     {% if form.f_name.errors %}
-                    {{form.f_name(class="form-control form-control-lg is invalid")}}
-                       {% for error in form.f_name.errors %}
-                            
+                        {{form.f_name(class="form-control form-control-lg is invalid")}}
+                        {% for error in form.f_name.errors %}
                         {% endfor %}
-                        {% else %}
+                    {% else %}
                         {{form.f_name(class="form-control form-control-lg")}}
                     {% endif %}
                 </div>
                 <div class = "form-group">
 
                     {{form.l_name.label(class="form-control-label")}}
-                    {%if form.l_name.errors%}
-                    {{form.l_name(class="form-control form-control-lg is invalid")}}
-                       {%for error in form.l_name.errors%}
-                            
+                    {% if form.l_name.errors%}
+                        {{form.l_name(class="form-control form-control-lg is invalid")}}
+                        {%for error in form.l_name.errors%}
                         {%endfor%}
-                        {% else %}
+                    {% else %}
                         {{form.l_name(class="form-control form-control-lg")}}
                     {%endif%}
                 </div>
@@ -41,11 +37,10 @@
 
                     {{form.date_of_birth.label(class="form-control-label")}}
                     {%if form.date_of_birth.errors%}
-                    {{form.date_of_birth(class="form-control form-control-lg is invalid")}}
-                       {%for error in form.date_of_birth.errors%}
-                            
+                        {{form.date_of_birth(class="form-control form-control-lg is invalid")}}
+                        {%for error in form.date_of_birth.errors%}
                         {%endfor%}
-                        {% else %}
+                    {% else %}
                         {{form.date_of_birth(class="form-control form-control-lg")}}
                     {%endif%}
                 </div>
@@ -53,46 +48,31 @@
 
                     {{form.date_of_vaccination.label(class="form-control-label")}}
                     {%if form.date_of_vaccination.errors%}
-                    {{form.date_of_vaccination(class="form-control form-control-lg is invalid")}}
-                       {%for error in form.date_of_vaccination.errors%}
-                            
+                        {{form.date_of_vaccination(class="form-control form-control-lg is invalid")}}
+                        {%for error in form.date_of_vaccination.errors%}
                         {%endfor%}
-                        {% else %}
+                    {% else %}
                         {{form.date_of_vaccination(class="form-control form-control-lg")}}
                     {%endif%}
                 </div>
                 <div class = "form-group">
-
                     {{form.disease.label(class="form-control-label")}}
-                    {%if form.disease.errors%}
-                    {{form.disease(class="form-control form-control-lg is invalid")}}
-                       {%for error in form.disease.errors%}
-                          
-                        {% else %}
+                    {% if form.disease.errors %}
+                        {{form.disease(class="form-control form-control-lg is invalid")}}
+                        {% for error in form.disease.errors %}
+                        {% endfor %}     
+                    {% else %}
                         {{form.disease(class="form-control form-control-lg")}}
                     {%endif%}
                 </div>
+                
                 <div class = "form-group">
-
-                    {{form.vacccine(class="form-control-label")}}
-                    {%if form.vaccine.errors%}
-                    {{form.vaccine(class="form-control form-control-lg is invalid")}}
-                       {%for error in form.vaccine.errors%}
-                            
-                        {%endfor%}
-                        {% else %}
-                        {{form.vaccine(class="form-control form-control-lg")}}
-                    {%endif%}
-                </div>
-                <div class = "form-group">
-
                     {{form.vaccine_marketing_authorization_holder(class="form-control-label")}}
                     {%if form.vaccine_marketing_authorization_holder.errors%}
-                    {{form.vaccine_marketing_authorization_holder(class="form-control form-control-lg is invalid")}}
-                       {%for error in form.vaccine_marketing_authorization_holder.errors%}
-                            
+                        {{form.vaccine_marketing_authorization_holder(class="form-control form-control-lg is invalid")}}
+                        {%for error in form.vaccine_marketing_authorization_holder.errors%}
                         {%endfor%}
-                        {% else %}
+                    {% else %}
                         {{form.vaccine_marketing_authorization_holder(class="form-control form-control-lg")}}
                     {%endif%}
                 </div>
@@ -100,11 +80,10 @@
 
                     {{form.batch_number(class="form-control-label")}}
                     {%if form.batch_number.errors%}
-                    {{form.batch_number(class="form-control form-control-lg is invalid")}}
-                       {%for error in form.batch_number.errors%}
-                            
+                        {{form.batch_number(class="form-control form-control-lg is invalid")}}
+                        {%for error in form.batch_number.errors%}
                         {%endfor%}
-                        {% else %}
+                    {% else %}
                         {{form.batch_number(class="form-control form-control-lg")}}
                     {%endif%}
                 </div>
@@ -112,11 +91,10 @@
 
                     {{form.number_of_doses_expected(class="form-control-label")}}
                     {%if form.number_of_doses_expected.errors%}
-                    {{form.number_of_doses_expected(class="form-control form-control-lg is invalid")}}
-                       {%for error in form.number_of_doses_expected.errors%}
-                            
+                        {{form.number_of_doses_expected(class="form-control form-control-lg is invalid")}}
+                        {%for error in form.number_of_doses_expected.errors%}
                         {%endfor%}
-                        {% else %}
+                    {% else %}
                         {{form.number_of_doses_expected(class="form-control form-control-lg")}}
                     {%endif%}
                 </div>
@@ -124,11 +102,10 @@
 
                     {{form.number_of_doses_administered(class="form-control-label")}}
                     {%if form.number_of_doses_administered.errors%}
-                    {{form.number_of_doses_administered(class="form-control form-control-lg is invalid")}}
-                       {%for error in form.number_of_doses_administered.errors%}
-                            
+                        {{form.number_of_doses_administered(class="form-control form-control-lg is invalid")}}
+                        {%for error in form.number_of_doses_administered.errors%}    
                         {%endfor%}
-                        {% else %}
+                    {% else %}
                         {{form.number_of_doses_administered(class="form-control form-control-lg")}}
                     {%endif%}
                 </div>
@@ -136,11 +113,10 @@
 
                     {{form.member_state(class="form-control-label")}}
                     {%if form.member_state.errors%}
-                    {{form.member_state(class="form-control form-control-lg is invalid")}}
-                       {%for error in form.member_state.errors%}
-                           
+                        {{form.member_state(class="form-control form-control-lg is invalid")}}
+                        {%for error in form.member_state.errors%}   
                         {%endfor%}
-                        {% else %}
+                    {% else %}
                         {{form.member_state(class="form-control form-control-lg")}}
                     {%endif%}
                 </div>
@@ -148,21 +124,19 @@
 
                     {{form.certificate_issuer(class="form-control-label")}}
                     {%if form.certificate_issuer.errors%}
-                    {{form.certificate_issuer(class="form-control form-control-lg is invalid")}}
-                       {%for error in form.certificate_issuer.errors%}
-                          
+                        {{form.certificate_issuer(class="form-control form-control-lg is invalid")}}
+                        {%for error in form.certificate_issuer.errors%}
                         {%endfor%}
-                        {% else %}
+                    {% else %}
                         {{form.certificate_issuer(class="form-control form-control-lg")}}
                     {%endif%}
                 </div>
                 <div class = "form-group mt-4">
-                    {{form.submit(class="btn btn-secondary" ) }}
+                    {{ form.generate_certificate(class="btn btn-secondary" ) }}
                 </div>
 
             </fieldset>
-
         </form>
-
     </div>
 {% endblock %}
+
