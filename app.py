@@ -9,7 +9,42 @@ app.config['SECRET_KEY'] = 'test'
 
 @app.route("/")
 def home():
-    return render_template("home.html")
+    return render_template("landing.html")
+
+# Patient routes
+@app.route("/patient")
+def patient_home():
+    return render_template("/patient/patient_vaccination_certificate.html")
+
+@app.route("/patient/impfwissen")
+def patient_impfwissen():
+    return render_template("/patient/patient_vaccination_knowledge.html")
+
+@app.route("/patient/kalender")
+def patient_kalender():
+    return render_template("/patient/patient_calendar.html")
+
+@app.route("/patient/scan")
+def patient_scan():
+    return render_template("/patient/patient_scan.html")
+
+@app.route("/patient/profil")
+def patient_profil():
+    return render_template("/patient/patient_profile.html")
+
+# Issuer routes
+@app.route("/issuer")
+def issuer_home():
+    return render_template("/issuer/issuer_create_qr.html")
+
+@app.route("/issuer/impfwissen")   
+def issuer_impfwissen():
+    return render_template("issuer/issuer_vaccination_knowledge.html")
+
+@app.route("/issuer/profil")
+def issuer_profil():
+    return render_template("/issuer/issuer_profile.html")
+
 
 @app.route("/issuer/QR", methods =["GET", "POST"])   
 def issuer_create_qr():
