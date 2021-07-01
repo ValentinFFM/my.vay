@@ -7,15 +7,11 @@ class ImpfnachweisForm (Form):
     date_of_birth = DateField("Geburtsdatum des Geimpften: ")
     # issuer_claim?
     date_of_vaccination= DateField("Datum der Impfung: ")
+    vaccine_category = TextField("Impfkategorie (Standarfimpfung, Auffrischimpfung,...): ")
     disease = StringField("Impfung für folgende Krankheit: ")
     vaccine = StringField("Impfstoff: ")
-    #medicinal_product = StringField("Name des Impfstoffes: ") # was war medicinal_product?
     vaccine_marketing_authorization_holder = TextField("Hersteller: ")
     batch_number = StringField("Chargennummer: ")
-    number_of_doses_expected = IntegerField("Nötige Impfdosen: ")     
-    number_of_doses_administered = IntegerField("Bisher erhaltene Impfdosen: ")
     issued_at = DateTimeField ("Ausgestellt am: ")
-    member_state = TextField("Land der Ausstellung: ")
     certificate_issuer = StringField("Ihre Zertifikatsnummer: ")
-    #generate_unique_certificate_id = StringField("Zertifikatsnummer") --> 
     generate_certificate =  SubmitField("Impfnachweis erstellen")

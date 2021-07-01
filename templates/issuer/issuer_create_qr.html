@@ -8,6 +8,7 @@
     <div class = "container w-50">
         <form method="POST" action = "">
             {{form.hidden_tag()}}
+
             <fieldset>
                 <legend class = "border-bottom -mb-4">Impfnachweis ausstellen</legend>
                 <div class = "form-group">
@@ -25,6 +26,7 @@
                 <div class = "form-group">
 
                     {{form.l_name.label(class="form-control-label")}}
+
                     {% if form.l_name.errors%}
                         {{form.l_name(class="form-control form-control-lg is invalid")}}
                         {%for error in form.l_name.errors%}
@@ -36,6 +38,7 @@
                 <div class = "form-group">
 
                     {{form.date_of_birth.label(class="form-control-label")}}
+
                     {%if form.date_of_birth.errors%}
                         {{form.date_of_birth(class="form-control form-control-lg is invalid")}}
                         {%for error in form.date_of_birth.errors%}
@@ -47,6 +50,7 @@
                 <div class = "form-group">
 
                     {{form.date_of_vaccination.label(class="form-control-label")}}
+
                     {%if form.date_of_vaccination.errors%}
                         {{form.date_of_vaccination(class="form-control form-control-lg is invalid")}}
                         {%for error in form.date_of_vaccination.errors%}
@@ -56,7 +60,19 @@
                     {%endif%}
                 </div>
                 <div class = "form-group">
+                    {{form.vaccine_category.label(class="form-control-label")}}
+
+                    {% if form.vaccine_category.errors %}
+                        {{form.vaccine_categroy(class="form-control form-control-lg is invalid")}}
+                        {% for error in form.vaccine_category.errors %}
+                        {% endfor %}     
+                    {% else %}
+                        {{form.vaccine_category(class="form-control form-control-lg")}}
+                    {%endif%}
+                </div>
+                <div class = "form-group">
                     {{form.disease.label(class="form-control-label")}}
+
                     {% if form.disease.errors %}
                         {{form.disease(class="form-control form-control-lg is invalid")}}
                         {% for error in form.disease.errors %}
@@ -65,20 +81,31 @@
                         {{form.disease(class="form-control form-control-lg")}}
                     {%endif%}
                 </div>
-                
                 <div class = "form-group">
-                    {{form.vaccine_marketing_authorization_holder(class="form-control-label")}}
-                    {%if form.vaccine_marketing_authorization_holder.errors%}
+                    {{form.vaccine.label(class="form-control-label")}}
+
+                    {% if form.vaccine.errors %}
+                        {{form.vaccine(class="form-control form-control-lg is invalid")}}
+                        {% for error in form.vaccine.errors %}
+                        {% endfor %}     
+                    {% else %}
+                        {{form.vaccine(class="form-control form-control-lg")}}
+                    {%endif%}
+                </div>
+                <div class = "form-group">
+                    {{form.vaccine_marketing_authorization_holder.label(class="form-control-label")}}
+
+                    {% if form.vaccine_marketing_authorization_holder.errors %}
                         {{form.vaccine_marketing_authorization_holder(class="form-control form-control-lg is invalid")}}
-                        {%for error in form.vaccine_marketing_authorization_holder.errors%}
-                        {%endfor%}
+                        {% for error in form.vaccine_marketing_authorization_holder.errors %}
+                        {% endfor %}     
                     {% else %}
                         {{form.vaccine_marketing_authorization_holder(class="form-control form-control-lg")}}
                     {%endif%}
                 </div>
                 <div class = "form-group">
+                    {{form.batch_number.label(class="form-control-label")}}
 
-                    {{form.batch_number(class="form-control-label")}}
                     {%if form.batch_number.errors%}
                         {{form.batch_number(class="form-control form-control-lg is invalid")}}
                         {%for error in form.batch_number.errors%}
@@ -89,40 +116,18 @@
                 </div>
                 <div class = "form-group">
 
-                    {{form.number_of_doses_expected(class="form-control-label")}}
-                    {%if form.number_of_doses_expected.errors%}
-                        {{form.number_of_doses_expected(class="form-control form-control-lg is invalid")}}
-                        {%for error in form.number_of_doses_expected.errors%}
+                    {{form.issued_at.label(class="form-control-label")}}
+                    {%if form.issued_at.errors%}
+                        {{form.issued_at(class="form-control form-control-lg is invalid")}}
+                        {%for error in form.issued_at.errors%}
                         {%endfor%}
                     {% else %}
-                        {{form.number_of_doses_expected(class="form-control form-control-lg")}}
+                        {{form.issued_at(class="form-control form-control-lg")}}
                     {%endif%}
                 </div>
                 <div class = "form-group">
 
-                    {{form.number_of_doses_administered(class="form-control-label")}}
-                    {%if form.number_of_doses_administered.errors%}
-                        {{form.number_of_doses_administered(class="form-control form-control-lg is invalid")}}
-                        {%for error in form.number_of_doses_administered.errors%}    
-                        {%endfor%}
-                    {% else %}
-                        {{form.number_of_doses_administered(class="form-control form-control-lg")}}
-                    {%endif%}
-                </div>
-                <div class = "form-group">
-
-                    {{form.member_state(class="form-control-label")}}
-                    {%if form.member_state.errors%}
-                        {{form.member_state(class="form-control form-control-lg is invalid")}}
-                        {%for error in form.member_state.errors%}   
-                        {%endfor%}
-                    {% else %}
-                        {{form.member_state(class="form-control form-control-lg")}}
-                    {%endif%}
-                </div>
-                <div class = "form-group">
-
-                    {{form.certificate_issuer(class="form-control-label")}}
+                    {{form.certificate_issuer.label(class="form-control-label")}}
                     {%if form.certificate_issuer.errors%}
                         {{form.certificate_issuer(class="form-control form-control-lg is invalid")}}
                         {%for error in form.certificate_issuer.errors%}
