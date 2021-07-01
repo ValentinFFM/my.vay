@@ -154,6 +154,19 @@ def patient_scan():
 def patient_profil():
     return render_template("/patient/patient_profile.html")
 
+# Issuer routes
+@app.route("/issuer")
+def issuer_home():
+    return render_template("/issuer/issuer_create_qr.html")
+
+@app.route("/issuer/impfwissen")   
+def issuer_impfwissen():
+    return render_template("issuer/issuer_vaccination_knowledge.html")
+
+@app.route("/issuer/profil")
+def issuer_profil():
+    return render_template("/issuer/issuer_profile.html")
+
 @app.route("/QR", methods =["GET", "POST"])   
 def issuer_create_qr():
     #fields = NONE
