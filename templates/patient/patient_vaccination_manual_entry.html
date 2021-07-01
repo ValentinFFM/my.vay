@@ -57,6 +57,94 @@
             </div>
         </nav>
 
+        <div class="col-12 col-md-6 col-xl-4">
+            <div class="form-group">
+                {{ form.date_of_vaccination.label() }}
+
+                {% if form.date_of_vaccination.errors %}
+                    {{ form.date_of_vaccination(class="form-control is-invalid") }}
+                    <div class="invalid-feedback">
+                        {% for error in form.date_of_vaccination.errors %}
+                            <span>{{ error }}</span>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    {{ form.date_of_vaccination(class="form-control") }}
+                {% endif %}
+            </div>
+        </div>
+
+
+        <div class="col-12 col-md-6 col-xl-4">
+            <div class="form-group">
+                {{ form.vaccine.label() }}
+
+                {% if form.vaccine.errors %}
+                    {{ form.vaccine(class="form-control is-invalid") }}
+                    <div class="invalid-feedback">
+                        {% for error in form.vaccine.errors %}
+                            <span>{{ error }}</span>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    {{ form.vaccine(class="form-control") }}
+                {% endif %}
+            </div>
+        </div>
+
+
+        <div class="col-12 col-md-6 col-xl-4">
+            <div class="form-group">
+                {{ form.batch_number.label() }}
+
+                {% if form.batch_number.errors %}
+                    {{ form.batch_number(class="form-control is-invalid") }}
+                    <div class="invalid-feedback">
+                        {% for error in form.batch_number.errors %}
+                            <span>{{ error }}</span>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    {{ form.batch_number(class="form-control") }}
+                {% endif %}
+            </div>
+        </div>
+
+
+        <div class="col-12 col-md-6 col-xl-4">
+            <div class="form-group">
+                {{ form.vaccination_category.label() }}
+
+                {% if form.vaccination_category.errors %}
+                    {{ form.vaccination_category(class="form-control is-invalid") }}
+                    <div class="invalid-feedback">
+                        {% for error in form.vaccination_category.errors %}
+                            <span>{{ error }}</span>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    {{ form.vaccination_category(class="form-control") }}
+                {% endif %}
+            </div>
+        </div>
+
+
+        <div class="col-12 col-md-6 col-xl-4">
+            <div class="form-group">
+                {{ form.certificate_issuer.label() }}
+
+                {% if form.certificate_issuer.errors %}
+                    {{ form.certificate_issuer(class="form-control is-invalid") }}
+                    <div class="invalid-feedback">
+                        {% for error in form.certificate_issuer.errors %}
+                            <span>{{ error }}</span>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    {{ form.certificate_issuer(class="form-control") }}
+                {% endif %}
+            </div>
+        </div>
 
         <!-- <form action="/addvaccination" method="POST">
             <div class="form-group">

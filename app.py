@@ -6,12 +6,14 @@ from flask_wtf import Form
 from wtforms import TextField, StringField, DateTimeField, BooleanField, SubmitField, IntegerField, DateField
 from wtforms.validators import InputRequired, Length
 # from flask_bootstrap import Bootstrap
+#from flask_sqlalchemy import SQLAlchemy
+
 
 # Initialize flask application
 app = Flask(__name__)
 # Bootstrap(app)
 app.config['SECRET_KEY'] = ''
-
+#db = SQLAlchemy(app)
 
 class ImpfnachweisForm (Form):
     f_name = TextField("Vorname des Geimpften: ")
@@ -78,7 +80,7 @@ def addPatient():
         flash('Impfeintrag erstellt!')
         return redirect(url_for('patient_vaccination_certificate'))
 
-    return render_template('patient/patient_vaccination_vaccination_entry.html', form=form)
+    return render_template('patient/patient_vaccination_manual_entry.html', form=form)
 
 @app.route("/")
 def home():
