@@ -6,8 +6,8 @@ from forms import ImpfnachweisForm, LoginForm
 
 import pyqrcode
 import qrcode
-import png
-import cv2
+#import png
+#import cv2
 
 
 # Initialize flask application
