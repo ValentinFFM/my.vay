@@ -57,27 +57,28 @@ def issuer_profil():
 
 @app.route("/issuer/QR", methods =["GET", "POST"])   
 def issuer_create_qr():
-    #fields = NONE
     form = ImpfnachweisForm()
-    if form.validate_on_submit():
-        impfnachweis = ImpfnachweisForm(
-            Vorname = form.f_name.data,
-            Nachname = form.l_name.data,
-            Geburtsdatum = form.date_of_birth.data,
-            Impfdatum = form.date_of_vaccination.data,
-            Impfkategorie = form.vaccine_category.data,
-            Krankheit = form.disease.data,
-            Impfstoff = form.vaccine.data,
-            Hersteller = form.vaccine_marketing_authorization_holder.data,
-            Chargennummer = form.batch_number.data,
-            Ausstellungszeitpunkt = form.issued_at.data,
-            Arztkennung = form.certificate_issuer.data)
-        impfnachweis.save()
-        qr = qrcode.make()
-        qr.save('PrototypischerImpfnachweis.png')
+    ## Clicking on the submit button is creating JSON-Object
+    if form.is_submitted():
+        proof_of_vaccination= {}
+        proof_of_vaccination['f_name']= form.f_name.data
+        proof_of_vaccination['l_name'] = form.l_name.data
+        proof_of_vaccination['date_of_birth']=form.date_of_birth.data
+        proof_of_vaccination['date_of_vaccination'] = form.date_of_vaccination.data
+        proof_of_vaccination['vaccination_category'] = form.vaccine_category.data
+        proof_of_vaccination['vaccine_marketing_authorization_holder'] = form.vaccine_marketing_authorization_holder.data
+        proof_of_vaccination['batch_number'] = form.batch_number.data
+        proof_of_vaccination['issued_at'] = form.issued_at.data
+        proof_of_vaccination['certificate_issuer'] = form.certificate_issuer.data
+        ###Create QR Code with data of JSON-Object
+        qr = qrcode.make(proof_of_vaccination)
+        #qr.save('PrototypischerImpfnachweis.png')
+        ### display QR Code
         qr.show()
-        return redirect(url_for('home'))
+       #return redirect(url_for('show_qr', qr=qr))
     return render_template("/issuer/issuer_create_qr.html", form=form)
+
+
 
 
 @app.route("/login")
@@ -91,9 +92,6 @@ def login():
          #else:
             # flash(f'Login fehlgeschlagen für {form.username.data}', category = 'danger')
     return render_template("/login/login.html", title = 'Login', form=form)
-
-
-
 
 
 
