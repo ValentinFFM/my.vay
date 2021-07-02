@@ -1,5 +1,6 @@
 from flask_wtf import Form
-from wtforms import TextField, StringField, DateTimeField, BooleanField, SubmitField, IntegerField, DateField
+from wtforms import TextField, StringField, DateTimeField, BooleanField, SubmitField, IntegerField, DateField, PasswordField
+from wtforms.fields.html5 import DateTimeLocalField
 
 class ImpfnachweisForm (Form):
     f_name = TextField("Vorname des Geimpften: ")
@@ -7,11 +8,18 @@ class ImpfnachweisForm (Form):
     date_of_birth = DateField("Geburtsdatum des Geimpften: ")
     # issuer_claim?
     date_of_vaccination= DateField("Datum der Impfung: ")
-    vaccine_category = TextField("Impfkategorie (Standarfimpfung, Auffrischimpfung,...): ")
+    vaccine_category = TextField("Impfkategorie (Standardimpfung, Auffrischimpfung,...): ")
     disease = StringField("Impfung für folgende Krankheit: ")
     vaccine = StringField("Impfstoff: ")
     vaccine_marketing_authorization_holder = TextField("Hersteller: ")
     batch_number = StringField("Chargennummer: ")
-    issued_at = DateTimeField ("Ausgestellt am: ")
+    issued_at = DateTimeLocalField ("Ausgestellt am: ", format='%m/%d/%y',)
     certificate_issuer = StringField("Ihre Zertifikatsnummer: ")
     generate_certificate =  SubmitField("Impfnachweis erstellen")
+
+class LoginForm(Form):
+    username = TextField("Nutzername")
+    password = PasswordField('Password (*)')
+    remember = BooleanField('Passwort vergessen')
+    submit = SubmitField('Login')
+
