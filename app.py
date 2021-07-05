@@ -6,98 +6,83 @@ from flask_wtf import Form
 from wtforms import TextField, StringField, DateTimeField, BooleanField, SubmitField, IntegerField, DateField
 from wtforms.validators import InputRequired, Length, DataRequired, Email
 # from flask_bootstrap import Bootstrap
-#from flask_sqlalchemy import SQLAlchemy
+from flask_sqlalchemy import SQLAlchemy
+import datetime
 
 
-# Initialize flask application
 app = Flask(__name__)
-# Bootstrap(app)
-app.config['SECRET_KEY'] = 'Test'
-#db = SQLAlchemy(app)
-
-class ImpfnachweisForm (Form):
-    f_name = TextField("Vorname des Geimpften: ")
-    l_name = TextField("Nachname des Geimpften: ")
-    date_of_birth = DateField("Geburtsdatum des Geimpften: ")
-    # issuer_claim?
-    date_of_vaccination= DateField("Datum der Impfung: ")
-    disease = StringField("Impfung für folgende Krankheit: ")
-    vaccine = StringField("Impfstoff: ")
-    medicinal_product = StringField("Name des Impfstoffes: ") # was war medicinal_product?
-    vaccine_marketing_authorization_holder = TextField("Hersteller: ")
-    batch_number = StringField("Chargennummer: ")
-    number_of_doses_expected = IntegerField("Nötige Impfdosen: ")     
-    number_of_doses_administered = IntegerField("Bisher erhaltene Impfdosen: ")
-    issued_at = DateTimeField ("Ausgestellt am: ")
-    member_state = TextField("Land der Ausstellung: ")
-    certificate_issuer = StringField("Ihre Zertifikatsnummer: ")
-    #generate_unique_certificate_id = StringField("Zertifikatsnummer") --> 
-    generate_certificate =  SubmitField("Impfnachweis erstellen")
-
-vaccination =[
-    {
-        "date_of_vaccination":"01.06.21",
-        "vaccine":"BioNTech",
-        "batch_number":"128he23bhu",
-        "vaccination_category":"Standard",
-        "certificate_issuer": "Impfzentrum Frankfurt"
-
-    },
-    {
-        "date_of_vaccination":"01.09.21",
-        "vaccine":"BioNTech",
-        "batch_number":"dadsdafaf",
-        "vaccination_category":"Standard",
-        "certificate_issuer": "Impfzentrum Frankfurt"
-    }
-]
 
 
-# class vaccination(db.Model):
-    #brauchen wir noch mehr Infos ausgegeben?
-    # date_of_vaccination = db.Column(db.String(100))
-    # vaccine = db.Column(db.String(100))
-    # batch_number = db.Column(db.String(100), primary_key=True)
-    # vaccination_category = db.Column(db.String(100))
-    # certificate_issuer = db.Column(db.String(100))
+#
+# DATABASE
+#
 
-    # def __init__(self, date_of_vaccination, vaccine, batch_number, vaccination_category, certificate_issuer):
-    #     self.date_of_vaccination = date_of_vaccination
-    #     self.vaccine = vaccine
-    #     self.batch_number = batch_number
-    #     self.vaccination_category = vaccination_category
-    #     self.certificate_issuer = certificate_issuer
+# Location of the database 
+app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://postgres:Master123@localhost:5432/vaccination_database'
+app.config['SQLALCHEMY_ECHO'] = True
+
+# Initializing database with SQLAlchemy
+db = SQLAlchemy(app)
+
+# Patient Model
+class Patient(db.Model):
+    # Primary Key for patient is the username
+    unique_patient_identifier = db.Column(db.String, primary_key = True)
     
-    # def __repr__(self):
-    #     return '<Impfung:%r>' % self.date_of_vaccination % self.vaccine % self.batch_number % self.vaccination_category %self.certificate_issuer
+    # Defining all required attributes
+    password = db.Column(db.String, nullable = False)
+    f_name = db.Column(db.String, nullable = False)
+    l_name = db.Column(db.String, nullable = False)
+    date_of_birth = db.Column(db.DateTime, nullable = False)
+    
+    # Defining relationship to proof_of_vaccination
+    proof_of_vaccination_identifier = db.relationship('Proof_of_vaccination', backref = 'patient') 
 
-class AddVaccination(Form):
+# Issuer Model
+class Issuer(db.Model):
+    # Defining primary key
+    unique_issuer_identifier = db.Column(db.String, primary_key = True)
+    
+    # Defining all required attributes
+    password = db.Column(db.String, nullable = False)
+    f_name = db.Column(db.String, nullable = False)
+    l_name = db.Column(db.String, nullable = False)
+    date_of_birth = db.Column(db.DateTime, nullable = False)
+    
+    # Defining relationship to proof_of_vaccination
+    proof_of_vaccination_identifier = db.relationship('Proof_of_vaccination', backref = 'issuer') 
 
-    # Creation of all inputfields and the submit button
-    date_of_vaccination = DateField('Datum (*)', validators=[DataRequired(), Length(max=30)])
-    vaccine = StringField('Impfstoff (*)', validators=[DataRequired(), Length(max=30)])
-    batch_number = StringField('Chargennummer(*)',  validators=[DataRequired()])
-    vaccination_category = StringField('Impfkategorie(*)', validators=[Length(max=60)])
-    certificate_issuer = StringField('Medizinische Einrichtung', validators=[Length(max=30)])
-    submit = SubmitField('Speichern')
+# Proof_of_vaccination Model
+class Proof_of_vaccination(db.Model):
+    # Defining primary key
+    unique_certificate_identifier = db.Column(db.String, primary_key = True)
+    
+    # Defining all required attributes
+    date_of_vaccination = db.Column(db.DateTime, nullable = False)
+    vaccine_category = db.Column(db.String, nullable = False)
+    disease = db.Column(db.String, nullable = False)
+    vaccine = db.Column(db.String, nullable = False)
+    vaccine_marketing_authorization_holder = db.Column(db.String, nullable = False)
+    batch_number = db.Column(db.String, nullable = False)
+    issued_at = db.Column(db.DateTime, nullable = False)
+    
+    # Defining relationship to patient
+    unique_patient_identifier = db.Column(db.String, db.ForeignKey('patient.unique_patient_identifier'), nullable=False)
+    
+    # Defining relationship to issuer
+    unique_issuer_identifier = db.Column(db.String, db.ForeignKey('issuer.unique_issuer_identifier'), nullable=False)
+    
+    db.Column(db.String, nullable = False)
 
-@app.route("/vaccination/add", methods=['POST', 'GET'])
-#@login_required
-def addVaccination():
+# Create tables
+db.create_all()
 
-    form = AddVaccination()
 
-    # if form.validate_on_submit():
-    # Inserts a patient and a relative to the patient the SQL databs
-    # patient = vaccination(date_of_vaccination=form.date_of_vaccination.data, vaccine=form.vaccine.data, batch_number=form.batch_number.data, vaccination_category=form.vaccination_category.data, certificate_issuer=form.certificate_issuer.data)
-    # db.session.add(vaccination)
-    # db.session.commit()
+#
+# Routing
+#
 
-    # flash('Impfeintrag erstellt!')
-    # return redirect(url_for('patient_vaccination_certificate'))
-
-    return render_template('patient/patient_vaccination_manual_entry.html', form=form)
-
+# Landing Page route
 @app.route("/")
 def home():
     return render_template("landing.html")
@@ -106,6 +91,13 @@ def home():
 
 @app.route("/patient")
 def patient_home():
+
+# EXAMPLE CODE: Creating new user
+    # birth_date = datetime.datetime(2020,5,17)
+    # new_patient = Patient(unique_patient_identifier = "12345678", password = "football4life", f_name="Valentin", l_name="Müller", date_of_birth=birth_date)
+    # db.session.add(new_patient)
+    # db.session.commit()
+
     # if request.method == "POST":
     #     branch = Impfung.query.all()
         # return render_template('patient_vaccination_certificate.html', branch=branch)
@@ -141,6 +133,8 @@ def patient_vaccination_entry():
 #         return render_template('patient_vaccination_certificate.html', branch = branch)
 
 
+    
+    
 
 @app.route("/patient/impfwissen")
 def patient_impfwissen():
@@ -177,7 +171,9 @@ def issuer_create_qr():
     form = ImpfnachweisForm()
     return render_template("issuer_create_qr.html", title = "Impfnachweis erstellen",form=form)
 
-# Run application with debug console
+# 
+# Run application
+#
 if __name__ == "__main__":
     app.run(debug=True, host="0.0.0.0", port=3000)
 
