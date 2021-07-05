@@ -1,7 +1,7 @@
 from flask_wtf import Form
 from wtforms import TextField, StringField, DateTimeField, BooleanField, SubmitField, IntegerField, DateField, PasswordField
 from wtforms.fields.html5 import DateTimeLocalField
-from wtforms.validators import EqualTo, DataRequired, Length, ValidationError
+from wtforms.validators import EqualTo, DataRequired, Length, ValidationError, Email
 #from models import Patient
 
 class ImpfnachweisForm (Form):
@@ -40,6 +40,16 @@ class RegistrationForm(Form):
         unique_patient_identifier = Patient.query.filter_by(unique_patient_identifier=unique_patient_identifier.data).first()
         if unique_patient_identifier:
             raise ValidationError('Nutzerkennung bereits vergeben')
+        
+class AddVaccination(Form):
+
+    # Creation of all inputfields and the submit button
+    date_of_vaccination = DateField('Datum (*)', validators=[DataRequired(), Length(max=30)])
+    vaccine = StringField('Impfstoff (*)', validators=[DataRequired(), Length(max=30)])
+    batch_number = StringField('Chargennummer(*)',  validators=[DataRequired()])
+    vaccine_category = StringField('Impfkategorie(*)', validators=[Length(max=60)])
+    unique_issuer_identifier = StringField('Medizinische Einrichtung', validators=[Length(max=30)])
+    submit = SubmitField('Speichern')
 
 
 

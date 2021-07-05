@@ -7,24 +7,15 @@ from flask import Flask, render_template, abort, url_for, redirect, flash
 from flask_sqlalchemy import SQLAlchemy
 from qrcode.main import QRCode
 from wtforms.meta import DefaultMeta
-from forms import ImpfnachweisForm, LoginForm
-
-# Imports from Flask
-from flask import Flask, render_template, abort
-from flask_wtf import Form
-from wtforms import TextField, StringField, DateTimeField, BooleanField, SubmitField, IntegerField, DateField
-from wtforms.validators import InputRequired, Length, DataRequired, Email
-# from flask_bootstrap import Bootstrap
-from flask_sqlalchemy import SQLAlchemy
-import datetime
+from forms import ImpfnachweisForm, LoginForm, AddVaccination
 
 import qrcode
 import pyqrcode
 import json
 import cv2
 from PIL import Image
-from django.shortcuts import render
-import qrcode.image.svg
+# from django.shortcuts import render
+# import qrcode.image.svg
 from io import BytesIO
 from PIL import Image
 import io
@@ -41,7 +32,7 @@ app = Flask(__name__)
 # Bootstrap(app)
 app.config['SECRET_KEY'] = 'test'
 
-app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://postgres:Start1210!@localhost:5432/vaccination_database'
+app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://postgres:Master123@localhost:5432/vaccination_database'
 app.config['SQLALCHEMY_ECHO'] = True
 
 
@@ -109,15 +100,7 @@ class Proof_of_vaccination(db.Model):
 # Create tables
 db.create_all()
 
-class AddVaccination(Form):
 
-    # Creation of all inputfields and the submit button
-    date_of_vaccination = DateField('Datum (*)', validators=[DataRequired(), Length(max=30)])
-    vaccine = StringField('Impfstoff (*)', validators=[DataRequired(), Length(max=30)])
-    batch_number = StringField('Chargennummer(*)',  validators=[DataRequired()])
-    vaccine_category = StringField('Impfkategorie(*)', validators=[Length(max=60)])
-    unique_issuer_identifier = StringField('Medizinische Einrichtung', validators=[Length(max=30)])
-    submit = SubmitField('Speichern')
 #
 # Routing
 #
@@ -138,11 +121,11 @@ def patient_home():
     
     return render_template('patient/patient_vaccination_certificate.html')
 
-@app.route("/patient/impfeintrag-neu")
+@app.route("/patient/impfeintrag")
 def patient_vaccination_entry():
     return render_template('patient/patient_vaccination_entry.html')
 
-@app.route("/vaccination/add", methods=['POST', 'GET'])
+@app.route("/patient/impfeintrag/manuell", methods=['POST', 'GET'])
 #@login_required
 def addVaccination():
 
@@ -199,7 +182,7 @@ def patient_impfwissen():
 def patient_kalender():
     return render_template("/patient/patient_calendar.html")
 
-@app.route("/patient/scan")
+@app.route("/patient/impfeintrag/scan")
 def patient_scan():
     #img = cv2.imread('Beispiel.png')
     #cv2.imshow('Ihr Impfnachweis',img)
