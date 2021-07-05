@@ -1,8 +1,13 @@
-body{
+h1{
+    color: #349B73;
     text-align: center;
 }
 
- .form-control{
+.card{
+    border: #349B73 solid 1px;
+}
+
+.form-control{
     border: 1px solid;
     border-color:rgb(24, 119, 163);
- }
+}
