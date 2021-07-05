@@ -1,5 +1,8 @@
+{% extends "html_container.html" %}
+{% block page_title %}
+    Patient - Eintrag wählen
+{% endblock %}
 {% block page_content %}
-<div class="container">
 
     <nav class="fixed-bottom navbar-light bg-dark">
         <div class="container-fluid py-2">
@@ -23,7 +26,7 @@
                 </li>
                 <li class="nav-item">
                     <!-- Impfpass Icon (Aktiv) -->
-                    <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" fill="#0d6efd" class="bi bi-file-medical" viewBox="0 0 16 16">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" fill="#349B73" class="bi bi-file-medical" viewBox="0 0 16 16">
                         <path d="M8.5 4.5a.5.5 0 0 0-1 0v.634l-.549-.317a.5.5 0 1 0-.5.866L7 6l-.549.317a.5.5 0 1 0 .5.866l.549-.317V7.5a.5.5 0 1 0 1 0v-.634l.549.317a.5.5 0 1 0 .5-.866L9 6l.549-.317a.5.5 0 1 0-.5-.866l-.549.317V4.5zM5.5 9a.5.5 0 0 0 0 1h5a.5.5 0 0 0 0-1h-5zm0 2a.5.5 0 0 0 0 1h5a.5.5 0 0 0 0-1h-5z"/>
                         <path d="M2 2a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V2zm10-1H4a1 1 0 0 0-1 1v12a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1z"/>
                     </svg>
@@ -49,35 +52,37 @@
             </ul>
         </div>
     </nav>
-    
-    <div class="row">
-        <div class="col-md-3"></div>
-        <div class="col-md-6 border">
+
+    <div class="container my-5">
+        
+        <div class="row">
+            <div class="col-md-3"></div>
+            <div class="col-md-6 border">
 
 
 
-    <h1>Neuer Impfeintrag</h1>
-    <h3>Wähle die Art deines Impfeintrags</h3>
-    <div class="row">
-        <div class="col-6">
-            <a href="patient_vaccination_manual_entry.html">
-                <button type="button" class="btn btn-light"><svg xmlns="http://www.w3.org/2000/svg" width="100" height="100" fill="currentColor" style="color: rgb(24, 119, 163);" class="bi bi-pencil-square" viewBox="0 0 16 16">
-                    <path d="M15.502 1.94a.5.5 0 0 1 0 .706L14.459 3.69l-2-2L13.502.646a.5.5 0 0 1 .707 0l1.293 1.293zm-1.75 2.456-2-2L4.939 9.21a.5.5 0 0 0-.121.196l-.805 2.414a.25.25 0 0 0 .316.316l2.414-.805a.5.5 0 0 0 .196-.12l6.813-6.814z"/>
-                    <path fill-rule="evenodd" d="M1 13.5A1.5 1.5 0 0 0 2.5 15h11a1.5 1.5 0 0 0 1.5-1.5v-6a.5.5 0 0 0-1 0v6a.5.5 0 0 1-.5.5h-11a.5.5 0 0 1-.5-.5v-11a.5.5 0 0 1 .5-.5H9a.5.5 0 0 0 0-1H2.5A1.5 1.5 0 0 0 1 2.5v11z"/>
-                    </svg></button> 
-                </a> <p>Manueller Eintrag</p>
+        <h1>Neuer Impfeintrag</h1>
+        <h3 style="text-align: center;">Wähle die Art deines Impfeintrags</h3>
+        <div class="row">
+            <div class="col-6" style="text-align: center;">
+                <a href="{{ url_for('addVaccination') }}">
+                    <button type="button" class="btn btn-light"><svg xmlns="http://www.w3.org/2000/svg" width="100" height="100" fill="#349B73" class="bi bi-pencil-square" viewBox="0 0 16 16">
+                        <path d="M15.502 1.94a.5.5 0 0 1 0 .706L14.459 3.69l-2-2L13.502.646a.5.5 0 0 1 .707 0l1.293 1.293zm-1.75 2.456-2-2L4.939 9.21a.5.5 0 0 0-.121.196l-.805 2.414a.25.25 0 0 0 .316.316l2.414-.805a.5.5 0 0 0 .196-.12l6.813-6.814z"/>
+                        <path fill-rule="evenodd" d="M1 13.5A1.5 1.5 0 0 0 2.5 15h11a1.5 1.5 0 0 0 1.5-1.5v-6a.5.5 0 0 0-1 0v6a.5.5 0 0 1-.5.5h-11a.5.5 0 0 1-.5-.5v-11a.5.5 0 0 1 .5-.5H9a.5.5 0 0 0 0-1H2.5A1.5 1.5 0 0 0 1 2.5v11z"/>
+                        </svg></button> 
+                    </a> <p>Manueller Eintrag</p>
+            </div>
+            <div class="col-6 " style="text-align: center;">
+                    
+                <a href="patient_scan.html">
+                    <button type="button" class="btn btn-light"><svg xmlns="http://www.w3.org/2000/svg" fill="#349B73"  width="100" height="100" class="bi bi-upc-scan" viewBox="0 0 16 16">
+                        <path d="M1.5 1a.5.5 0 0 0-.5.5v3a.5.5 0 0 1-1 0v-3A1.5 1.5 0 0 1 1.5 0h3a.5.5 0 0 1 0 1h-3zM11 .5a.5.5 0 0 1 .5-.5h3A1.5 1.5 0 0 1 16 1.5v3a.5.5 0 0 1-1 0v-3a.5.5 0 0 0-.5-.5h-3a.5.5 0 0 1-.5-.5zM.5 11a.5.5 0 0 1 .5.5v3a.5.5 0 0 0 .5.5h3a.5.5 0 0 1 0 1h-3A1.5 1.5 0 0 1 0 14.5v-3a.5.5 0 0 1 .5-.5zm15 0a.5.5 0 0 1 .5.5v3a1.5 1.5 0 0 1-1.5 1.5h-3a.5.5 0 0 1 0-1h3a.5.5 0 0 0 .5-.5v-3a.5.5 0 0 1 .5-.5zM3 4.5a.5.5 0 0 1 1 0v7a.5.5 0 0 1-1 0v-7zm2 0a.5.5 0 0 1 1 0v7a.5.5 0 0 1-1 0v-7zm2 0a.5.5 0 0 1 1 0v7a.5.5 0 0 1-1 0v-7zm2 0a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 .5.5v7a.5.5 0 0 1-.5.5h-1a.5.5 0 0 1-.5-.5v-7zm3 0a.5.5 0 0 1 1 0v7a.5.5 0 0 1-1 0v-7z"/>
+                    </svg>  </button> 
+                </a> <p> Scan</p>
+            </div>
         </div>
-        <div class="col-6">
-                
-            <a href="patient_scan.html">
-                <button type="button" class="btn btn-light"><svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" style="color: rgb(24, 119, 163);" width="100" height="100" class="bi bi-upc-scan" viewBox="0 0 16 16">
-                    <path d="M1.5 1a.5.5 0 0 0-.5.5v3a.5.5 0 0 1-1 0v-3A1.5 1.5 0 0 1 1.5 0h3a.5.5 0 0 1 0 1h-3zM11 .5a.5.5 0 0 1 .5-.5h3A1.5 1.5 0 0 1 16 1.5v3a.5.5 0 0 1-1 0v-3a.5.5 0 0 0-.5-.5h-3a.5.5 0 0 1-.5-.5zM.5 11a.5.5 0 0 1 .5.5v3a.5.5 0 0 0 .5.5h3a.5.5 0 0 1 0 1h-3A1.5 1.5 0 0 1 0 14.5v-3a.5.5 0 0 1 .5-.5zm15 0a.5.5 0 0 1 .5.5v3a1.5 1.5 0 0 1-1.5 1.5h-3a.5.5 0 0 1 0-1h3a.5.5 0 0 0 .5-.5v-3a.5.5 0 0 1 .5-.5zM3 4.5a.5.5 0 0 1 1 0v7a.5.5 0 0 1-1 0v-7zm2 0a.5.5 0 0 1 1 0v7a.5.5 0 0 1-1 0v-7zm2 0a.5.5 0 0 1 1 0v7a.5.5 0 0 1-1 0v-7zm2 0a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 .5.5v7a.5.5 0 0 1-.5.5h-1a.5.5 0 0 1-.5-.5v-7zm3 0a.5.5 0 0 1 1 0v7a.5.5 0 0 1-1 0v-7z"/>
-                </svg>  </button> 
-            </a> <p> Scan</p>
+        </div>
+            <div class="col-md-3"></div>
         </div>
     </div>
-    </div>
-        <div class="col-md-3"></div>
-    </div>
-</div>
-{% endblock %}
+{% endblock page_content%}

@@ -36,15 +36,19 @@ class ImpfnachweisForm (Form):
 
 vaccination =[
     {
-        "date_of_vaccination":"01.06.2021",
+        "date_of_vaccination":"01.06.21",
         "vaccine":"BioNTech",
-        "batch_number":"128he23bhu"
+        "batch_number":"128he23bhu",
+        "vaccination_category":"Standard",
+        "certificate_issuer": "Impfzentrum Frankfurt"
+
     },
     {
-        "date_of_vaccination":"01.09.2021",
+        "date_of_vaccination":"01.09.21",
         "vaccine":"BioNTech",
         "batch_number":"dadsdafaf",
-        "institution": "Impfzentrum Frankfurt"
+        "vaccination_category":"Standard",
+        "certificate_issuer": "Impfzentrum Frankfurt"
     }
 ]
 
@@ -79,7 +83,7 @@ class AddVaccination(Form):
 
 @app.route("/vaccination/add", methods=['POST', 'GET'])
 #@login_required
-def addPatient():
+def addVaccination():
 
     form = AddVaccination()
 

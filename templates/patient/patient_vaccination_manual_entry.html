@@ -2,12 +2,6 @@
 {% block page_title %}Manueller-Impfeintrag{% endblock %}
   
         {% block page_content %}
-        <div class="container">
-            
-            <div class="row">
-             <div class="col-md-3"></div>
-             <div class="col-md-6 border">
-
         <nav class="fixed-bottom navbar-light bg-dark">
             <div class="container-fluid py-2">
                 <ul class="nav nav-pills nav-fill">
@@ -30,7 +24,7 @@
                     </li>
                     <li class="nav-item">
                         <!-- Impfpass Icon (Aktiv) -->
-                        <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" fill="#0d6efd" class="bi bi-file-medical" viewBox="0 0 16 16">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" fill="#349B73" class="bi bi-file-medical" viewBox="0 0 16 16">
                             <path d="M8.5 4.5a.5.5 0 0 0-1 0v.634l-.549-.317a.5.5 0 1 0-.5.866L7 6l-.549.317a.5.5 0 1 0 .5.866l.549-.317V7.5a.5.5 0 1 0 1 0v-.634l.549.317a.5.5 0 1 0 .5-.866L9 6l.549-.317a.5.5 0 1 0-.5-.866l-.549.317V4.5zM5.5 9a.5.5 0 0 0 0 1h5a.5.5 0 0 0 0-1h-5zm0 2a.5.5 0 0 0 0 1h5a.5.5 0 0 0 0-1h-5z"/>
                             <path d="M2 2a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V2zm10-1H4a1 1 0 0 0-1 1v12a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1z"/>
                         </svg>
@@ -57,8 +51,17 @@
             </div>
         </nav>
 
+        <div class="container my-5">
+            <h1>Neuen Impfeintrag erstellen</h1>
+            
+            <div class="row">
+             <div class="col-md-3"></div>
+             <div class="col-md-6 border">
+
+       
+
         <div class="col-12 col-md-6 col-xl-4">
-            <div class="form-group">
+            <div class="form-group mt-2">
                 {{ form.date_of_vaccination.label() }}
 
                 {% if form.date_of_vaccination.errors %}
@@ -76,7 +79,7 @@
 
 
         <div class="col-12 col-md-6 col-xl-4">
-            <div class="form-group">
+            <div class="form-group mt-2">
                 {{ form.vaccine.label() }}
 
                 {% if form.vaccine.errors %}
@@ -94,7 +97,7 @@
 
 
         <div class="col-12 col-md-6 col-xl-4">
-            <div class="form-group">
+            <div class="form-group mt-2">
                 {{ form.batch_number.label() }}
 
                 {% if form.batch_number.errors %}
@@ -112,7 +115,7 @@
 
 
         <div class="col-12 col-md-6 col-xl-4">
-            <div class="form-group">
+            <div class="form-group mt-2">
                 {{ form.vaccination_category.label() }}
 
                 {% if form.vaccination_category.errors %}
@@ -130,7 +133,7 @@
 
 
         <div class="col-12 col-md-6 col-xl-4">
-            <div class="form-group">
+            <div class="form-group mt-2">
                 {{ form.certificate_issuer.label() }}
 
                 {% if form.certificate_issuer.errors %}
@@ -145,25 +148,9 @@
                 {% endif %}
             </div>
         </div>
-
-        <!-- <form action="/addvaccination" method="POST">
-            <div class="form-group">
-             <br>
-            <h3 style="color: rgb(24, 119, 163);">Geben Sie Ihre Daten der Impfung ein:</h3>
-            <br>
-                <label class="test">Impfdatum:</label>
-                 <p ><input type="text" class="form-control" name="Impfung.Impfdatum" ></p>
-                 <label >Name des Impfstoffes:</label>
-                <p><input type="text" class="form-control" name="Impfung.Impfstoff" ></p> 
-                <label >Chargennummer:</label>
-                <p><input type="text" class="form-control" name="Impfung.Chargennummer" ></p> 
-                <label >Impfkategorie:</label>
-                <p><input type="text" class="form-control" name="Impfung.Impfkategorie" ></p>
-                <label >Name und Adresse der medizinischen Einrichtung:</label>
-                <p><input type="text" class="form-control" name="Impfung.Medizinische_Einrichtung" ></p>
-                <p><input type="submit" value="Speichern" class="btn btn-dark" name="addvaccination"></p> <br>
+        <div class="form-group my-2">
+            {{ form.submit(class="btn btn-outline-success btn-block") }}
         </div>
-        </form>  -->
         
         </div>
         <div class="col-md-3"></div>
