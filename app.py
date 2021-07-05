@@ -18,8 +18,9 @@ app = Flask(__name__)
 #
 
 #Location of the database 
-app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://postgres:Master123@localhost:5432/vaccination_database'
+app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://postgres:1234@localhost:5432/vaccination_database'
 app.config['SQLALCHEMY_ECHO'] = True
+app.config['SECRET_KEY'] = 'any secret string'
 
 # Initializing database with SQLAlchemy
 db = SQLAlchemy(app)
@@ -80,7 +81,7 @@ db.create_all()
 class AddVaccination(Form):
 
     # Creation of all inputfields and the submit button
-    date_of_vaccination = DateField('Datum (*)', validators=[DataRequired(), Length(max=30)])
+    date_of_vaccination = DateField('Datum (*)', format="%Y-%m-%d", validators=[ Length(max=30)])
     vaccine = StringField('Impfstoff (*)', validators=[DataRequired(), Length(max=30)])
     batch_number = StringField('Chargennummer(*)',  validators=[DataRequired()])
     vaccine_category = StringField('Impfkategorie(*)', validators=[Length(max=60)])
@@ -123,6 +124,8 @@ def addVaccination():
             unique_certificate_identifier = unique_certificate_identifier + 1
 
         #unique_patient_identifier ?
+        print(form.date_of_vaccination.data)
+        #date_of_vaccinaion = datetime.datetime(date_of_vaccination)
         new_vaccination = Proof_of_vaccination(unique_certificate_identifier=unique_certificate_identifier, date_of_vaccination = form.date_of_vaccination.data, vaccine = form.vaccine.data, batch_number=form.batch_number.data, vaccine_category=form.vaccine_category.data, unique_issuer_identifier=form.unique_issuer_identifier.data, disease= "/", vaccine_marketing_authorization_holder= "/", issued_at= "/")
         db.session.add(new_vaccination)
         db.session.commit()

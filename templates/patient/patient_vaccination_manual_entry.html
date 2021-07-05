@@ -57,105 +57,108 @@
             <div class="row">
              <div class="col-md-3"></div>
              <div class="col-md-6 border">
+                <form method="POST" action= "{{ url_for('addVaccination') }}"> 
 
-       
+                    
 
-        <div class="col-12 col-md-6 col-xl-4">
-            <div class="form-group mt-2">
-                {{ form.date_of_vaccination.label() }}
+                    <div class="col-12 col-md-6 col-xl-4">
+                        <div class="form-group mt-2">
+                            {{ form.hidden_tag() }}
+                            {{ form.date_of_vaccination.label() }}
 
-                {% if form.date_of_vaccination.errors %}
-                    {{ form.date_of_vaccination(class="form-control is-invalid") }}
-                    <div class="invalid-feedback">
-                        {% for error in form.date_of_vaccination.errors %}
-                            <span>{{ error }}</span>
-                        {% endfor %}
+                            {% if form.date_of_vaccination.errors %}
+                                {{ form.date_of_vaccination(class="form-control is-invalid") }}
+                                <div class="invalid-feedback">
+                                    {% for error in form.date_of_vaccination.errors %}
+                                        <span>{{ error }}</span>
+                                    {% endfor %}
+                                </div>
+                            {% else %}
+                                {{ form.date_of_vaccination(class="form-control") }}
+                            {% endif %}
+                        </div>
                     </div>
-                {% else %}
-                    {{ form.date_of_vaccination(class="form-control") }}
-                {% endif %}
-            </div>
-        </div>
 
 
-        <div class="col-12 col-md-6 col-xl-4">
-            <div class="form-group mt-2">
-                {{ form.vaccine.label() }}
+                    <div class="col-12 col-md-6 col-xl-4">
+                        <div class="form-group mt-2">
+                            {{ form.vaccine.label() }}
 
-                {% if form.vaccine.errors %}
-                    {{ form.vaccine(class="form-control is-invalid") }}
-                    <div class="invalid-feedback">
-                        {% for error in form.vaccine.errors %}
-                            <span>{{ error }}</span>
-                        {% endfor %}
+                            {% if form.vaccine.errors %}
+                                {{ form.vaccine(class="form-control is-invalid") }}
+                                <div class="invalid-feedback">
+                                    {% for error in form.vaccine.errors %}
+                                        <span>{{ error }}</span>
+                                    {% endfor %}
+                                </div>
+                            {% else %}
+                                {{ form.vaccine(class="form-control") }}
+                            {% endif %}
+                        </div>
                     </div>
-                {% else %}
-                    {{ form.vaccine(class="form-control") }}
-                {% endif %}
-            </div>
-        </div>
 
 
-        <div class="col-12 col-md-6 col-xl-4">
-            <div class="form-group mt-2">
-                {{ form.batch_number.label() }}
+                    <div class="col-12 col-md-6 col-xl-4">
+                        <div class="form-group mt-2">
+                            {{ form.batch_number.label() }}
 
-                {% if form.batch_number.errors %}
-                    {{ form.batch_number(class="form-control is-invalid") }}
-                    <div class="invalid-feedback">
-                        {% for error in form.batch_number.errors %}
-                            <span>{{ error }}</span>
-                        {% endfor %}
+                            {% if form.batch_number.errors %}
+                                {{ form.batch_number(class="form-control is-invalid") }}
+                                <div class="invalid-feedback">
+                                    {% for error in form.batch_number.errors %}
+                                        <span>{{ error }}</span>
+                                    {% endfor %}
+                                </div>
+                            {% else %}
+                                {{ form.batch_number(class="form-control") }}
+                            {% endif %}
+                        </div>
                     </div>
-                {% else %}
-                    {{ form.batch_number(class="form-control") }}
-                {% endif %}
-            </div>
-        </div>
 
 
-        <div class="col-12 col-md-6 col-xl-4">
-            <div class="form-group mt-2">
-                {{ form.vaccine_category.label() }}
+                    <div class="col-12 col-md-6 col-xl-4">
+                        <div class="form-group mt-2">
+                            {{ form.vaccine_category.label() }}
 
-                {% if form.vaccine_category.errors %}
-                    {{ form.vaccine_category(class="form-control is-invalid") }}
-                    <div class="invalid-feedback">
-                        {% for error in form.vaccine_category.errors %}
-                            <span>{{ error }}</span>
-                        {% endfor %}
+                            {% if form.vaccine_category.errors %}
+                                {{ form.vaccine_category(class="form-control is-invalid") }}
+                                <div class="invalid-feedback">
+                                    {% for error in form.vaccine_category.errors %}
+                                        <span>{{ error }}</span>
+                                    {% endfor %}
+                                </div>
+                            {% else %}
+                                {{ form.vaccine_category(class="form-control") }}
+                            {% endif %}
+                        </div>
                     </div>
-                {% else %}
-                    {{ form.vaccine_category(class="form-control") }}
-                {% endif %}
-            </div>
-        </div>
 
 
-        <div class="col-12 col-md-6 col-xl-4">
-            <div class="form-group mt-2">
-                {{ form.unique_issuer_identifier.label() }}
+                    <div class="col-12 col-md-6 col-xl-4">
+                        <div class="form-group mt-2">
+                            {{ form.unique_issuer_identifier.label() }}
 
-                {% if form.unique_issuer_identifier.errors %}
-                    {{ form.unique_issuer_identifier(class="form-control is-invalid") }}
-                    <div class="invalid-feedback">
-                        {% for error in form.unique_issuer_identifier.errors %}
-                            <span>{{ error }}</span>
-                        {% endfor %}
+                            {% if form.unique_issuer_identifier.errors %}
+                                {{ form.unique_issuer_identifier(class="form-control is-invalid") }}
+                                <div class="invalid-feedback">
+                                    {% for error in form.unique_issuer_identifier.errors %}
+                                        <span>{{ error }}</span>
+                                    {% endfor %}
+                                </div>
+                            {% else %}
+                                {{ form.unique_issuer_identifier(class="form-control") }}
+                            {% endif %}
+                        </div>
                     </div>
-                {% else %}
-                    {{ form.unique_issuer_identifier(class="form-control") }}
-                {% endif %}
-            </div>
-        </div>
-        <div class="form-group my-2">
-            {{ form.submit(class="btn btn-outline-success btn-block") }}
-        </div>
-        
-        </div>
+                    <div class="form-group my-2">
+                        {{ form.submit(class="btn btn-outline-success btn-block") }}
+                    </div>
+                    
+                    </div>
+                </form>
         <div class="col-md-3"></div>
         </div>
         </div>
-{% endblock %}
+        {% endblock %}
 
      
