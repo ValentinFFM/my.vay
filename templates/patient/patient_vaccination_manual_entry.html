@@ -116,17 +116,17 @@
 
         <div class="col-12 col-md-6 col-xl-4">
             <div class="form-group mt-2">
-                {{ form.vaccination_category.label() }}
+                {{ form.vaccine_category.label() }}
 
-                {% if form.vaccination_category.errors %}
-                    {{ form.vaccination_category(class="form-control is-invalid") }}
+                {% if form.vaccine_category.errors %}
+                    {{ form.vaccine_category(class="form-control is-invalid") }}
                     <div class="invalid-feedback">
-                        {% for error in form.vaccination_category.errors %}
+                        {% for error in form.vaccine_category.errors %}
                             <span>{{ error }}</span>
                         {% endfor %}
                     </div>
                 {% else %}
-                    {{ form.vaccination_category(class="form-control") }}
+                    {{ form.vaccine_category(class="form-control") }}
                 {% endif %}
             </div>
         </div>
@@ -134,17 +134,17 @@
 
         <div class="col-12 col-md-6 col-xl-4">
             <div class="form-group mt-2">
-                {{ form.certificate_issuer.label() }}
+                {{ form.unique_issuer_identifier.label() }}
 
-                {% if form.certificate_issuer.errors %}
-                    {{ form.certificate_issuer(class="form-control is-invalid") }}
+                {% if form.unique_issuer_identifier.errors %}
+                    {{ form.unique_issuer_identifier(class="form-control is-invalid") }}
                     <div class="invalid-feedback">
-                        {% for error in form.certificate_issuer.errors %}
+                        {% for error in form.unique_issuer_identifier.errors %}
                             <span>{{ error }}</span>
                         {% endfor %}
                     </div>
                 {% else %}
-                    {{ form.certificate_issuer(class="form-control") }}
+                    {{ form.unique_issuer_identifier(class="form-control") }}
                 {% endif %}
             </div>
         </div>

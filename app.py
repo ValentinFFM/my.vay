@@ -17,9 +17,9 @@ app = Flask(__name__)
 # DATABASE
 #
 
-# Location of the database 
+#Location of the database 
 app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://postgres:Master123@localhost:5432/vaccination_database'
-app.config['SQLALCHEMY_ECHO'] = True
+ app.config['SQLALCHEMY_ECHO'] = True
 
 # Initializing database with SQLAlchemy
 db = SQLAlchemy(app)
@@ -77,7 +77,15 @@ class Proof_of_vaccination(db.Model):
 # Create tables
 db.create_all()
 
+class AddVaccination(Form):
 
+    # Creation of all inputfields and the submit button
+    date_of_vaccination = DateField('Datum (*)', validators=[DataRequired(), Length(max=30)])
+    vaccine = StringField('Impfstoff (*)', validators=[DataRequired(), Length(max=30)])
+    batch_number = StringField('Chargennummer(*)',  validators=[DataRequired()])
+    vaccination_category = StringField('Impfkategorie(*)', validators=[Length(max=60)])
+    certificate_issuer = StringField('Medizinische Einrichtung', validators=[Length(max=30)])
+    submit = SubmitField('Speichern')
 #
 # Routing
 #
@@ -101,13 +109,23 @@ def patient_home():
     # if request.method == "POST":
     #     branch = Impfung.query.all()
         # return render_template('patient_vaccination_certificate.html', branch=branch)
-    print(vaccination)
-    return render_template('patient/patient_vaccination_certificate.html', vaccination=vaccination)
+    
+    return render_template('patient/patient_vaccination_certificate.html')
 
 @app.route("/patient/impfeintrag-neu")
 def patient_vaccination_entry():
     return render_template('patient/patient_vaccination_entry.html')
 
+@app.route("/vaccination/add", methods=['POST', 'GET'])
+#@login_required
+def addVaccination():
+
+    form = AddVaccination()
+
+        # flash('Impfeintrag erstellt!')
+    # return redirect(url_for('patient_vaccination_certificate'))
+
+    return render_template('patient/patient_vaccination_manual_entry.html', form=form)
 
 # @app.route('/showvaccination', methods=['POST'])
 # def showvaccination():
