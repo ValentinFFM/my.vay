@@ -19,7 +19,7 @@ app = Flask(__name__)
 
 #Location of the database 
 app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://postgres:Master123@localhost:5432/vaccination_database'
- app.config['SQLALCHEMY_ECHO'] = True
+app.config['SQLALCHEMY_ECHO'] = True
 
 # Initializing database with SQLAlchemy
 db = SQLAlchemy(app)
@@ -83,8 +83,8 @@ class AddVaccination(Form):
     date_of_vaccination = DateField('Datum (*)', validators=[DataRequired(), Length(max=30)])
     vaccine = StringField('Impfstoff (*)', validators=[DataRequired(), Length(max=30)])
     batch_number = StringField('Chargennummer(*)',  validators=[DataRequired()])
-    vaccination_category = StringField('Impfkategorie(*)', validators=[Length(max=60)])
-    certificate_issuer = StringField('Medizinische Einrichtung', validators=[Length(max=30)])
+    vaccine_category = StringField('Impfkategorie(*)', validators=[Length(max=60)])
+    unique_issuer_identifier = StringField('Medizinische Einrichtung', validators=[Length(max=30)])
     submit = SubmitField('Speichern')
 #
 # Routing
@@ -99,12 +99,6 @@ def home():
 
 @app.route("/patient")
 def patient_home():
-
-# EXAMPLE CODE: Creating new user
-    # birth_date = datetime.datetime(2020,5,17)
-    # new_patient = Patient(unique_patient_identifier = "12345678", password = "football4life", f_name="Valentin", l_name="Müller", date_of_birth=birth_date)
-    # db.session.add(new_patient)
-    # db.session.commit()
 
     # if request.method == "POST":
     #     branch = Impfung.query.all()
@@ -122,8 +116,19 @@ def addVaccination():
 
     form = AddVaccination()
 
-        # flash('Impfeintrag erstellt!')
-    # return redirect(url_for('patient_vaccination_certificate'))
+    if form.validate_on_submit():
+
+        unique_certificate_identifier = 1
+        while Proof_of_vaccination.query.filter_by(unique_certificate_identifier=unique_certificate_identifier).first() is not None:
+            unique_certificate_identifier = unique_certificate_identifier + 1
+
+        #unique_patient_identifier ?
+        new_vaccination = Proof_of_vaccination(unique_certificate_identifier=unique_certificate_identifier, date_of_vaccination = form.date_of_vaccination.data, vaccine = form.vaccine.data, batch_number=form.batch_number.data, vaccine_category=form.vaccine_category.data, unique_issuer_identifier=form.unique_issuer_identifier.data, disease= "/", vaccine_marketing_authorization_holder= "/", issued_at= "/")
+        db.session.add(new_vaccination)
+        db.session.commit()
+
+        #flash('Impfeintrag erstellt!')
+        #return redirect(url_for('patient_vaccination_certificate'))
 
     return render_template('patient/patient_vaccination_manual_entry.html', form=form)
 
