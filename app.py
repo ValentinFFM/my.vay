@@ -11,8 +11,7 @@ from flask_sqlalchemy import SQLAlchemy
 import qrcode
 import pyqrcode
 import json
-#import cv2
-
+import cv2
 from PIL import Image
 from django.shortcuts import render
 import qrcode.image.svg
@@ -21,6 +20,10 @@ from PIL import Image
 import io
 from io import StringIO
 from base64 import b64encode
+#import pyzbar
+#from pyzbar.pyzbar import decode
+
+
 
 
 # Initialize flask application
@@ -28,8 +31,8 @@ app = Flask(__name__)
 # Bootstrap(app)
 app.config['SECRET_KEY'] = 'test'
 
-#app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://postgres:Master123@localhost:5432/vaccination_database'
-#app.config['SQLALCHEMY_ECHO'] = True
+app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://postgres:Start1210!@localhost:5432/vaccination_database'
+app.config['SQLALCHEMY_ECHO'] = True
 
 @app.route("/")
 def home():
@@ -50,6 +53,10 @@ def patient_kalender():
 
 @app.route("/patient/scan")
 def patient_scan():
+    #img = cv2.imread('Beispiel.png')
+    #cv2.imshow('Ihr Impfnachweis',img)
+    #print(decode(img))
+
     return render_template("/patient/patient_scan.html")
 
 @app.route("/patient/profil")
@@ -89,13 +96,13 @@ def issuer_create_qr():
         proof_of_vaccination['issued_at'] = form.issued_at.data
         proof_of_vaccination['certificate_issuer'] = form.certificate_issuer.data
         
-        qr = QRCode(version=1, box_size=6,border=5)
+        qr = QRCode(version=1, box_size=6,border=4)
         qr.add_data(proof_of_vaccination)
         qr.make()
         #qr = qrcode.make(proof_of_vaccination)
         img = qr.make_image (fill = 'black', back_color = 'white')
-        #img = np.array(img)
         img.save(file_object,'PNG')
+
         
 
     return render_template("/issuer/issuer_create_qr.html", form=form, qr="data:image/png;base64,"+b64encode(file_object.getvalue()).decode('ascii'))
