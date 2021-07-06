@@ -1,16 +1,40 @@
 {% extends "html_container.html" %}
 
 {% block page_title %}
-Issuer - Login
+    Landing Page
 {% endblock %}
 
 {% block page_content %}
-<div class="container">
-    <form methode="POST" action="/">
-        <d1>
-        {{wtf.quick_form(form)}}
-        <input class="btn btn-primary" type="submit" value="Login">
-        </d1>
-    </form>
-</div>
+    <div class="full-screensize bg-login">
+        <main role="main" class="container h-100">
+            <div class="row align-items-center h-100">
+                <div class="col-4">
+                    <div class="card card-landing">
+                        <div class="card-body">
+                            <h2 class="card-title card-title-landing text-center">Issuer</h2>
+                            <a href="#" class="btn btn-outline-success">Login</a>
+                            
+                            
+                        </div>
+                    </div>
+                </div>
+                <div class="col-4">
+                    <div class="card card-landing">
+                        <div class="card-body">
+                            <h2 class="card-title card-title-landing text-center">Patient</h2>
+                            <a href="{{ url_for('patient_login') }}" class="btn btn-outline-secondary">Login</a>
+                            <a href="{{ url_for('patient_registration') }}" class="btn btn-outline-danger">Registrierung</a>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-4">
+                    <div class="card card-landing">
+                        <div class="card-body">
+                            <h2 class="card-title card-title-landing text-center">Verifier</h2>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
 {% endblock page_content %}
