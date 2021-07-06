@@ -19,9 +19,9 @@ class ImpfnachweisForm (Form):
     generate_certificate =  SubmitField("Impfnachweis erstellen")
 
 class LoginForm(Form):
-    username = TextField("Nutzerkennung")
+    unique_patient_identifier = TextField("Nutzerkennung")
     password = PasswordField('Passwort')
-    remember = BooleanField('Passwort vergessen')
+    remember = BooleanField('Angemeldet bleiben?')
     submit = SubmitField('Login')
 
 
