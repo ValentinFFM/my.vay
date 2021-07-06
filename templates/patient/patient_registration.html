@@ -1,0 +1,114 @@
+{% extends "html_container.html" %}
+
+{% block page_title %}
+    Patient - Registrierung
+{% endblock %}
+
+{% block page_content %}
+<div class="container my-5">
+    <form method="POST" action="">
+        {{ form.hidden_tag() }}
+
+        <fieldset class="form-group mx-3">
+            <legend class="border-bottom mb-4">
+                Registrierung
+            </legend>
+
+            <div class="form-group">
+                {{ form.f_name.label() }}
+                {% if form.f_name.errors %}
+                    {{ form.f_name(class="form-control is-invalid") }}
+                    <div class="invalid-feedback">
+                        {% for error in form.f_name.errors %}
+                            <span>{{ error }}</span>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    {{ form.f_name(class="form-control") }}
+                {% endif %}
+            </div>
+
+            <div class="form-group">
+                {{ form.l_name.label() }}
+                {% if form.l_name.errors %}
+                    {{ form.l_name(class="form-control is-invalid") }}
+                    <div class="invalid-feedback">
+                        {% for error in form.l_name.errors %}
+                            <span>{{ error }}</span>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    {{ form.l_name(class="form-control") }}
+                {% endif %}
+            </div>
+
+            <div class="form-group">
+                {{ form.date_of_birth.label() }}
+                {% if form.date_of_birth.errors %}
+                    {{ form.date_of_birth(class="form-control is-invalid") }}
+                    <div class="invalid-feedback">
+                        {% for error in form.date_of_birth.errors %}
+                            <span>{{ error }}</span>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    {{ form.date_of_birth(class="form-control") }}
+                {% endif %}
+            </div>
+
+            <div class="form-group">
+                {{ form.unique_patient_identifier.label() }}
+                {% if form.unique_patient_identifier.errors %}
+                    {{ form.unique_patient_identifier(class="form-control is-invalid") }}
+                    <div class="invalid-feedback">
+                        {% for error in form.unique_patient_identifier.errors %}
+                            <span>{{ error }}</span>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    {{ form.unique_patient_identifier(class="form-control") }}
+                {% endif %}
+            </div>
+
+            <div class="form-group">
+                {{ form.password.label() }}
+                {% if form.password.errors %}
+                    {{ form.password(class="form-control is-invalid") }}
+                    <div class="invalid-feedback">
+                        {% for error in form.password.errors %}
+                            <span>{{ error }}</span>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    {{ form.password(class="form-control") }}
+                {% endif %}
+            </div>
+
+            <div class="form-group">
+                {{ form.confirmPassword.label() }}
+                {% if form.confirmPassword.errors %}
+                    {{ form.confirmPassword(class="form-control is-invalid") }}
+                    <div class="invalid-feedback">
+                        {% for error in form.confirmPassword.errors %}
+                            <span>{{ error }}</span>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    {{ form.confirmPassword(class="form-control") }}
+                {% endif %}
+            </div>
+        </fieldset>
+
+            <div class="form-group mx-3">
+                {{ form.submit(class="btn btn-outline-success btn-block") }}
+            </div>
+    
+            <div class="row mx-3">
+                <div class="col-8 mx-0 px-0 text-right">
+                    <small><a class="ml-2" href="{{ url_for('patient_login') }}">Anmelden</a></small>   
+                </div>
+            </div>
+        </fieldset>
+    </form>
+</div>
+{% endblock %}

@@ -7,7 +7,7 @@ from flask import Flask, render_template, abort, url_for, redirect, flash
 from flask_sqlalchemy import SQLAlchemy
 from qrcode.main import QRCode
 from wtforms.meta import DefaultMeta
-from forms import ImpfnachweisForm, LoginForm, AddVaccination
+from forms import ImpfnachweisForm, LoginForm, AddVaccination, RegistrationForm
 
 import qrcode
 import pyqrcode
@@ -29,7 +29,6 @@ from base64 import b64encode
 #
 
 app = Flask(__name__)
-# Bootstrap(app)
 app.config['SECRET_KEY'] = 'test'
 
 app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://postgres:Master123@localhost:5432/vaccination_database'
@@ -120,6 +119,16 @@ def patient_home():
         # return render_template('patient_vaccination_certificate.html', branch=branch)
     
     return render_template('patient/patient_vaccination_certificate.html')
+
+@app.route("/patient/login", methods =["GET", "POST"])
+def patient_login():
+    form = LoginForm()
+    return render_template('patient/patient_login.html', form=form)
+
+@app.route("/patient/registrierung", methods =["GET", "POST"])
+def patient_registration():
+    form = RegistrationForm()
+    return render_template('patient/patient_registration.html', form=form)
 
 @app.route("/patient/impfeintrag")
 def patient_vaccination_entry():
