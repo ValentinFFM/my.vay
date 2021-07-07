@@ -116,11 +116,13 @@ def home():
 @app.route("/patient")
 def patient_home():
 
+    branch = Proof_of_vaccination.query.all()
+
     # if request.method == "POST":
     #     branch = Impfung.query.all()
         # return render_template('patient_vaccination_certificate.html', branch=branch)
     
-    return render_template('patient/patient_vaccination_certificate.html')
+    return render_template('patient/patient_vaccination_certificate.html', branch=branch)
 
 @app.route("/patient/impfeintrag")
 def patient_vaccination_entry():
@@ -131,22 +133,20 @@ def patient_vaccination_entry():
 def addVaccination():
 
     form = AddVaccination()
-
-    if form.validate_on_submit():
-
+    if form.is_submitted():
         unique_certificate_identifier = 1
-        # while Proof_of_vaccination.query.filter_by(unique_certificate_identifier=unique_certificate_identifier).first() is not None:
-        #     unique_certificate_identifier = unique_certificate_identifier + 1
+        while Proof_of_vaccination.query.filter_by(unique_certificate_identifier=unique_certificate_identifier).first() is not None:
+            unique_certificate_identifier = int(unique_certificate_identifier) + 1
 
         #unique_patient_identifier ?
         #print(form.date_of_vaccination.data)
-        #date_of_vaccinaion = datetime.datetime(date_of_vaccination)
-        new_vaccination = Proof_of_vaccination(unique_certificate_identifier="1", date_of_vaccination = "2020-05-04", vaccine = form.vaccine.data, batch_number=form.batch_number.data, vaccine_category=form.vaccine_category.data, unique_issuer_identifier=form.unique_issuer_identifier.data, disease= "/", vaccine_marketing_authorization_holder= "/", issued_at= "/")
+        #date_of_vaccinaion = datetime.date(form.date_of_vaccination.data)
+        new_vaccination = Proof_of_vaccination(unique_certificate_identifier=unique_certificate_identifier, unique_patient_identifier= "1", date_of_vaccination = form.date_of_vaccination.data, vaccine = form.vaccine.data, batch_number=form.batch_number.data, vaccine_category=form.vaccine_category.data, unique_issuer_identifier=form.unique_issuer_identifier.data, disease= "/", vaccine_marketing_authorization_holder= "/", issued_at= "2021-08-07 13:14:30")
         db.session.add(new_vaccination)
         db.session.commit()
-
+        
         #flash('Impfeintrag erstellt!')
-        return redirect(url_for('patient_vaccination_certificate'))
+        return redirect(url_for('patient_home'))
 
     return render_template('patient/patient_vaccination_manual_entry.html', form=form)
 

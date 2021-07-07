@@ -91,12 +91,12 @@
                             </h5>
                         
                         </div>
-                            {% if vaccination %}       
-                            {% for entry in vaccination %}
+                            {% if branch %}       
+                            {% for entry in branch%}
                             <div class="row">                           
                                 <h5 class="card mt-2">
                                     <div class="row my-2">
-                                        <div class="col-2">{{ entry.date_of_vaccination }}</div>
+                                        <div class="col-2">{{ entry.date_of_vaccination.strftime("%d.%m.%Y") }}</div>
                                         <div class="col-2">{{ entry.vaccine }}</div>
                                         <div class="col-2"> {{ entry.vaccine_category }}</div>
                                         <div class="col-2"> {{ entry.batch_number }}</div>
