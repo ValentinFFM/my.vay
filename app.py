@@ -55,7 +55,7 @@ class Patient(db.Model):
     password = db.Column(db.String, nullable = False)
     f_name = db.Column(db.String, nullable = False)
     l_name = db.Column(db.String, nullable = False)
-    date_of_birth = db.Column(db.DateTime, nullable = False)
+    date_of_birth = db.Column(db.Date, nullable = False)
     
     # Defining relationship to proof_of_vaccination
     proof_of_vaccination_identifier = db.relationship('Proof_of_vaccination', backref = 'patient') 
@@ -69,7 +69,7 @@ class Issuer(db.Model):
     password = db.Column(db.String, nullable = False)
     f_name = db.Column(db.String, nullable = False)
     l_name = db.Column(db.String, nullable = False)
-    date_of_birth = db.Column(db.DateTime, nullable = False)
+    date_of_birth = db.Column(db.Date, nullable = False)
     
     # Defining relationship to proof_of_vaccination
     proof_of_vaccination_identifier = db.relationship('Proof_of_vaccination', backref = 'issuer') 
@@ -80,7 +80,7 @@ class Proof_of_vaccination(db.Model):
     unique_certificate_identifier = db.Column(db.String, primary_key = True)
     
     # Defining all required attributes
-    date_of_vaccination = db.Column(db.DateTime, nullable = False)
+    date_of_vaccination = db.Column(db.Date, nullable = False)
     vaccine_category = db.Column(db.String, nullable = False)
     disease = db.Column(db.String, nullable = False)
     vaccine = db.Column(db.String, nullable = False)
@@ -128,6 +128,12 @@ def patient_login():
 @app.route("/patient/registrierung", methods =["GET", "POST"])
 def patient_registration():
     form = RegistrationForm()
+    
+    if form.validate_on_submit():
+        new_patient = Patient(f_name=form.f_name.data, l_name=form.l_name.data, date_of_birth=form.date_of_birth.data, unique_patient_identifier=form.unique_patient_identifier.data, password=form.password.data)
+        db.session.add(new_patient)
+        db.session.commit()
+    
     return render_template('patient/patient_registration.html', form=form)
 
 @app.route("/patient/impfeintrag")
@@ -137,7 +143,6 @@ def patient_vaccination_entry():
 @app.route("/patient/impfeintrag/manuell", methods=['POST', 'GET'])
 #@login_required
 def addVaccination():
-
     form = AddVaccination()
 
     if form.validate_on_submit():
