@@ -1,14 +1,8 @@
 {% extends "html_container.html" %}
 
 {% block page_title %}
-<<<<<<< HEAD
     Issuer - QRCode
 {% endblock %}
-=======
-    Issuer - QR Code
-{% endblock %}
-
->>>>>>> page_impfpass
 {% block page_content %}
 <!-- Navigation bar -->
     <nav class="fixed-bottom navbar-light bg-dark">
@@ -43,7 +37,6 @@
         </div>
     </nav>
 
-<<<<<<< HEAD
     <div class = "container my-5">
         <form method="POST" action = "{{url_for('issuer_create_qr')}}">
             {{form.hidden_tag()}}
@@ -210,70 +203,4 @@
 
     </div>
 
-=======
-{% if  issuer_create_cr%}
-    <h1> Impfnachweis für {{f_name,l_name}} erfolgreich ausgestellt</h1>   
-{% else%}
-    <h1> Impfnachweis ausstellen</h1> 
-    <br>
-    <form method="POST" action= "/QR">
-        <div>
-            {{ form.hidden_tag() }}
-        {{form.f_name.label(class="form-label")}}
-        {{form.f_name(class="form-control") }}
-        </div>
-        <div>
-        {{form.l_name.label(class="form-label")}}
-        {{form.l_name(class="form-control") }}
-        </div>
-        <div>
-        {{form.date_of_birth.label(class="form-label")}}
-        {{form.date_of_birth(class="form-control") }}
-        </div>
-        <div>
-        {{form_date_of_vaccination.label(class="form-label")}}
-        {{form.date_of_vaccination(class="form-control") }}
-        </div>
-        <div>
-        {{form.disease.label(class="form-label")}}
-        {{form.diesease(class="form-control") }}
-        </div>
-        <div>
-        {{form.vaccine.label(class="form-label")}}
-        {{form.vaccine(class="form-control") }}
-        </div>
-        <div>
-        {{form.medicinal_product.label(class="form-label")}}
-        {{form.medicinal_product(class="form-control") }}
-        </div>
-        <div>
-        {{form.accine_marketing_authorization_holder.label(class="form-label")}}
-        {{form.accine_marketing_authorization_holder(class="form-control") }}
-        </div>
-        <div>
-        {{form.batch_number.label(class="form-label")}}
-        {{form.batch_number}(class="form-control") }
-        </div>
-        <div>
-        {{form.number_of_doses_expected.label(class="form-label")}}
-        {{form.number_of_doses_expected(class="form-control") }}
-        </div>
-        <div>
-        {{form.number_of_doses_administered.label(class="form-label")}}
-        {{form.number_of_doses_administered(class="form-control") }}
-        </div>
-        <div>
-        {{form.member_state.label(class="form-label")}}
-        {{form.member_state(class="form-control") }}
-        </div>
-        <div>
-        {{form.certificate_issuer.label(class="form-label")}}
-        {{form.certificate_issuer(class="form-control") }}
-        </div>
-        <div>
-        {{form.submit(class="btn btn-secondary" ) }}
-        </div>
-    </form>
-   </div>
->>>>>>> page_impfpass
 {% endblock %}

@@ -7,8 +7,8 @@ from wtforms.validators import EqualTo, DataRequired, Length, ValidationError, E
 class ImpfnachweisForm (Form):
     f_name = TextField("Vorname des Geimpften: ")
     l_name = TextField("Nachname des Geimpften: ")
-    date_of_birth = DateField("Geburtsdatum des Geimpften: ",format='%Y-%m-%d')
-    date_of_vaccination= DateTimeField("Datum der Impfung: ",format='%m/%d/%y')
+    date_of_birth = DateField("Geburtsdatum des Geimpften: ",format='%m/%d/%y')
+    date_of_vaccination= DateField("Datum der Impfung: ",format='%m/%d/%y')
     vaccine_category = TextField("Impfkategorie (Standardimpfung, Auffrischimpfung,...): ")
     disease = StringField("Impfung für folgende Krankheit: ")
     vaccine = StringField("Impfstoff: ")
@@ -35,11 +35,11 @@ class RegistrationForm(Form):
     submit = SubmitField('Registrieren')
 
 #validate unique_patient_identifier and check if it's already existing in patient database 
-    def validate_unique_patient_identifier(self, unique_patient_identifier):
+    #def validate_unique_patient_identifier(self, unique_patient_identifier):
     
-        unique_patient_identifier = Patient.query.filter_by(unique_patient_identifier=unique_patient_identifier.data).first()
-        if unique_patient_identifier:
-            raise ValidationError('Nutzerkennung bereits vergeben')
+        #unique_patient_identifier = Patient.query.filter_by(unique_patient_identifier=unique_patient_identifier.data).first()
+        #if unique_patient_identifier:
+            #raise ValidationError('Nutzerkennung bereits vergeben')
         
 class AddVaccination(Form):
 
@@ -53,3 +53,5 @@ class AddVaccination(Form):
 
 
 
+class ScanQRForm(Form):
+    scan_qr_code = SubmitField('QR-Code einscannen')
