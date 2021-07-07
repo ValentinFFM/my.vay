@@ -28,18 +28,18 @@ class LoginForm(Form):
 class RegistrationForm(Form):
     f_name = StringField('Vorname', validators=[DataRequired()])
     l_name = StringField('Nachname', validators=[DataRequired()])
-    date_of_birth = DateField("Geburtsdatum des Geimpften: ",validators = [DataRequired()],format='%Y-%m-%d')
+    date_of_birth = DateField("Geburtsdatum ",validators = [DataRequired()],format='%Y-%m-%d')
     unique_patient_identifier = StringField("Nutzerkennung")
     password = PasswordField('Passwort', validators=[DataRequired(), Length(min=8)])
     confirmPassword = PasswordField('Passwort bestätigen', validators=[DataRequired(), EqualTo('password'), Length(min=8)])
     submit = SubmitField('Registrieren')
 
-#validate unique_patient_identifier and check if it's already existing in patient database 
-    def validate_unique_patient_identifier(self, unique_patient_identifier):
+    #validate unique_patient_identifier and check if it's already existing in patient database 
+    # def validate_unique_patient_identifier(self, unique_patient_identifier):
     
-        unique_patient_identifier = Patient.query.filter_by(unique_patient_identifier=unique_patient_identifier.data).first()
-        if unique_patient_identifier:
-            raise ValidationError('Nutzerkennung bereits vergeben')
+    #     unique_patient_identifier = Patient.query.filter_by(unique_patient_identifier=unique_patient_identifier.data).first()
+    #     if unique_patient_identifier:
+    #         raise ValidationError('Nutzerkennung bereits vergeben')
         
 class AddVaccination(Form):
 
