@@ -259,7 +259,7 @@ def issuer_create_qr():
 
 @app.route("/login")
 def login():
-    return render_template("/login/login.html", title = 'Login', form=form)
+    return render_template("/login/login.html", title = 'Login')
 
 @app.route("/login")
 def login():

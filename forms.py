@@ -1,13 +1,9 @@
 from flask_wtf import Form
 from wtforms import TextField, StringField, DateTimeField, BooleanField, SubmitField, IntegerField, DateField, PasswordField
 from wtforms.fields.html5 import DateTimeLocalField
-<<<<<<< Updated upstream
 from wtforms.validators import EqualTo, DataRequired, Length, ValidationError, Email
 #from models import Patient
-=======
-from wtforms.validators import EqualTo, ValidationError
-from 
->>>>>>> Stashed changes
+from wtforms.validators import EqualTo, ValidationError 
 
 class ImpfnachweisForm (Form):
     f_name = TextField("Vorname des Geimpften: ")
@@ -24,7 +20,6 @@ class ImpfnachweisForm (Form):
     generate_certificate =  SubmitField("Impfnachweis erstellen")
 
 class LoginForm(Form):
-<<<<<<< Updated upstream
     username = TextField("Nutzerkennung")
     password = PasswordField('Passwort')
     remember = BooleanField('Passwort vergessen')
@@ -61,24 +56,8 @@ class AddVaccination(Form):
 
 class ScanQRForm(Form):
     scan_qr_code = SubmitField('QR-Code einscannen')
-=======
     username = TextField("Nutzername")
     password = PasswordField('Passwort')
     remember = BooleanField('Angemeldet bleiben')
     submit = SubmitField('Login')
 
-class RegistrationForm(Form):
-    unique_patient_identifier = StringField('Nutzername')
-    f_name = StringField('Vorname')
-    l_name = StringField('Nachname')
-    password = PasswordField('Passwort')
-    confirmPassword = PasswordField('Passwort bestätigen', EqualTo('Test'))
-    submit = SubmitField('Registrieren')
-
-    #Validating 'username' of a patient and check if it already exists in patient database
-    def validate_unique_patient_identifier(self, unique_patient_identifier):
-
-        unique_patient_identifier = Patient.query.filter_by(unique_patient_identifier)=unique_patient_identifier.data).first()
-        if unique_patient_identifier:
-            raise ValidationError('Nutzername bereits vergeben')
->>>>>>> Stashed changes
