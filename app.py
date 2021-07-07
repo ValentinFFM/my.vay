@@ -42,6 +42,19 @@ app.config['SECRET_KEY'] = 'test'
 app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://postgres:Master123@localhost:5432/vaccination_database'
 app.config['SQLALCHEMY_ECHO'] = True
 
+# Configuration of the LoginManager, which handels the user sessions in the browser to ensure that users must be logged in for the application.
+loginManager = LoginManager(app)
+loginManager.login_view = 'login'
+loginManager.login_message_category = 'info'
+
+@loginManager.user_loader
+def loadPatient(unique_patient_identifier):
+    return Patient.query.get(unique_patient_identifier)
+
+@loginManager.user_loader
+def loadIssuer(unique_issuer_identifier):
+    return Issuer.query.get(unique_issuer_identifier)
+
 
 #
 # DATABASE
@@ -55,7 +68,7 @@ app.config['SQLALCHEMY_ECHO'] = True
 db = SQLAlchemy(app)
 
 # Patient Model
-class Patient(db.Model):
+class Patient(db.Model, UserMixin):
     # Primary Key for patient is the username
     unique_patient_identifier = db.Column(db.String, primary_key = True)
     
@@ -67,9 +80,13 @@ class Patient(db.Model):
     
     # Defining relationship to proof_of_vaccination
     proof_of_vaccination_identifier = db.relationship('Proof_of_vaccination', backref = 'patient') 
+    
+    # Defines the attribute that is given back, when the get_id function is called on an object of this class
+    def get_id(self):
+        return (self.unique_patient_identifier)
 
 # Issuer Model
-class Issuer(db.Model):
+class Issuer(db.Model, UserMixin):
     # Defining primary key
     unique_issuer_identifier = db.Column(db.String, primary_key = True)
     
@@ -120,6 +137,7 @@ def home():
 # Impdaten anzeigen
 
 @app.route("/patient")
+@login_required
 def patient_home():
 
     # if request.method == "POST":
@@ -131,6 +149,17 @@ def patient_home():
 @app.route("/patient/login", methods =["GET", "POST"])
 def patient_login():
     form = LoginForm()
+    
+    if form.validate_on_submit():
+        patient = Patient.query.filter_by(unique_patient_identifier=form.unique_patient_identifier.data).first()
+        
+        if patient:
+            login_user(patient, remember=form.remember.data)
+            
+            return redirect(url_for('patient_home'))
+        else:
+            flash(f'Login fehlgeschlagen!', 'danger')
+    
     return render_template('patient/patient_login.html', form=form)
 
 @app.route("/patient/registrierung", methods =["GET", "POST"])
@@ -260,8 +289,6 @@ def issuer_create_qr():
 
     return render_template("/issuer/issuer_create_qr.html", form=form, qr="data:image/png;base64,"+b64encode(file_object.getvalue()).decode('ascii'))
 
-
-
 @app.route("/login")
 def login():
     form = LoginForm()
@@ -275,7 +302,6 @@ def login():
          #else:
             # flash(f'Login fehlgeschlagen für {form.username.data}', category = 'danger')
     return render_template("/login/login.html", title = 'Login', form=form)
-
 
 
 # 
