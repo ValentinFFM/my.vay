@@ -53,18 +53,9 @@
             </ul>
         </div>
     </nav>
-    <div class = "container my-5">
-        <form method="POST" action = "{{url_for('patient_scan')}}">
-            {{form.hidden_tag()}}
-
-            <fieldset>
-                <div class = "form-group my-4">
-                    {{ form.scan_qr_code(class="btn btn-secondary" ) }}
-                </div>    
-
-            </fieldset>
-        </form> 
-    </div>
+    <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModal">
+        QR-Code anzeigen
+    </button>
 
 
 

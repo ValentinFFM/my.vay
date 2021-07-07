@@ -2,7 +2,7 @@
 # Imports
 #
 import datetime
-from types import DynamicClassAttribute
+from types import DynamicClassAttribute, new_class
 from flask import Flask, render_template, abort, url_for, redirect, flash, request
 from flask_sqlalchemy import SQLAlchemy
 from qrcode.main import QRCode
@@ -81,9 +81,14 @@ class Issuer(db.Model):
 # Proof_of_vaccination Model
 class Proof_of_vaccination(db.Model):
     # Defining primary key
+    
     unique_certificate_identifier = db.Column(db.String, primary_key = True)
+   
+  
     
     # Defining all required attributes
+    f_name = db.Column(db.String, nullable = False)
+    l_name = db.Column(db.String, nullable = False)
     date_of_vaccination = db.Column(db.DateTime, nullable = False)
     vaccine_category = db.Column(db.String, nullable = False)
     disease = db.Column(db.String, nullable = False)
@@ -133,15 +138,16 @@ def patient_vaccination_entry():
 def addVaccination():
 
     form = AddVaccination()
+    new_vaccination = {}
 
     if form.validate_on_submit():
 
-        unique_certificate_identifier = 1
-        while Proof_of_vaccination.query.filter_by(unique_certificate_identifier=unique_certificate_identifier).first() is not None:
-            unique_certificate_identifier = unique_certificate_identifier + 1
+        #unique_certificate_identifier = 1
+        #while Proof_of_vaccination.query.filter_by(unique_certificate_identifier=unique_certificate_identifier).first() is not None:
+         #   unique_certificate_identifier = unique_certificate_identifier + 1
 
         #unique_patient_identifier ?
-        new_vaccination = Proof_of_vaccination(unique_certificate_identifier=unique_certificate_identifier, date_of_vaccination = form.date_of_vaccination.data, vaccine = form.vaccine.data, batch_number=form.batch_number.data, vaccine_category=form.vaccine_category.data, unique_issuer_identifier=form.unique_issuer_identifier.data, disease= "/", vaccine_marketing_authorization_holder= "/", issued_at= "/")
+        new_vaccination = Proof_of_vaccination(unique_certificate_identifier='1', date_of_vaccination = form.date_of_vaccination.data, vaccine = form.vaccine.data, batch_number=form.batch_number.data, vaccine_category=form.vaccine_category.data, unique_issuer_identifier=form.unique_issuer_identifier.data, disease= "/", vaccine_marketing_authorization_holder= "/", issued_at= "/")
         db.session.add(new_vaccination)
         db.session.commit()
 
@@ -172,10 +178,6 @@ def addVaccination():
 #         db.session.commit()
 #         branch = Impfung.query.all()
 #         return render_template('patient_vaccination_certificate.html', branch = branch)
-
-
-    
-
 @app.route("/patient/impfwissen")
 def patient_impfwissen():
         return render_template("/patient/patient_vaccination_knowledge.html")
@@ -187,6 +189,7 @@ def patient_kalender():
 @app.route("/patient/impfeintrag/scan",methods =["GET", "POST"])
 def patient_scan():
     form = ScanQRForm()
+    new_entry = {}
     #form =ImpfnachweisForm()
     ### open camera
     cap = cv2.VideoCapture(0)
@@ -197,11 +200,15 @@ def patient_scan():
             bytstr = objects.data
             dictstr = bytstr.decode('utf-8')
             certificate_data = ast.literal_eval(dictstr)
-            print(certificate_data)
+            new_entry = Proof_of_vaccination(unique_certificate_identifier = '3', f_name =certificate_data['f_name'], date_of_vaccination = certificate_data['date_of_vaccination'], vaccine = certificate_data['vaccine'], batch_number=certificate_data['batch_number'], vaccine_category=certificate_data['vaccine_category'], unique_issuer_identifier=certificate_data['certificate_issuer'], disease= certificate_data['disease'], vaccine_marketing_authorization_holder= certificate_data['vaccine_marketing_authorization_holder'], issued_at= certificate_data['issued_at'])
+            print (certificate_data['f_name'])
         cv2.imshow('Impfnachweis einlesen',frame) # show the frame
         key = cv2.waitKey(1)
         if key ==27:
             break
+        db.session.add(new_entry)
+        db.session.commit()
+        return render_template("/patient/patient_vaccination_certificate.html",form=form)
 
         #add_certificate_data = Proof_of_vaccination(f_name =form.f_name.data, date_of_vaccination = form.date_of_vaccination.data, vaccine = form.vaccine.data, batch_number=form.batch_number.data, vaccine_category=form.vaccine_category.data, unique_issuer_identifier=form.unique_issuer_identifier.data, disease= "/", vaccine_marketing_authorization_holder= "/", issued_at= "/")
         #db.session.add(nadd_certificate_data)
@@ -231,7 +238,6 @@ def issuer_create_qr():
     qr = {}
     img = []
     file_object = io.BytesIO()
-
 ## Clicking on the submit button is creating JSON-Object with input data
     if form.is_submitted():
         proof_of_vaccination= {}
@@ -239,7 +245,9 @@ def issuer_create_qr():
         proof_of_vaccination['l_name'] = form.l_name.data
         proof_of_vaccination['date_of_birth']=form.date_of_birth.data
         proof_of_vaccination['date_of_vaccination'] = form.date_of_vaccination.data
-        proof_of_vaccination['vaccination_category'] = form.vaccine_category.data
+        proof_of_vaccination['vaccine_category'] = form.vaccine_category.data
+        proof_of_vaccination['disease'] = form.disease.data
+        proof_of_vaccination['vaccine'] = form.vaccine.data
         proof_of_vaccination['vaccine_marketing_authorization_holder'] = form.vaccine_marketing_authorization_holder.data
         proof_of_vaccination['batch_number'] = form.batch_number.data
         proof_of_vaccination['issued_at'] = form.issued_at.data
@@ -259,10 +267,7 @@ def issuer_create_qr():
 
 @app.route("/login")
 def login():
-    return render_template("/login/login.html", title = 'Login')
-
-@app.route("/login")
-def login():
+    
     form = LoginForm()
     if form.validate_on_submit():   
         if form.username.data == 'Patient1' and form.password.data =="Test":
