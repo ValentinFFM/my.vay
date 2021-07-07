@@ -44,7 +44,7 @@ class RegistrationForm(Form):
 class AddVaccination(Form):
 
     # Creation of all inputfields and the submit button
-    date_of_vaccination = DateField('Datum (*)', validators=[DataRequired(), Length(max=30)])
+    #date_of_vaccination = StringField('Datum (*)', validators=[DataRequired(), Length(max=30)])
     vaccine = StringField('Impfstoff (*)', validators=[DataRequired(), Length(max=30)])
     batch_number = StringField('Chargennummer(*)',  validators=[DataRequired()])
     vaccine_category = StringField('Impfkategorie(*)', validators=[Length(max=60)])
