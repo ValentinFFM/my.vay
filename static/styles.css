@@ -3,7 +3,7 @@ h1{
     text-align: center;
 }
 
-.card{
+.card-vaccination{
     border: #349B73 solid 1px;
 }
 
@@ -29,7 +29,8 @@ h1{
 }
 
 .card-landing{
-    box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2)
+    box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
+    background-color: rgba(0, 0, 0, 0.7);
 }
 
 .card-title-landing{
