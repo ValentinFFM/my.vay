@@ -257,6 +257,9 @@ def issuer_create_qr():
 
 
 
+@app.route("/login")
+def login():
+    return render_template("/login/login.html", title = 'Login', form=form)
 
 @app.route("/login")
 def login():
