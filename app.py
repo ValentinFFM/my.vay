@@ -1,14 +1,22 @@
 # 
 # Imports
 #
-import datetime
-from types import DynamicClassAttribute
+
+# General imports for Flask
 from flask import Flask, render_template, abort, url_for, redirect, flash
 from flask_sqlalchemy import SQLAlchemy
-from qrcode.main import QRCode
+
+# Imports for forms
 from wtforms.meta import DefaultMeta
 from forms import ImpfnachweisForm, LoginForm, AddVaccination, RegistrationForm
 
+# Imports for user handeling
+from flask_login import login_user, current_user, logout_user, login_required, UserMixin, LoginManager
+
+
+from qrcode.main import QRCode
+from types import DynamicClassAttribute
+import datetime
 import qrcode
 import pyqrcode
 import json
