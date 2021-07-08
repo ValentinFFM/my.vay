@@ -2,7 +2,6 @@
 
 import pyqrcode
 import qrcode
-import png
 import cv2
 
 qr = qrcode.make('Dieser QR Code stellt die für den Impfnachweis nötigen Impfadaten dar')
