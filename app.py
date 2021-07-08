@@ -51,7 +51,7 @@ db = SQLAlchemy(app)
 # Patient Model
 class Patient(db.Model):
     # Primary Key for patient is the username
-    unique_patient_identifier = db.Column(db.String, primary_key = True)
+    unique_patient_identifier = db.Column(db.Integer, primary_key = True)
     
     # Defining all required attributes
     password = db.Column(db.String, nullable = False)
@@ -65,7 +65,7 @@ class Patient(db.Model):
 # Issuer Model
 class Issuer(db.Model):
     # Defining primary key
-    unique_issuer_identifier = db.Column(db.String, primary_key = True)
+    unique_issuer_identifier = db.Column(db.Integer, primary_key = True)
     
     # Defining all required attributes
     password = db.Column(db.String, nullable = False)
@@ -79,10 +79,10 @@ class Issuer(db.Model):
 # Proof_of_vaccination Model
 class Proof_of_vaccination(db.Model):
     # Defining primary key
-    unique_certificate_identifier = db.Column(db.String, primary_key = True)
+    unique_certificate_identifier = db.Column(db.Integer, primary_key = True)
     
     # Defining all required attributes
-    date_of_vaccination = db.Column(db.DateTime, nullable = False)
+    date_of_vaccination = db.Column(db.Date, nullable = False)
     vaccine_category = db.Column(db.String, nullable = False)
     disease = db.Column(db.String, nullable = False)
     vaccine = db.Column(db.String, nullable = False)
@@ -91,10 +91,10 @@ class Proof_of_vaccination(db.Model):
     issued_at = db.Column(db.DateTime, nullable = False)
     
     # Defining relationship to patient
-    unique_patient_identifier = db.Column(db.String, db.ForeignKey('patient.unique_patient_identifier'), nullable=False)
+    unique_patient_identifier = db.Column(db.Integer, db.ForeignKey('patient.unique_patient_identifier'), nullable=False)
     
     # Defining relationship to issuer
-    unique_issuer_identifier = db.Column(db.String, db.ForeignKey('issuer.unique_issuer_identifier'), nullable=False)
+    unique_issuer_identifier = db.Column(db.Integer, db.ForeignKey('issuer.unique_issuer_identifier'), nullable=False)
     
     db.Column(db.String, nullable = False)
 
@@ -116,13 +116,39 @@ def home():
 @app.route("/patient")
 def patient_home():
 
-    branch = Proof_of_vaccination.query.all()
-
-    # if request.method == "POST":
-    #     branch = Impfung.query.all()
-        # return render_template('patient_vaccination_certificate.html', branch=branch)
-    
+    branch = Proof_of_vaccination.query.all() 
     return render_template('patient/patient_vaccination_certificate.html', branch=branch)
+
+@app.route("/patientQR/<int:unique_certificate_identifier>", methods=['POST', 'GET'])
+def open_QR(unique_certificate_identifier):
+    branch = Proof_of_vaccination.query.filter_by(unique_certificate_identifier=unique_certificate_identifier).first()
+
+    qr = {}
+    img = []
+    file_object = io.BytesIO()
+
+    proof_of_vaccination= {}
+    proof_of_vaccination['unique_certificate_identifier']= branch.unique_certificate_identifier
+    proof_of_vaccination['date_of_vaccination']= branch.date_of_vaccination
+    proof_of_vaccination['vaccine']= branch.vaccine
+    proof_of_vaccination['vaccine_category']= branch.vaccine_category
+    proof_of_vaccination['disease']= branch.disease
+    proof_of_vaccination['vaccine_marketing_authorization_holder']= branch.vaccine_marketing_authorization_holder
+    proof_of_vaccination['batch_number']= branch.batch_number
+    proof_of_vaccination['issued_at']= branch.issued_at
+    proof_of_vaccination['unique_patient_identifier']= branch.unique_patient_identifier
+    proof_of_vaccination['unique_issuer_identifier']= branch.unique_issuer_identifier
+
+    print(proof_of_vaccination)
+
+    qr = QRCode(version=1, box_size=6,border=4)
+    qr.add_data(proof_of_vaccination)
+    qr.make()
+        #qr = qrcode.make(proof_of_vaccination)
+    img = qr.make_image (fill = 'black', back_color = 'white')
+    img.save(file_object,'PNG')
+
+    return render_template('patient/patient_show_QR.html', branch = branch, qr="data:image/png;base64,"+b64encode(file_object.getvalue()).decode('ascii'))
 
 @app.route("/patient/impfeintrag")
 def patient_vaccination_entry():
@@ -136,12 +162,12 @@ def addVaccination():
     if form.is_submitted():
         unique_certificate_identifier = 1
         while Proof_of_vaccination.query.filter_by(unique_certificate_identifier=unique_certificate_identifier).first() is not None:
-            unique_certificate_identifier = int(unique_certificate_identifier) + 1
+            unique_certificate_identifier = unique_certificate_identifier + 1
 
         #unique_patient_identifier ?
         #print(form.date_of_vaccination.data)
         #date_of_vaccinaion = datetime.date(form.date_of_vaccination.data)
-        new_vaccination = Proof_of_vaccination(unique_certificate_identifier=unique_certificate_identifier, unique_patient_identifier= "1", date_of_vaccination = form.date_of_vaccination.data, vaccine = form.vaccine.data, batch_number=form.batch_number.data, vaccine_category=form.vaccine_category.data, unique_issuer_identifier=form.unique_issuer_identifier.data, disease= "/", vaccine_marketing_authorization_holder= "/", issued_at= "2021-08-07 13:14:30")
+        new_vaccination = Proof_of_vaccination(unique_certificate_identifier=unique_certificate_identifier, unique_patient_identifier= 1, date_of_vaccination = form.date_of_vaccination.data, vaccine = form.vaccine.data, batch_number=form.batch_number.data, vaccine_category=form.vaccine_category.data, unique_issuer_identifier=form.unique_issuer_identifier.data, disease= "/", vaccine_marketing_authorization_holder= "/", issued_at= "0000-00-00 00:00:00")
         db.session.add(new_vaccination)
         db.session.commit()
         

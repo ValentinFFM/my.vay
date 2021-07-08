@@ -49,7 +49,7 @@ class AddVaccination(Form):
     vaccine = StringField('Impfstoff (*)')
     batch_number = StringField('Chargennummer(*)')
     vaccine_category = StringField('Impfkategorie(*)')
-    unique_issuer_identifier = StringField('Medizinische Einrichtung')
+    unique_issuer_identifier = StringField('Issuer ID')
     submit = SubmitField('Speichern')
 
 

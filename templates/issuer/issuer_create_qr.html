@@ -58,12 +58,12 @@
         {{form.date_of_birth(class="form-control") }}
         </div>
         <div>
-        {{form_date_of_vaccination.label(class="form-label")}}
+        {{form.date_of_vaccination.label(class="form-label")}}
         {{form.date_of_vaccination(class="form-control") }}
         </div>
         <div>
         {{form.disease.label(class="form-label")}}
-        {{form.diesease(class="form-control") }}
+        {{form.disease(class="form-control") }}
         </div>
         <div>
         {{form.vaccine.label(class="form-label")}}
@@ -79,7 +79,7 @@
         </div>
         <div>
         {{form.batch_number.label(class="form-label")}}
-        {{form.batch_number}(class="form-control") }
+        {{form.batch_number(class="form-control") }}
         </div>
         <div>
         {{form.number_of_doses_expected.label(class="form-label")}}
@@ -100,6 +100,7 @@
         <div>
         {{form.submit(class="btn btn-secondary" ) }}
         </div>
+    
     </form>
-   </div>
+    {%endif%}
 {% endblock %}
