@@ -24,10 +24,10 @@ from io import StringIO
 from base64 import b64encode
 #import pyzbar.pyzbar
 #
-from pyzbar import pyzbar
+#from pyzbar import pyzbar
 #import pyzbar.pyzbar as pyzbar
 #import numpy as np
-from pyzbar.pyzbar import decode
+#from pyzbar.pyzbar import decode
 
 # 
 # Initialization of Flask Application

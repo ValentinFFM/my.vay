@@ -9,10 +9,12 @@
         <div class="container-fluid py-2">
             <ul class="nav nav-pills nav-fill">
                 <li class="nav-item">
-                    <!-- Scan Icon (Aktiv) -->
-                    <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" fill="#349B73" class="bi bi-upc-scan" viewBox="0 0 16 16">
-                        <path d="M1.5 1a.5.5 0 0 0-.5.5v3a.5.5 0 0 1-1 0v-3A1.5 1.5 0 0 1 1.5 0h3a.5.5 0 0 1 0 1h-3zM11 .5a.5.5 0 0 1 .5-.5h3A1.5 1.5 0 0 1 16 1.5v3a.5.5 0 0 1-1 0v-3a.5.5 0 0 0-.5-.5h-3a.5.5 0 0 1-.5-.5zM.5 11a.5.5 0 0 1 .5.5v3a.5.5 0 0 0 .5.5h3a.5.5 0 0 1 0 1h-3A1.5 1.5 0 0 1 0 14.5v-3a.5.5 0 0 1 .5-.5zm15 0a.5.5 0 0 1 .5.5v3a1.5 1.5 0 0 1-1.5 1.5h-3a.5.5 0 0 1 0-1h3a.5.5 0 0 0 .5-.5v-3a.5.5 0 0 1 .5-.5zM3 4.5a.5.5 0 0 1 1 0v7a.5.5 0 0 1-1 0v-7zm2 0a.5.5 0 0 1 1 0v7a.5.5 0 0 1-1 0v-7zm2 0a.5.5 0 0 1 1 0v7a.5.5 0 0 1-1 0v-7zm2 0a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 .5.5v7a.5.5 0 0 1-.5.5h-1a.5.5 0 0 1-.5-.5v-7zm3 0a.5.5 0 0 1 1 0v7a.5.5 0 0 1-1 0v-7z"/>
-                    </svg>
+                    <a href="{{ url_for('patient_scan') }}">
+                        <!-- Scan Icon -->
+                        <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" fill="white" class="bi bi-upc-scan" viewBox="0 0 16 16">
+                            <path d="M1.5 1a.5.5 0 0 0-.5.5v3a.5.5 0 0 1-1 0v-3A1.5 1.5 0 0 1 1.5 0h3a.5.5 0 0 1 0 1h-3zM11 .5a.5.5 0 0 1 .5-.5h3A1.5 1.5 0 0 1 16 1.5v3a.5.5 0 0 1-1 0v-3a.5.5 0 0 0-.5-.5h-3a.5.5 0 0 1-.5-.5zM.5 11a.5.5 0 0 1 .5.5v3a.5.5 0 0 0 .5.5h3a.5.5 0 0 1 0 1h-3A1.5 1.5 0 0 1 0 14.5v-3a.5.5 0 0 1 .5-.5zm15 0a.5.5 0 0 1 .5.5v3a1.5 1.5 0 0 1-1.5 1.5h-3a.5.5 0 0 1 0-1h3a.5.5 0 0 0 .5-.5v-3a.5.5 0 0 1 .5-.5zM3 4.5a.5.5 0 0 1 1 0v7a.5.5 0 0 1-1 0v-7zm2 0a.5.5 0 0 1 1 0v7a.5.5 0 0 1-1 0v-7zm2 0a.5.5 0 0 1 1 0v7a.5.5 0 0 1-1 0v-7zm2 0a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 .5.5v7a.5.5 0 0 1-.5.5h-1a.5.5 0 0 1-.5-.5v-7zm3 0a.5.5 0 0 1 1 0v7a.5.5 0 0 1-1 0v-7z"/>
+                        </svg>   
+                    </a>
                 </li>
                 <li class="nav-item">
                     <a href="{{ url_for('patient_impfwissen') }}">
@@ -24,16 +26,14 @@
                     </a>
                 </li>
                 <li class="nav-item">
-                    <a href="{{ url_for('patient_home') }}">
-                        <!-- Impfpass Icon -->
-                        <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" fill="white" class="bi bi-file-medical" viewBox="0 0 16 16">
-                            <path d="M8.5 4.5a.5.5 0 0 0-1 0v.634l-.549-.317a.5.5 0 1 0-.5.866L7 6l-.549.317a.5.5 0 1 0 .5.866l.549-.317V7.5a.5.5 0 1 0 1 0v-.634l.549.317a.5.5 0 1 0 .5-.866L9 6l.549-.317a.5.5 0 1 0-.5-.866l-.549.317V4.5zM5.5 9a.5.5 0 0 0 0 1h5a.5.5 0 0 0 0-1h-5zm0 2a.5.5 0 0 0 0 1h5a.5.5 0 0 0 0-1h-5z"/>
-                            <path d="M2 2a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V2zm10-1H4a1 1 0 0 0-1 1v12a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1z"/>
-                        </svg>
-                    </a>
+                    <!-- Impfpass Icon (Aktiv) -->
+                    <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" fill="#349B73" class="bi bi-file-medical" viewBox="0 0 16 16">
+                        <path d="M8.5 4.5a.5.5 0 0 0-1 0v.634l-.549-.317a.5.5 0 1 0-.5.866L7 6l-.549.317a.5.5 0 1 0 .5.866l.549-.317V7.5a.5.5 0 1 0 1 0v-.634l.549.317a.5.5 0 1 0 .5-.866L9 6l.549-.317a.5.5 0 1 0-.5-.866l-.549.317V4.5zM5.5 9a.5.5 0 0 0 0 1h5a.5.5 0 0 0 0-1h-5zm0 2a.5.5 0 0 0 0 1h5a.5.5 0 0 0 0-1h-5z"/>
+                        <path d="M2 2a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V2zm10-1H4a1 1 0 0 0-1 1v12a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1z"/>
+                    </svg>
                 </li>
                 <li class="nav-item">
-                    <a href="{{ url_for('patient_kalender') }}">
+                    <a href="{{ url_for('patient_kalender') }}">   
                         <!-- Kalender Icon -->
                         <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" fill="white" class="bi bi-calendar-date" viewBox="0 0 16 16">
                             <path d="M6.445 11.688V6.354h-.633A12.6 12.6 0 0 0 4.5 7.16v.695c.375-.257.969-.62 1.258-.777h.012v4.61h.675zm1.188-1.305c.047.64.594 1.406 1.703 1.406 1.258 0 2-1.066 2-2.871 0-1.934-.781-2.668-1.953-2.668-.926 0-1.797.672-1.797 1.809 0 1.16.824 1.77 1.676 1.77.746 0 1.23-.376 1.383-.79h.027c-.004 1.316-.461 2.164-1.305 2.164-.664 0-1.008-.45-1.05-.82h-.684zm2.953-2.317c0 .696-.559 1.18-1.184 1.18-.601 0-1.144-.383-1.144-1.2 0-.823.582-1.21 1.168-1.21.633 0 1.16.398 1.16 1.23z"/>
@@ -54,33 +54,44 @@
         </div>
     </nav>
 
-    {% if branch %}       
+    {% if branch %}    
     
-    <div class="row">                           
-        <h5 class="card mt-2">
-            <div class="row my-2">
-                <div class="col-1">{{ branch.unique_certificate_identifier }}</div>
-                <div class="col-2">{{ branch.date_of_vaccination}}</div>
-                <div class="col-2">{{ branch.vaccine }}</div>
-                <div class="col-2"> {{ branch.vaccine_category }}</div>
-                <div class="col-2"> {{ branch.batch_number }}</div>
-                <div class="col-1"> {{ branch.unique_issuer_identifier }}</div>
-                <div class="col-2 " style="text-align: center;"> 
-                    <button type="button" class="btn btn-secondary" data-dismiss="modal"><svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" fill="#349B73" class="bi bi-upc-scan" viewBox="0 0 16 16">
-                        <path d="M1.5 1a.5.5 0 0 0-.5.5v3a.5.5 0 0 1-1 0v-3A1.5 1.5 0 0 1 1.5 0h3a.5.5 0 0 1 0 1h-3zM11 .5a.5.5 0 0 1 .5-.5h3A1.5 1.5 0 0 1 16 1.5v3a.5.5 0 0 1-1 0v-3a.5.5 0 0 0-.5-.5h-3a.5.5 0 0 1-.5-.5zM.5 11a.5.5 0 0 1 .5.5v3a.5.5 0 0 0 .5.5h3a.5.5 0 0 1 0 1h-3A1.5 1.5 0 0 1 0 14.5v-3a.5.5 0 0 1 .5-.5zm15 0a.5.5 0 0 1 .5.5v3a1.5 1.5 0 0 1-1.5 1.5h-3a.5.5 0 0 1 0-1h3a.5.5 0 0 0 .5-.5v-3a.5.5 0 0 1 .5-.5zM3 4.5a.5.5 0 0 1 1 0v7a.5.5 0 0 1-1 0v-7zm2 0a.5.5 0 0 1 1 0v7a.5.5 0 0 1-1 0v-7zm2 0a.5.5 0 0 1 1 0v7a.5.5 0 0 1-1 0v-7zm2 0a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 .5.5v7a.5.5 0 0 1-.5.5h-1a.5.5 0 0 1-.5-.5v-7zm3 0a.5.5 0 0 1 1 0v7a.5.5 0 0 1-1 0v-7z"/>
-                    </svg></button>
-                    
-                </div>
-                
-                
-                    
-                    
+    <div class="container my-5">
+    
+    <div class="row">
+        <div class="col-2"></div>
+        <div class="col-8">
+        <h3 style="text-align: center;">Impfpassdaten:</h3>                           
+            <h5 class="card mt-2">
+                <div class="row my-2">
+                    <div class="col-2">{{ branch.unique_certificate_identifier }}</div>
+                    <div class="col-2">{{ branch.date_of_vaccination}}</div>
+                    <div class="col-2">{{ branch.vaccine }}</div>
+                    <div class="col-2"> {{ branch.vaccine_category }}</div>
+                    <div class="col-2"> {{ branch.batch_number }}</div>
+                    <div class="col-2"> {{ branch.unique_issuer_identifier }}</div>
+                       
                 </div>
             </h5>
+                
+                
+            <div class="picture" style="text-align: center;">
+                <img src="{{qr}}">
             </div>
-            <div class="container">
-            <p>{{ qr }}</p>
-            </div>
+            <div class="col" style="text-align: center;">
+                
+                <a href="{{ url_for('patient_home') }}"><button class="btn btn-danger">Zurück</button></a>
+              </div>
+        </div>
+        <div class="col-2"></div>
+    </div>
+    
+    
+    </div>
+    
+    
+   
+            
         
     
     
