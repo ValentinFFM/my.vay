@@ -69,8 +69,22 @@
                                         <small class="mx-3 mt-3">
                                             <a href="{{ url_for('patient_registration') }}">Noch kein Account?</a>
                                         </small>
+
+                                        <!-- Block, which displayes every flash message, when there are some on the head of the page -->
+                                        <div class="mx-3 my-3">
+                                            {% with messages = get_flashed_messages(with_categories=true) %}
+                                                {% if messages %}
+                                                    {% for category, message in messages %}
+                            
+                                                        <div class="alert alert-{{ category }}">
+                                                            {{ message }}
+                                                        </div>
+                            
+                                                    {% endfor %}
+                                                {% endif %}
+                                            {% endwith %}
+                                        </div>
                                     </div>
-                                    
                                 </form>
                             </div>
                         </div>
