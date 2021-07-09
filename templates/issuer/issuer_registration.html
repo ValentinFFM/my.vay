@@ -5,7 +5,7 @@
 {% endblock %}
 
 {% block page_title %}
-    Patient - Registrierung
+    Issuer - Registrierung
 {% endblock %}
 
 {% block page_content %}
@@ -24,7 +24,7 @@
                             
                                     <fieldset class="form-group mx-3">
                                         <legend class="border-bottom mb-4 pb-2 text-center">
-                                            Patient - Registrierung
+                                            Issuer - Registrierung
                                         </legend>
                             
                                         <div class="form-group mt-3">
@@ -70,16 +70,16 @@
                                         </div>
                             
                                         <div class="form-group mt-3">
-                                            {{ form.unique_patient_identifier.label(class="mb-1") }}
-                                            {% if form.unique_patient_identifier.errors %}
-                                                {{ form.unique_patient_identifier(class="form-control is-invalid") }}
+                                            {{ form.unique_issuer_identifier.label(class="mb-1") }}
+                                            {% if form.unique_issuer_identifier.errors %}
+                                                {{ form.unique_issuer_identifier(class="form-control is-invalid") }}
                                                 <div class="invalid-feedback">
-                                                    {% for error in form.unique_patient_identifier.errors %}
+                                                    {% for error in form.unique_issuer_identifier.errors %}
                                                         <span>{{ error }}</span>
                                                     {% endfor %}
                                                 </div>
                                             {% else %}
-                                                {{ form.unique_patient_identifier(class="form-control") }}
+                                                {{ form.unique_issuer_identifier(class="form-control") }}
                                             {% endif %}
                                         </div>
                             
@@ -118,7 +118,7 @@
                                         </div>
                                 
                                         <small class="mx-3 mt-3">
-                                            <a href="{{ url_for('patient_login') }}">Anmelden</a>
+                                            <a href="{{ url_for('issuer_login') }}">Anmelden</a>
                                         </small>
                                     </div>
                                     
