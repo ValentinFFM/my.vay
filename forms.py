@@ -18,18 +18,17 @@ class ImpfnachweisForm (Form):
     certificate_issuer = StringField("Ihre Zertifikatsnummer: ")
     generate_certificate =  SubmitField("Impfnachweis erstellen")
 
-class LoginForm(Form):
-    unique_patient_identifier = TextField("Nutzerkennung")
-    password = PasswordField('Passwort')
+class PatientLoginForm(Form):
+    unique_patient_identifier = IntegerField("Nutzer ID", validators=[DataRequired()])
+    password = PasswordField('Passwort', validators=[DataRequired(), Length(min=8)])
     remember = BooleanField('Angemeldet bleiben?')
     submit = SubmitField('Login')
 
-
-class RegistrationForm(Form):
+class PatientRegistrationForm(Form):
     f_name = StringField('Vorname', validators=[DataRequired()])
     l_name = StringField('Nachname', validators=[DataRequired()])
     date_of_birth = DateField("Geburtsdatum ",validators = [DataRequired()],format='%Y-%m-%d')
-    unique_patient_identifier = StringField("Nutzerkennung")
+    unique_patient_identifier = IntegerField("Nutzer ID")
     password = PasswordField('Passwort', validators=[DataRequired(), Length(min=8)])
     confirmPassword = PasswordField('Passwort bestätigen', validators=[DataRequired(), EqualTo('password'), Length(min=8)])
     submit = SubmitField('Registrieren')
@@ -40,6 +39,21 @@ class RegistrationForm(Form):
     #     unique_patient_identifier = Patient.query.filter_by(unique_patient_identifier=unique_patient_identifier.data).first()
     #     if unique_patient_identifier:
     #         raise ValidationError('Nutzerkennung bereits vergeben')
+    
+class IssuerLoginForm(Form):
+    unique_issuer_identifier = IntegerField("Nutzer ID", validators=[DataRequired()])
+    password = PasswordField('Passwort', validators=[DataRequired(), Length(min=8)])
+    remember = BooleanField('Angemeldet bleiben?')
+    submit = SubmitField('Login')
+
+class IssuerRegistrationForm(Form):
+    f_name = StringField('Vorname', validators=[DataRequired()])
+    l_name = StringField('Nachname', validators=[DataRequired()])
+    date_of_birth = DateField("Geburtsdatum ",validators = [DataRequired()],format='%Y-%m-%d')
+    unique_issuer_identifier = IntegerField("Nutzer ID")
+    password = PasswordField('Passwort', validators=[DataRequired(), Length(min=8)])
+    confirmPassword = PasswordField('Passwort bestätigen', validators=[DataRequired(), EqualTo('password'), Length(min=8)])
+    submit = SubmitField('Registrieren')
         
 class AddVaccination(Form):
 
@@ -48,7 +62,7 @@ class AddVaccination(Form):
     vaccine = StringField('Impfstoff (*)', validators=[DataRequired(), Length(max=30)])
     batch_number = StringField('Chargennummer(*)',  validators=[DataRequired()])
     vaccine_category = StringField('Impfkategorie(*)', validators=[Length(max=60)])
-    unique_issuer_identifier = StringField('Medizinische Einrichtung', validators=[Length(max=30)])
+    unique_issuer_identifier = IntegerField('Medizinische Einrichtung', validators=[Length(max=30)])
     submit = SubmitField('Speichern')
 
 
