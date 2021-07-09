@@ -7,7 +7,7 @@ from my_vay import app, db
 from flask import Flask, render_template, abort, url_for, redirect, flash, request, session
 
 # Imports for forms
-from my_vay.forms import ImpfnachweisForm, PatientLoginForm, AddVaccination, PatientRegistrationForm, IssuerRegistrationForm, IssuerLoginForm
+from my_vay.forms import ImpfnachweisForm, PatientLoginForm, AddVaccination, PatientRegistrationForm, IssuerRegistrationForm, IssuerLoginForm, IssuerUpdateForm, PatientUpdateForm
 
 # Imports for user handeling
 from flask_login import login_user, current_user, logout_user, login_required, UserMixin, LoginManager
@@ -81,6 +81,10 @@ def patient_login():
             
             # Patient is redirected to the patient landing page
             return redirect(url_for('patient_home'))
+
+        else:
+            flash('Es existiert kein Patient mit dieser Nutzer ID!', 'danger')
+            return redirect(url_for('patient_login'))
     
     return render_template('patient/patient_login.html', form=form)
 
@@ -89,7 +93,10 @@ def patient_login():
 def patient_registration():
     form = PatientRegistrationForm()
     
+    # If the form is submitted and validated then...
     if form.validate_on_submit():
+        
+        # a new patient is added to the database
         new_patient = Patient(f_name=form.f_name.data, l_name=form.l_name.data, date_of_birth=form.date_of_birth.data, unique_patient_identifier=form.unique_patient_identifier.data, password=form.password.data)
         db.session.add(new_patient)
         db.session.commit()
@@ -143,10 +150,30 @@ def patient_scan():
 
     return render_template("/patient/patient_scan.html")
 
-@app.route("/patient/profil")
+@app.route("/patient/profil", methods =["GET", "POST"])
 @login_required
 def patient_profil():
-    return render_template("/patient/patient_profile.html")
+    
+    form = PatientUpdateForm()
+    
+    # Saving the new entered data in the database
+    if form.validate_on_submit():
+        current_user.f_name = form.f_name.data
+        current_user.l_name = form.l_name.data
+        current_user.date_of_birth = form.date_of_birth.data
+        current_user.password = form.password.data
+        db.session.commit()
+
+        return redirect(url_for('patient_profil'))
+    
+    # Reading out the current data and filling it in the forms
+    elif request.method == 'GET':
+        form.f_name.data = current_user.f_name
+        form.l_name.data = current_user.l_name
+        form.date_of_birth.data = current_user.date_of_birth
+        form.password.data = current_user.password
+
+    return render_template("/patient/patient_profile.html", form=form)
 
 
 
@@ -185,27 +212,41 @@ def issuer_home():
 
     return render_template("/issuer/issuer_create_qr.html", form=form, qr="data:image/png;base64,"+b64encode(file_object.getvalue()).decode('ascii'))
 
-# Login route
+# Issuer - Login route
 @app.route("/issuer/login", methods =["GET", "POST"])
 def issuer_login():
     
+    # Redirects user to the issuer landing page, if he is already signed in
     if current_user.is_authenticated:
-        return redirect(url_for('patient_home'))
+        if session['user_type'] == 'issuer':
+            return redirect(url_for('issuer_home'))
     
+    # Loads the IssuerLoginForm from forms.py 
     form = IssuerLoginForm()
     
+    # If the form is submitted and validated then...
     if form.validate_on_submit():
-        patient = Patient.query.filter_by(unique_patient_identifier=form.unique_patient_identifier.data).first()
         
-        if patient:
-            session['user_type'] = 'patient'
-            login_user(patient, remember=form.remember.data)
+        # Database is queryed based on the unique_issuer_identifier
+        issuer = Issuer.query.filter_by(unique_issuer_identifier=form.unique_issuer_identifier.data).first()
+        
+        # If a issuer with the entered unique_issuer_identifier exists and the password in the database is the same as in the form then...
+        if issuer and issuer.password == form.password.data:
+            
+            # Issuer is written into a cookie and user is logged in
+            session['user_type'] = 'issuer'
+            login_user(issuer, remember=form.remember.data)
+            
+            # Issuer is redirected to the issuer landing page
+            return redirect(url_for('issuer_home'))
 
-            return redirect(url_for('patient_home'))
+        else:
+            flash('Es existiert kein Issuer mit dieser Nutzer ID!', 'danger')
+            return redirect(url_for('issuer_login'))
     
     return render_template('issuer/issuer_login.html', form=form)
 
-# Registration route
+# Issuer - Registration route
 @app.route("/issuer/registrierung", methods =["GET", "POST"])
 def issuer_registration():
     form = IssuerRegistrationForm()
@@ -224,10 +265,29 @@ def issuer_registration():
 def issuer_impfwissen():
     return render_template("issuer/issuer_vaccination_knowledge.html")
 
-@app.route("/issuer/profil")
+@app.route("/issuer/profil", methods =["GET", "POST"])
 @login_required
 def issuer_profil():
-    return render_template("/issuer/issuer_profile.html")
+    form = IssuerUpdateForm()
+    
+    # Saving the new entered data in the database
+    if form.validate_on_submit():
+        current_user.f_name = form.f_name.data
+        current_user.l_name = form.l_name.data
+        current_user.date_of_birth = form.date_of_birth.data
+        current_user.password = form.password.data
+        db.session.commit()
+
+        return redirect(url_for('issuer_profil'))
+    
+    # Reading out the current data and filling it in the forms
+    elif request.method == 'GET':
+        form.f_name.data = current_user.f_name
+        form.l_name.data = current_user.l_name
+        form.date_of_birth.data = current_user.date_of_birth
+        form.password.data = current_user.password
+
+    return render_template("/issuer/issuer_profile.html", form=form)
 
 # @app.route('/showvaccination', methods=['POST'])
 # def showvaccination():
