@@ -15,6 +15,8 @@ from flask_login import login_user, current_user, logout_user, login_required, U
 from my_vay.models import Patient, Issuer, Proof_of_vaccination
 
 from base64 import b64encode
+import io
+from qrcode.main import QRCode
 
 
 
@@ -97,11 +99,12 @@ def patient_registration():
     return render_template('patient/patient_registration.html', form=form)
 
 @app.route("/patient/impfeintrag")
+@login_required
 def patient_vaccination_entry():
     return render_template('patient/patient_vaccination_entry.html')
 
 @app.route("/patient/impfeintrag/manuell", methods=['POST', 'GET'])
-#@login_required
+@login_required
 def addVaccination():
     form = AddVaccination()
 
@@ -122,14 +125,17 @@ def addVaccination():
     return render_template('patient/patient_vaccination_manual_entry.html', form=form)
 
 @app.route("/patient/impfwissen")
+@login_required
 def patient_impfwissen():
     return render_template("/patient/patient_vaccination_knowledge.html")
 
 @app.route("/patient/kalender")
+@login_required
 def patient_kalender():
     return render_template("/patient/patient_calendar.html")
 
 @app.route("/patient/impfeintrag/scan")
+@login_required
 def patient_scan():
     #img = cv2.imread('Beispiel.png')
     #cv2.imshow('Ihr Impfnachweis',img)
@@ -138,6 +144,7 @@ def patient_scan():
     return render_template("/patient/patient_scan.html")
 
 @app.route("/patient/profil")
+@login_required
 def patient_profil():
     return render_template("/patient/patient_profile.html")
 
@@ -148,9 +155,35 @@ def patient_profil():
 #
 
 # Landing page route
-@app.route("/issuer")
+@app.route("/issuer", methods =["GET", "POST"])
+@login_required
 def issuer_home():
-    return render_template("/issuer/issuer_create_qr.html")
+    form = ImpfnachweisForm()
+    qr = {}
+    img = []
+    file_object = io.BytesIO()
+
+# Clicking on the submit button is creating JSON-Object with input data
+    if form.is_submitted():
+        proof_of_vaccination= {}
+        proof_of_vaccination['f_name']= form.f_name.data
+        proof_of_vaccination['l_name'] = form.l_name.data
+        proof_of_vaccination['date_of_birth']=form.date_of_birth.data
+        proof_of_vaccination['date_of_vaccination'] = form.date_of_vaccination.data
+        proof_of_vaccination['vaccination_category'] = form.vaccine_category.data
+        proof_of_vaccination['vaccine_marketing_authorization_holder'] = form.vaccine_marketing_authorization_holder.data
+        proof_of_vaccination['batch_number'] = form.batch_number.data
+        proof_of_vaccination['issued_at'] = form.issued_at.data
+        proof_of_vaccination['certificate_issuer'] = form.certificate_issuer.data
+        
+        qr = QRCode(version=1, box_size=6,border=4)
+        qr.add_data(proof_of_vaccination)
+        qr.make()
+        #qr = qrcode.make(proof_of_vaccination)
+        img = qr.make_image (fill = 'black', back_color = 'white')
+        img.save(file_object,'PNG')
+
+    return render_template("/issuer/issuer_create_qr.html", form=form, qr="data:image/png;base64,"+b64encode(file_object.getvalue()).decode('ascii'))
 
 # Login route
 @app.route("/issuer/login", methods =["GET", "POST"])
@@ -186,46 +219,15 @@ def issuer_registration():
     
     return render_template('issuer/issuer_registration.html', form=form)
 
-@app.route("/issuer/impfwissen")   
+@app.route("/issuer/impfwissen")
+@login_required
 def issuer_impfwissen():
     return render_template("issuer/issuer_vaccination_knowledge.html")
 
 @app.route("/issuer/profil")
+@login_required
 def issuer_profil():
     return render_template("/issuer/issuer_profile.html")
-
-@app.route("/issuer/QR", methods =["GET", "POST"])   
-def issuer_create_qr():
-    form = ImpfnachweisForm()
-    qr = {}
-    img = []
-    file_object = io.BytesIO()
-
-## Clicking on the submit button is creating JSON-Object with input data
-    if form.is_submitted():
-        proof_of_vaccination= {}
-        proof_of_vaccination['f_name']= form.f_name.data
-        proof_of_vaccination['l_name'] = form.l_name.data
-        proof_of_vaccination['date_of_birth']=form.date_of_birth.data
-        proof_of_vaccination['date_of_vaccination'] = form.date_of_vaccination.data
-        proof_of_vaccination['vaccination_category'] = form.vaccine_category.data
-        proof_of_vaccination['vaccine_marketing_authorization_holder'] = form.vaccine_marketing_authorization_holder.data
-        proof_of_vaccination['batch_number'] = form.batch_number.data
-        proof_of_vaccination['issued_at'] = form.issued_at.data
-        proof_of_vaccination['certificate_issuer'] = form.certificate_issuer.data
-        
-        qr = QRCode(version=1, box_size=6,border=4)
-        qr.add_data(proof_of_vaccination)
-        qr.make()
-        #qr = qrcode.make(proof_of_vaccination)
-        img = qr.make_image (fill = 'black', back_color = 'white')
-        img.save(file_object,'PNG')
-
-        
-
-    return render_template("/issuer/issuer_create_qr.html", form=form, qr="data:image/png;base64,"+b64encode(file_object.getvalue()).decode('ascii'))
-
-
 
 # @app.route('/showvaccination', methods=['POST'])
 # def showvaccination():
