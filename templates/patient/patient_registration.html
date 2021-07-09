@@ -1,5 +1,9 @@
 {% extends "html_container.html" %}
 
+{% block style_sheets %}
+    <link rel="stylesheet" href="{{ url_for('static', filename = 'styles-login-registration.css') }}">
+{% endblock %}
+
 {% block page_title %}
     Patient - Registrierung
 {% endblock %}

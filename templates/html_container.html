@@ -8,8 +8,14 @@
         <!-- Integrating stylesheet for bootstrap -->
         <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
 
+        
+
         <!-- Integrating custom stylesheet -->
-        <link rel="stylesheet" href="../../static/styles.css">
+        <link rel="stylesheet" href="{{ url_for('static', filename = 'styles.css') }}">
+
+        <!-- Block for additional page specific style sheets -->
+        {% block style_sheets %}
+        {% endblock %}
 
         <!-- Placeholder for Title -->
         <title>{% block page_title %}{% endblock %}</title>

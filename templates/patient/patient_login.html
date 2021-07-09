@@ -1,5 +1,9 @@
 {% extends "html_container.html" %}
 
+{% block style_sheets %}
+    <link rel="stylesheet" href="{{ url_for('static', filename = 'styles-login-registration.css') }}">
+{% endblock %}
+
 {% block page_title %}
     Patient - Login
 {% endblock %}
@@ -12,8 +16,8 @@
                     <div class="col-xl-4">
                         
                     </div>
-                    <div class="col-xl-4">
-                        <div class="card">
+                    <div class="col-12 col-lg-6 col-xl-4">
+                        <div class="card my-5">
                             <div class="card-body">
                                 <form method="POST" action="">
                                     {{ form.hidden_tag() }}
@@ -68,8 +72,8 @@
                                     {% endwith %}
                                     
                                     <div class="text-center">
-                                        <div class="form-group mx-3 mt-3">
-                                            {{ form.submit(class="btn btn-outline-success btn-block") }}
+                                        <div class="form-group mx-3 my-3">
+                                            {{ form.submit(class="btn btn-outline-success col-12") }}
                                         </div>
                                 
                                         <small class="mx-3 mt-3">

@@ -1,11 +1,15 @@
 {% extends "html_container.html" %}
 
+{% block style_sheets %}
+    <link rel="stylesheet" href="{{ url_for('static', filename = 'styles-landing.css') }}">
+{% endblock %}
+
 {% block page_title %}
     Landing Page
 {% endblock %}
 
 {% block page_content %}
-    <div class="full-screensize bg-login">
+    <div class="full-screensize bg-landing">
         <main role="main" class="container h-100">
             <div class="row align-items-center h-100">
                 <div class="col-12 col-lg-6 col-xl-4">
