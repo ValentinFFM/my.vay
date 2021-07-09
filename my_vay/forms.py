@@ -39,6 +39,14 @@ class PatientRegistrationForm(Form):
 
         if unique_patient_identifier:
             raise ValidationError('Diese Nutzer ID ist bereits vergeben.')
+        
+class PatientUpdateForm(Form):
+    f_name = StringField('Vorname', validators=[DataRequired()])
+    l_name = StringField('Nachname', validators=[DataRequired()])
+    date_of_birth = DateField("Geburtsdatum ",validators = [DataRequired()],format='%Y-%m-%d')
+    unique_issuer_identifier = IntegerField("Nutzer ID")
+    password = PasswordField('Passwort', validators=[DataRequired(), Length(min=8)])
+    submit = SubmitField('Speichern')
     
 class IssuerLoginForm(Form):
     unique_issuer_identifier = IntegerField("Nutzer ID", validators=[DataRequired()])
@@ -61,6 +69,14 @@ class IssuerRegistrationForm(Form):
 
         if unique_issuer_identifier:
             raise ValidationError('Diese Nutzer ID ist bereits vergeben.')
+
+class IssuerUpdateForm(Form):
+    f_name = StringField('Vorname', validators=[DataRequired()])
+    l_name = StringField('Nachname', validators=[DataRequired()])
+    date_of_birth = DateField("Geburtsdatum ",validators = [DataRequired()],format='%Y-%m-%d')
+    unique_issuer_identifier = IntegerField("Nutzer ID")
+    password = PasswordField('Passwort', validators=[DataRequired(), Length(min=8)])
+    submit = SubmitField('Speichern')
         
 class AddVaccination(Form):
     date_of_vaccination = DateField('Datum (*)', validators=[DataRequired(), Length(max=30)])
@@ -69,6 +85,9 @@ class AddVaccination(Form):
     vaccine_category = StringField('Impfkategorie(*)', validators=[Length(max=60)])
     unique_issuer_identifier = IntegerField('Medizinische Einrichtung', validators=[Length(max=30)])
     submit = SubmitField('Speichern')
+
+
+    
 
 
 
