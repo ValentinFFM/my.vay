@@ -34,12 +34,11 @@ class PatientRegistrationForm(Form):
     submit = SubmitField('Registrieren')
 
     #validate unique_patient_identifier and check if it's already existing in patient database
-    
-    # def validate_unique_patient_identifier(self, unique_patient_identifier):
-    
-    #     unique_patient_identifier = Patient.query.filter_by(unique_patient_identifier=unique_patient_identifier.data).first()
-    #     if unique_patient_identifier:
-    #         raise ValidationError('Nutzerkennung bereits vergeben')
+    def validate_unique_patient_identifier(self, unique_patient_identifier):
+        unique_patient_identifier = Patient.query.filter_by(unique_patient_identifier=unique_patient_identifier.data).first()
+
+        if unique_patient_identifier:
+            raise ValidationError('Diese Nutzer ID ist bereits vergeben.')
     
 class IssuerLoginForm(Form):
     unique_issuer_identifier = IntegerField("Nutzer ID", validators=[DataRequired()])
@@ -55,10 +54,15 @@ class IssuerRegistrationForm(Form):
     password = PasswordField('Passwort', validators=[DataRequired(), Length(min=8)])
     confirmPassword = PasswordField('Passwort bestätigen', validators=[DataRequired(), EqualTo('password'), Length(min=8)])
     submit = SubmitField('Registrieren')
+    
+    #validate unique_patient_identifier and check if it's already existing in patient database
+    def validate_unique_issuer_identifier(self, unique_issuer_identifier):
+        unique_issuer_identifier = Patient.query.filter_by(unique_issuer_identifier=unique_issuer_identifier.data).first()
+
+        if unique_issuer_identifier:
+            raise ValidationError('Diese Nutzer ID ist bereits vergeben.')
         
 class AddVaccination(Form):
-
-    # Creation of all inputfields and the submit button
     date_of_vaccination = DateField('Datum (*)', validators=[DataRequired(), Length(max=30)])
     vaccine = StringField('Impfstoff (*)', validators=[DataRequired(), Length(max=30)])
     batch_number = StringField('Chargennummer(*)',  validators=[DataRequired()])

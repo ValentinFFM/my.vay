@@ -91,6 +91,8 @@ def patient_registration():
         new_patient = Patient(f_name=form.f_name.data, l_name=form.l_name.data, date_of_birth=form.date_of_birth.data, unique_patient_identifier=form.unique_patient_identifier.data, password=form.password.data)
         db.session.add(new_patient)
         db.session.commit()
+        
+        return redirect(url_for('patient_login'))
     
     return render_template('patient/patient_registration.html', form=form)
 
@@ -179,6 +181,8 @@ def issuer_registration():
         new_issuer = Issuer(f_name=form.f_name.data, l_name=form.l_name.data, date_of_birth=form.date_of_birth.data, unique_issuer_identifier=form.unique_patient_identifier.data, password=form.password.data)
         db.session.add(new_issuer)
         db.session.commit()
+        
+        return redirect(url_for('issuer_login'))
     
     return render_template('issuer/issuer_registration.html', form=form)
 

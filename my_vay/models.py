@@ -13,7 +13,7 @@ def loadUser(user_id):
 # Patient Model
 class Patient(db.Model, UserMixin):
     # Primary Key for patient is the username
-    unique_patient_identifier = db.Column(db.String, primary_key = True)
+    unique_patient_identifier = db.Column(db.Integer, primary_key = True)
     
     # Defining all required attributes
     password = db.Column(db.String, nullable = False)
@@ -31,7 +31,7 @@ class Patient(db.Model, UserMixin):
 # Issuer Model
 class Issuer(db.Model, UserMixin):
     # Defining primary key
-    unique_issuer_identifier = db.Column(db.String, primary_key = True)
+    unique_issuer_identifier = db.Column(db.Integer, primary_key = True)
     
     # Defining all required attributes
     password = db.Column(db.String, nullable = False)
@@ -45,7 +45,7 @@ class Issuer(db.Model, UserMixin):
 # Proof_of_vaccination Model
 class Proof_of_vaccination(db.Model):
     # Defining primary key
-    unique_certificate_identifier = db.Column(db.String, primary_key = True)
+    unique_certificate_identifier = db.Column(db.Integer, primary_key = True)
     
     # Defining all required attributes
     date_of_vaccination = db.Column(db.Date, nullable = False)
@@ -57,10 +57,10 @@ class Proof_of_vaccination(db.Model):
     issued_at = db.Column(db.DateTime, nullable = False)
     
     # Defining relationship to patient
-    unique_patient_identifier = db.Column(db.String, db.ForeignKey('patient.unique_patient_identifier'), nullable=False)
+    unique_patient_identifier = db.Column(db.Integer, db.ForeignKey('patient.unique_patient_identifier'), nullable=False)
     
     # Defining relationship to issuer
-    unique_issuer_identifier = db.Column(db.String, db.ForeignKey('issuer.unique_issuer_identifier'), nullable=False)
+    unique_issuer_identifier = db.Column(db.Integer, db.ForeignKey('issuer.unique_issuer_identifier'), nullable=False)
     
     db.Column(db.String, nullable = False)
 
