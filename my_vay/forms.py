@@ -2,7 +2,7 @@ from flask_wtf import Form
 from wtforms import TextField, StringField, DateTimeField, BooleanField, SubmitField, IntegerField, DateField, PasswordField
 from wtforms.fields.html5 import DateTimeLocalField
 from wtforms.validators import EqualTo, DataRequired, Length, ValidationError, Email
-#from models import Patient
+from my_vay.models import Patient, Issuer
 
 class ImpfnachweisForm (Form):
     f_name = TextField("Vorname des Geimpften: ")
@@ -33,7 +33,8 @@ class PatientRegistrationForm(Form):
     confirmPassword = PasswordField('Passwort bestätigen', validators=[DataRequired(), EqualTo('password'), Length(min=8)])
     submit = SubmitField('Registrieren')
 
-    #validate unique_patient_identifier and check if it's already existing in patient database 
+    #validate unique_patient_identifier and check if it's already existing in patient database
+    
     # def validate_unique_patient_identifier(self, unique_patient_identifier):
     
     #     unique_patient_identifier = Patient.query.filter_by(unique_patient_identifier=unique_patient_identifier.data).first()

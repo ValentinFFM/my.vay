@@ -1,133 +1,20 @@
 # 
 # Imports
 #
+from my_vay import app, db
 
 # General imports for Flask
 from flask import Flask, render_template, abort, url_for, redirect, flash, request, session
-from flask_sqlalchemy import SQLAlchemy
 
 # Imports for forms
-from wtforms.meta import DefaultMeta
-from forms import ImpfnachweisForm, PatientLoginForm, AddVaccination, PatientRegistrationForm, IssuerRegistrationForm, IssuerLoginForm
+from my_vay.forms import ImpfnachweisForm, PatientLoginForm, AddVaccination, PatientRegistrationForm, IssuerRegistrationForm, IssuerLoginForm
 
 # Imports for user handeling
 from flask_login import login_user, current_user, logout_user, login_required, UserMixin, LoginManager
 
-from qrcode.main import QRCode
-from types import DynamicClassAttribute
-import datetime
-import qrcode
-import pyqrcode
-import json
-import cv2
-from PIL import Image
-# from django.shortcuts import render
-# import qrcode.image.svg
-from io import BytesIO
-from PIL import Image
-import io
-from io import StringIO
+from my_vay.models import Patient, Issuer, Proof_of_vaccination
+
 from base64 import b64encode
-#import pyzbar
-#from pyzbar.pyzbar import decode
-
-
-
-# 
-# Initialization of Flask Application
-#
-
-app = Flask(__name__)
-app.config['SECRET_KEY'] = 'test'
-
-app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://postgres:Master123@localhost:5432/vaccination_database'
-app.config['SQLALCHEMY_ECHO'] = True
-
-
-
-# 
-# Initialization of the LoginManager, which handels the user sessions in the browser to ensure that users must be logged in for the application.
-# 
-loginManager = LoginManager(app)
-loginManager.login_view = 'patient_login'
-loginManager.login_message_category = 'info'
-
-@loginManager.user_loader
-def loadUser(user_id):
-    if session['user_type'] == 'patient':
-        return Patient.query.get(user_id)
-    elif session['user_type'] == 'issuer':
-        return Issuer.query.get(user_id)
-
-
-
-#
-# DATABASE
-#
-
-#Location of the database 
-app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://postgres:Master123@localhost:5432/vaccination_database'
-app.config['SQLALCHEMY_ECHO'] = True
-
-# Initializing database with SQLAlchemy
-db = SQLAlchemy(app)
-
-# Patient Model
-class Patient(db.Model, UserMixin):
-    # Primary Key for patient is the username
-    unique_patient_identifier = db.Column(db.String, primary_key = True)
-    
-    # Defining all required attributes
-    password = db.Column(db.String, nullable = False)
-    f_name = db.Column(db.String, nullable = False)
-    l_name = db.Column(db.String, nullable = False)
-    date_of_birth = db.Column(db.Date, nullable = False)
-    
-    # Defining relationship to proof_of_vaccination
-    proof_of_vaccination_identifier = db.relationship('Proof_of_vaccination', backref = 'patient') 
-    
-    # Defines the attribute that is given back, when the get_id function is called on an object of this class
-    def get_id(self):
-        return (self.unique_patient_identifier)
-
-# Issuer Model
-class Issuer(db.Model, UserMixin):
-    # Defining primary key
-    unique_issuer_identifier = db.Column(db.String, primary_key = True)
-    
-    # Defining all required attributes
-    password = db.Column(db.String, nullable = False)
-    f_name = db.Column(db.String, nullable = False)
-    l_name = db.Column(db.String, nullable = False)
-    date_of_birth = db.Column(db.Date, nullable = False)
-    
-    # Defining relationship to proof_of_vaccination
-    proof_of_vaccination_identifier = db.relationship('Proof_of_vaccination', backref = 'issuer') 
-
-# Proof_of_vaccination Model
-class Proof_of_vaccination(db.Model):
-    # Defining primary key
-    unique_certificate_identifier = db.Column(db.String, primary_key = True)
-    
-    # Defining all required attributes
-    date_of_vaccination = db.Column(db.Date, nullable = False)
-    vaccine_category = db.Column(db.String, nullable = False)
-    disease = db.Column(db.String, nullable = False)
-    vaccine = db.Column(db.String, nullable = False)
-    vaccine_marketing_authorization_holder = db.Column(db.String, nullable = False)
-    batch_number = db.Column(db.String, nullable = False)
-    issued_at = db.Column(db.DateTime, nullable = False)
-    
-    # Defining relationship to patient
-    unique_patient_identifier = db.Column(db.String, db.ForeignKey('patient.unique_patient_identifier'), nullable=False)
-    
-    # Defining relationship to issuer
-    unique_issuer_identifier = db.Column(db.String, db.ForeignKey('issuer.unique_issuer_identifier'), nullable=False)
-    
-    db.Column(db.String, nullable = False)
-
-# Create tables
-db.create_all()
 
 
 
@@ -358,10 +245,3 @@ def issuer_create_qr():
 #         db.session.commit()
 #         branch = Impfung.query.all()
 #         return render_template('patient_vaccination_certificate.html', branch = branch)
-
-# 
-# Run application
-#
-if __name__ == "__main__":
-    app.run(debug=True, host="0.0.0.0", port=3000)
-
