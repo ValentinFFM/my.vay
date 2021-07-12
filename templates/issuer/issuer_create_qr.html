@@ -50,8 +50,11 @@
 
                     {% if form.f_name.errors %}
                         {{form.f_name(class="form-control form-control-lg is invalid")}}
+                        <div class="invalid-feedback">
                         {% for error in form.f_name.errors %}
+                            <span>{{ error }}</span>
                         {% endfor %}
+                        </div>
                     {% else %}
                         {{form.f_name(class="form-control form-control-lg")}}
                     {% endif %}
@@ -62,8 +65,11 @@
 
                     {% if form.l_name.errors%}
                         {{form.l_name(class="form-control form-control-lg is invalid")}}
+                        <div class="invalid-feedback"></div>
                         {%for error in form.l_name.errors%}
+                        <span>{{ error }}</span>
                         {%endfor%}
+                    </div>
                     {% else %}
                         {{form.l_name(class="form-control form-control-lg")}}
                     {%endif%}
@@ -75,8 +81,11 @@
 
                     {%if form.date_of_birth.errors%}
                         {{form.date_of_birth(class="form-control form-control-lg is invalid")}}
+                        <div class="invalid-feedback"></div>
                         {%for error in form.date_of_birth.errors%}
+                            <span>{{ error }}</span>
                         {%endfor%}
+                        </div>
                     {% else %}
                         {{form.date_of_birth(class="form-control form-control-lg")}}
                     {%endif%}
@@ -87,8 +96,11 @@
 
                     {%if form.date_of_vaccination.errors%}
                         {{form.date_of_vaccination(class="form-control form-control-lg is invalid")}}
+                        <div class="invalid-feedback"></div>
                         {%for error in form.date_of_vaccination.errors%}
+                            <span>{{ error }}</span>
                         {%endfor%}
+                        </div>
                     {% else %}
                         {{form.date_of_vaccination(class="form-control form-control-lg")}}
                     {%endif%}
@@ -98,8 +110,11 @@
 
                     {% if form.vaccine_category.errors %}
                         {{form.vaccine_categroy(class="form-control form-control-lg is invalid")}}
+                        <div class="invalid-feedback"></div>
                         {% for error in form.vaccine_category.errors %}
-                        {% endfor %}     
+                            <span>{{ error }}</span>   
+                        {% endfor %}  
+                        </div>   
                     {% else %}
                         {{form.vaccine_category(class="form-control form-control-lg")}}
                     {%endif%}
@@ -109,8 +124,11 @@
 
                     {% if form.disease.errors %}
                         {{form.disease(class="form-control form-control-lg is invalid")}}
+                        <div class="invalid-feedback"></div>
                         {% for error in form.disease.errors %}
-                        {% endfor %}     
+                            <span>{{ error }}</span>
+                        {% endfor %} 
+                        </div>    
                     {% else %}
                         {{form.disease(class="form-control form-control-lg")}}
                     {%endif%}
@@ -120,8 +138,11 @@
 
                     {% if form.vaccine.errors %}
                         {{form.vaccine(class="form-control form-control-lg is invalid")}}
+                        <div class="invalid-feedback"></div>
                         {% for error in form.vaccine.errors %}
-                        {% endfor %}     
+                            <span>{{ error }}</span>
+                        {% endfor %}  
+                        </div>   
                     {% else %}
                         {{form.vaccine(class="form-control form-control-lg")}}
                     {%endif%}
@@ -131,8 +152,11 @@
 
                     {% if form.vaccine_marketing_authorization_holder.errors %}
                         {{form.vaccine_marketing_authorization_holder(class="form-control form-control-lg is invalid")}}
+                        <div class="invalid-feedback"></div>
                         {% for error in form.vaccine_marketing_authorization_holder.errors %}
-                        {% endfor %}     
+                            <span>{{ error }}</span>
+                        {% endfor %}
+                        </div>    
                     {% else %}
                         {{form.vaccine_marketing_authorization_holder(class="form-control form-control-lg")}}
                     {%endif%}
@@ -142,8 +166,11 @@
 
                     {%if form.batch_number.errors%}
                         {{form.batch_number(class="form-control form-control-lg is invalid")}}
+                        <div class="invalid-feedback"></div>
                         {%for error in form.batch_number.errors%}
+                            <span>{{ error }}</span>
                         {%endfor%}
+                        </div>
                     {% else %}
                         {{form.batch_number(class="form-control form-control-lg")}}
                     {%endif%}
@@ -153,21 +180,27 @@
                     {{form.issued_at.label(class="form-control-label")}}
                     {%if form.issued_at.errors%}
                         {{form.issued_at(class="form-control form-control-lg is invalid")}}
+                        <div class="invalid-feedback"></div>
                         {%for error in form.issued_at.errors%}
+                            <span>{{ error }}</span>
                         {%endfor%}
+                        </div>
                     {% else %}
                         {{form.issued_at(class="form-control form-control-lg")}}
                     {%endif%}
                 </div>
                 <div class = "form-group">
 
-                    {{form.certificate_issuer.label(class="form-control-label")}}
-                    {%if form.certificate_issuer.errors%}
-                        {{form.certificate_issuer(class="form-control form-control-lg is invalid")}}
-                        {%for error in form.certificate_issuer.errors%}
+                    {{form.unique_issuer_identifier.label(class="form-control-label")}}
+                    {%if form.unique_issuer_identifier.errors%}
+                        {{form.unique_issuer_identifier(class="form-control form-control-lg is invalid")}}
+                        <div class="invalid-feedback">
+                        {%for error in form.unique_issuer_identifier.errors%}
+                            <span>{{ error }}</span>
                         {%endfor%}
+                        </div>
                     {% else %}
-                        {{form.certificate_issuer(class="form-control form-control-lg")}}
+                        {{form.unique_issuer_identifier(class="form-control form-control-lg")}}
                     {%endif%}
                 </div>
                 <div class = "form-group my-4">

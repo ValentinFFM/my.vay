@@ -3,15 +3,12 @@
 #
 import datetime
 from types import DynamicClassAttribute, new_class
-from flask import Flask, render_template, abort, url_for, redirect, flash, request
+from flask import Flask, render_template, abort, url_for, redirect, flash, request, Response
 from flask_sqlalchemy import SQLAlchemy
 from qrcode.main import QRCode
 from wtforms.meta import DefaultMeta
 from forms import ImpfnachweisForm, LoginForm, AddVaccination, ScanQRForm
 
-import qrcode
-import pyqrcode
-import json
 import cv2
 import ast
 from PIL import Image
@@ -22,6 +19,7 @@ from PIL import Image
 import io
 from io import StringIO
 from base64 import b64encode
+import uuid
 #import pyzbar.pyzbar
 #
 from pyzbar import pyzbar
@@ -73,7 +71,7 @@ class Issuer(db.Model):
     password = db.Column(db.String, nullable = False)
     f_name = db.Column(db.String, nullable = False)
     l_name = db.Column(db.String, nullable = False)
-    date_of_birth = db.Column(db.DateTime, nullable = False)
+    date_of_birth = db.Column(db.Date, nullable = False)
     
     # Defining relationship to proof_of_vaccination
     proof_of_vaccination_identifier = db.relationship('Proof_of_vaccination', backref = 'issuer') 
@@ -89,7 +87,7 @@ class Proof_of_vaccination(db.Model):
     # Defining all required attributes
     f_name = db.Column(db.String, nullable = False)
     l_name = db.Column(db.String, nullable = False)
-    date_of_vaccination = db.Column(db.DateTime, nullable = False)
+    date_of_vaccination = db.Column(db.Date, nullable = False)
     vaccine_category = db.Column(db.String, nullable = False)
     disease = db.Column(db.String, nullable = False)
     vaccine = db.Column(db.String, nullable = False)
@@ -156,28 +154,7 @@ def addVaccination():
 
     return render_template('patient/patient_vaccination_manual_entry.html', form=form)
 
-# @app.route('/showvaccination', methods=['POST'])
-# def showvaccination():
-#     if request.method == "POST":
-#         branch = Impfung.query.all()
-#         return render_template('patient_vaccination_certificate.html', branch=branch)
 
-#Neuer manueller Impfeintrag
-
-# @app.route('/addvaccination', methods=['POST'])
-# def addvaccination():
-#     if request.method == "POST":
-#         Impfdatum = request.form['Impfdatum']
-#         Impfstoff = request.form['Impfstoff']
-#         Chargennummer = request.form['Chargennummer']
-#         Impfkategorie = request.form['Impfkategorie']
-#         Medizinische_Einrichtung = request.form['Medizinische_Einrichtung']
-#         state_ = request.form['state_']
-#         data = Impfung(Impfdatum, Impfstoff, Chargennummer, Impfkategorie, Medizinische_Einrichtung)
-#         db.session.add(data)
-#         db.session.commit()
-#         branch = Impfung.query.all()
-#         return render_template('patient_vaccination_certificate.html', branch = branch)
 @app.route("/patient/impfwissen")
 def patient_impfwissen():
         return render_template("/patient/patient_vaccination_knowledge.html")
@@ -186,34 +163,51 @@ def patient_impfwissen():
 def patient_kalender():
     return render_template("/patient/patient_calendar.html")
 
-@app.route("/patient/impfeintrag/scan",methods =["GET", "POST"])
-def patient_scan():
-    form = ScanQRForm()
-    new_entry = {}
-    #form =ImpfnachweisForm()
-    ### open camera
-    cap = cv2.VideoCapture(0)
-    while True:
-        _,frame = cap.read() #### get next frame of the camera
-        decodedObjects = pyzbar.decode(frame) # decode QR-Code 
-        for objects in decodedObjects:
-            bytstr = objects.data
-            dictstr = bytstr.decode('utf-8')
-            certificate_data = ast.literal_eval(dictstr)
-            new_entry = Proof_of_vaccination(unique_certificate_identifier = '3', f_name =certificate_data['f_name'], date_of_vaccination = certificate_data['date_of_vaccination'], vaccine = certificate_data['vaccine'], batch_number=certificate_data['batch_number'], vaccine_category=certificate_data['vaccine_category'], unique_issuer_identifier=certificate_data['certificate_issuer'], disease= certificate_data['disease'], vaccine_marketing_authorization_holder= certificate_data['vaccine_marketing_authorization_holder'], issued_at= certificate_data['issued_at'])
-            print (certificate_data['f_name'])
-        cv2.imshow('Impfnachweis einlesen',frame) # show the frame
-        key = cv2.waitKey(1)
-        if key ==27:
-            break
+def gen_frames():
+        camera = cv2.VideoCapture(0) 
+        while True:
+            success, frame = camera.read()  # read the camera frame
+            if not success:
+                break
+            else:
+                ret, buffer = cv2.imencode('.jpg', frame)
+                frame = buffer.tobytes()
+                yield (b'--frame\r\n'
+                    b'Content-Type: image/jpeg\r\n\r\n' + frame + b'\r\n')  #concat frame one by one and show result
+
+def decode():
+    decodedObjects = pyzbar.decode(gen_frames()) # decode QR-Code 
+    for objects in decodedObjects:
+        bytstr = objects.data
+        dictstr = bytstr.decode('utf-8')
+        certificate_data = ast.literal_eval(dictstr)
+        new_entry = Proof_of_vaccination(unique_certificate_identifier = '3', f_name =certificate_data['f_name'], date_of_vaccination = certificate_data['date_of_vaccination'], vaccine = certificate_data['vaccine'], batch_number=certificate_data['batch_number'], vaccine_category=certificate_data['vaccine_category'], unique_issuer_identifier=certificate_data['certificate_issuer'], disease= certificate_data['disease'], vaccine_marketing_authorization_holder= certificate_data['vaccine_marketing_authorization_holder'], issued_at= certificate_data['issued_at'])
         db.session.add(new_entry)
         db.session.commit()
-        return render_template("/patient/patient_vaccination_certificate.html",form=form)
 
-        #add_certificate_data = Proof_of_vaccination(f_name =form.f_name.data, date_of_vaccination = form.date_of_vaccination.data, vaccine = form.vaccine.data, batch_number=form.batch_number.data, vaccine_category=form.vaccine_category.data, unique_issuer_identifier=form.unique_issuer_identifier.data, disease= "/", vaccine_marketing_authorization_holder= "/", issued_at= "/")
-        #db.session.add(nadd_certificate_data)
-        #db.session.commit()
-    return render_template("/patient/patient_scan.html",form=form)
+        print (certificate_data)
+
+@app.route("/patient/impfeintrag/scan",methods =["GET", "POST"])
+def patient_scan():
+    form = ImpfnachweisForm()
+    return Response(gen_frames(), decode(), mimetype='multipart/x-mixed-replace; boundary=frame',form=form)
+
+    #form =ImpfnachweisForm()
+    ### open camera
+    #cap = cv2.VideoCapture(0)
+    #while True:
+    #    _,frame = cap.read() #### get next frame of the camera
+    #    decodedObjects = pyzbar.decode(frame) # decode QR-Code 
+    #    for objects in decodedObjects:
+    #        bytstr = objects.data
+    #        dictstr = bytstr.decode('utf-8')
+    #        certificate_data = ast.literal_eval(dictstr)
+    #        new_entry = Proof_of_vaccination(unique_certificate_identifier = '3', f_name =certificate_data['f_name'], date_of_vaccination = certificate_data['date_of_vaccination'], vaccine = certificate_data['vaccine'], batch_number=certificate_data['batch_number'], vaccine_category=certificate_data['vaccine_category'], unique_issuer_identifier=certificate_data['certificate_issuer'], disease= certificate_data['disease'], vaccine_marketing_authorization_holder= certificate_data['vaccine_marketing_authorization_holder'], issued_at= certificate_data['issued_at'])
+    #        print (certificate_data)
+    #    cv2.imshow('Impfnachweis einlesen',frame) # show the frame
+    #    key = cv2.waitKey(1)
+    #    if key ==27:
+    #        break
 
 @app.route("/patient/profil")
 def patient_profil():
@@ -251,9 +245,9 @@ def issuer_create_qr():
         proof_of_vaccination['vaccine_marketing_authorization_holder'] = form.vaccine_marketing_authorization_holder.data
         proof_of_vaccination['batch_number'] = form.batch_number.data
         proof_of_vaccination['issued_at'] = form.issued_at.data
-        proof_of_vaccination['certificate_issuer'] = form.certificate_issuer.data
-        
-        qr = QRCode(version=1, box_size=6,border=4)
+        proof_of_vaccination['unique_issuer_identifier'] = form.unique_issuer_identifier.data
+        proof_of_vaccination['unique_certificate_identifier'] = uuid.uuid4() 
+        qr = QRCode(version=1, box_size=3,border=3)
         qr.add_data(proof_of_vaccination)
         qr.make()
         #qr = qrcode.make(proof_of_vaccination)

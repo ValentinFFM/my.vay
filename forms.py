@@ -16,7 +16,7 @@ class ImpfnachweisForm (Form):
     vaccine_marketing_authorization_holder = TextField("Hersteller: ")
     batch_number = StringField("Chargennummer: ")
     issued_at = DateTimeLocalField ("Ausgestellt am: ", format='%m/%d/%y')
-    certificate_issuer = StringField("Ihre Zertifikatsnummer: ")
+    unique_issuer_identifier = StringField("Ihre Zertifikatsnummer: ")
     generate_certificate =  SubmitField("Impfnachweis erstellen")
 
 class LoginForm(Form):
