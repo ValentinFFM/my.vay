@@ -1,5 +1,5 @@
 from flask_wtf import Form
-from wtforms import TextField, StringField, DateTimeField, BooleanField, SubmitField, IntegerField, DateField, PasswordField
+from wtforms import TextField, StringField, DateTimeField, BooleanField, SubmitField, IntegerField, DateField, PasswordField, SelectField
 from wtforms.fields.html5 import DateTimeLocalField
 from wtforms.validators import EqualTo, DataRequired, Length, ValidationError, Email
 from my_vay.models import Patient, Issuer
@@ -79,12 +79,27 @@ class IssuerUpdateForm(Form):
     submit = SubmitField('Speichern')
         
 class AddVaccination(Form):
-    date_of_vaccination = DateField('Datum (*)', validators=[DataRequired(), Length(max=30)])
-    vaccine = StringField('Impfstoff (*)', validators=[DataRequired(), Length(max=30)])
-    batch_number = StringField('Chargennummer(*)',  validators=[DataRequired()])
-    vaccine_category = StringField('Impfkategorie(*)', validators=[Length(max=60)])
-    unique_issuer_identifier = IntegerField('Medizinische Einrichtung', validators=[Length(max=30)])
+
+    # Creation of all inputfields and the submit button
+    date_of_vaccination = DateField('Datum (*)', validators=[DataRequired(), Length(max=30)], render_kw={"placeholder": "%Y-%m-%d"})
+    vaccine = StringField('Impfstoff (*)')
+    batch_number = StringField('Chargennummer(*)')
+    vaccine_category = SelectField(u'Impfkategorie(*)', choices=[(1,'Standard'),(2, 'Gelbfieber')])
+    unique_issuer_identifier = StringField('Issuer ID')
     submit = SubmitField('Speichern')
+    
+class ScanQRForm(Form):
+    scan_qr_code = SubmitField('QR-Code einscannen')
+    username = TextField("Nutzername")
+    password = PasswordField('Passwort')
+    remember = BooleanField('Angemeldet bleiben')
+    submit = SubmitField('Login')
+
+class SearchVaccine(Form):
+
+    # Creation of all inputfields and the submit button
+    name = StringField('Impfname:')
+    submit = SubmitField('Suchen!')
 
 
     
