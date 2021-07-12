@@ -44,7 +44,7 @@ app.config['SECRET_KEY'] = 'test'
 #
 
 #Location of the database 
-app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://postgres:1234@localhost:5432/vaccination_database'
+app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://postgres:Master123@localhost:5432/vaccination_database'
 app.config['SQLALCHEMY_ECHO'] = True
 app.config['SECRET_KEY'] = 'any secret string'
 
@@ -122,7 +122,6 @@ def home():
 #@login_required
 def patient_home(sort='date', search=''):
 
-    
     page = request.args.get('page', 1, type=int)
     form = SearchVaccine()
     vaccine_search = False
@@ -195,7 +194,7 @@ def addVaccination():
         #unique_patient_identifier ?
         #print(form.date_of_vaccination.data)
         #date_of_vaccinaion = datetime.date(form.date_of_vaccination.data)
-        new_vaccination = Proof_of_vaccination(unique_certificate_identifier=unique_certificate_identifier, unique_patient_identifier= 1, date_of_vaccination = form.date_of_vaccination.data, vaccine = form.vaccine.data, batch_number=form.batch_number.data, vaccine_category=form.vaccine_category.data, unique_issuer_identifier=form.unique_issuer_identifier.data, disease= "/", vaccine_marketing_authorization_holder= "/", issued_at= "0000-00-00 00:00:00")
+        new_vaccination = Proof_of_vaccination(unique_certificate_identifier=unique_certificate_identifier, unique_patient_identifier= 1, date_of_vaccination = form.date_of_vaccination.data, vaccine = form.vaccine.data, batch_number=form.batch_number.data, vaccine_category=form.vaccine_category.data, unique_issuer_identifier=form.unique_issuer_identifier.data, disease= "/", vaccine_marketing_authorization_holder= "/", issued_at= "2000-02-01 00:00:00")
         db.session.add(new_vaccination)
         db.session.commit()
         
