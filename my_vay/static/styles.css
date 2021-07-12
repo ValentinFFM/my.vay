@@ -3,7 +3,7 @@ h1{
     text-align: center;
 }
 
-.card{
+.card-vaccination{
     border: #349B73 solid 1px;
     
     box-shadow: 0 3px 10px 0 rgba(100, 100, 100, 0.26);
@@ -12,5 +12,5 @@ h1{
 
 .form-control{
     border: 1px solid;
-    border-color:rgb(24, 119, 163);
 }
+

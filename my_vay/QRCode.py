@@ -1,5 +1,3 @@
-
-
 import pyqrcode
 import qrcode
 import cv2

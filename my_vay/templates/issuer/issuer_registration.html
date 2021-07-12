@@ -1,0 +1,135 @@
+{% extends "html_container.html" %}
+
+{% block style_sheets %}
+    <link rel="stylesheet" href="{{ url_for('static', filename = 'styles-login-registration.css') }}">
+{% endblock %}
+
+{% block page_title %}
+    Issuer - Registrierung
+{% endblock %}
+
+{% block page_content %}
+    <div class="container my-5">
+        <div class="full-screensize bg-login">
+            <main role="main" class="container h-100">
+                <div class="row align-items-center h-100">
+                    <div class="col-xl-4">
+                        
+                    </div>
+                    <div class="col-12 col-lg-6 col-xl-4">
+                        <div class="card">
+                            <div class="card-body">
+                                <form method="POST" action="">
+                                    {{ form.hidden_tag() }}
+                            
+                                    <fieldset class="form-group mx-3">
+                                        <legend class="border-bottom mb-4 pb-2 text-center">
+                                            Issuer - Registrierung
+                                        </legend>
+                            
+                                        <div class="form-group mt-3">
+                                            {{ form.f_name.label(class="mb-1") }}
+                                            {% if form.f_name.errors %}
+                                                {{ form.f_name(class="form-control is-invalid") }}
+                                                <div class="invalid-feedback">
+                                                    {% for error in form.f_name.errors %}
+                                                        <span>{{ error }}</span>
+                                                    {% endfor %}
+                                                </div>
+                                            {% else %}
+                                                {{ form.f_name(class="form-control") }}
+                                            {% endif %}
+                                        </div>
+                            
+                                        <div class="form-group mt-3">
+                                            {{ form.l_name.label(class="mb-1") }}
+                                            {% if form.l_name.errors %}
+                                                {{ form.l_name(class="form-control is-invalid") }}
+                                                <div class="invalid-feedback">
+                                                    {% for error in form.l_name.errors %}
+                                                        <span>{{ error }}</span>
+                                                    {% endfor %}
+                                                </div>
+                                            {% else %}
+                                                {{ form.l_name(class="form-control") }}
+                                            {% endif %}
+                                        </div>
+                            
+                                        <div class="form-group mt-3">
+                                            {{ form.date_of_birth.label(class="mb-1") }}
+                                            {% if form.date_of_birth.errors %}
+                                                {{ form.date_of_birth(class="form-control is-invalid", placeholder="YYYY-MM-DD") }}
+                                                <div class="invalid-feedback">
+                                                    {% for error in form.date_of_birth.errors %}
+                                                        <span>{{ error }}</span>
+                                                    {% endfor %}
+                                                </div>
+                                            {% else %}
+                                                {{ form.date_of_birth(class="form-control", placeholder="YYYY-MM-DD") }}
+                                            {% endif %}
+                                        </div>
+                            
+                                        <div class="form-group mt-3">
+                                            {{ form.unique_issuer_identifier.label(class="mb-1") }}
+                                            {% if form.unique_issuer_identifier.errors %}
+                                                {{ form.unique_issuer_identifier(class="form-control is-invalid") }}
+                                                <div class="invalid-feedback">
+                                                    {% for error in form.unique_issuer_identifier.errors %}
+                                                        <span>{{ error }}</span>
+                                                    {% endfor %}
+                                                </div>
+                                            {% else %}
+                                                {{ form.unique_issuer_identifier(class="form-control") }}
+                                            {% endif %}
+                                        </div>
+                            
+                                        <div class="form-group mt-3">
+                                            {{ form.password.label(class="mb-1") }}
+                                            {% if form.password.errors %}
+                                                {{ form.password(class="form-control is-invalid") }}
+                                                <div class="invalid-feedback">
+                                                    {% for error in form.password.errors %}
+                                                        <span>{{ error }}</span>
+                                                    {% endfor %}
+                                                </div>
+                                            {% else %}
+                                                {{ form.password(class="form-control") }}
+                                            {% endif %}
+                                        </div>
+                            
+                                        <div class="form-group mt-3">
+                                            {{ form.confirmPassword.label(class="mb-1") }}
+                                            {% if form.confirmPassword.errors %}
+                                                {{ form.confirmPassword(class="form-control is-invalid") }}
+                                                <div class="invalid-feedback">
+                                                    {% for error in form.confirmPassword.errors %}
+                                                        <span>{{ error }}</span>
+                                                    {% endfor %}
+                                                </div>
+                                            {% else %}
+                                                {{ form.confirmPassword(class="form-control") }}
+                                            {% endif %}
+                                        </div>
+                                    </fieldset>
+                                    
+                                    <div class="text-center">
+                                        <div class="form-group mx-3 mt-3">
+                                            {{ form.submit(class="btn btn-outline-success btn-block") }}
+                                        </div>
+                                
+                                        <small class="mx-3 mt-3">
+                                            <a href="{{ url_for('issuer_login') }}">Anmelden</a>
+                                        </small>
+                                    </div>
+                                    
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-xl-4">  
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+{% endblock %}

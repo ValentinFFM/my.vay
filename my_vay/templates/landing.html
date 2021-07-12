@@ -1,0 +1,73 @@
+{% extends "html_container.html" %}
+
+{% block style_sheets %}
+    <link rel="stylesheet" href="{{ url_for('static', filename = 'styles-landing.css') }}">
+{% endblock %}
+
+{% block page_title %}
+    Landing Page
+{% endblock %}
+
+{% block page_content %}
+    <div class="full-screensize bg-landing">
+        <main role="main" class="container h-100">
+            <div class="row align-items-center h-100">
+                <div class="col-12 col-lg-6 col-xl-4">
+                    <div class="card card-landing my-5">
+                        <div class="card-body">
+                            <h2 class="card-title card-title-landing text-light text-center">Issuer</h2>
+                            <p class="text-justify text-light">
+                                Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet. 
+                            </p>
+                            <div class="row">
+                                <div class="col">
+                                    <a href="{{ url_for('issuer_login') }}" class="btn col-12 btn-outline-light">Login</a>
+                                </div>
+                                <div class="col">
+                                    <a href="{{ url_for('issuer_registration') }}" class="btn col-12 btn-outline-light">Registrierung</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-12 col-lg-6 col-xl-4">
+                    <div class="card card-landing my-5">
+                        <div class="card-body">
+                            <h2 class="card-title card-title-landing text-light text-center">Patient</h2>
+                            <p class="text-justify text-light">
+                                Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet. 
+                            </p>
+                            <div class="row">
+                                <div class="col">
+                                    <a href="{{ url_for('patient_login') }}" class="btn col-12 btn-outline-light">Login</a>
+                                </div>
+                                <div class="col">
+                                    <a href="{{ url_for('patient_registration') }}" class="btn col-12 btn-outline-light">Registrierung</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-12 col-lg-6 col-xl-4">
+                    <div class="card card-landing my-5">
+                        <div class="card-body">
+                            <h2 class="card-title card-title-landing text-light text-center">Verifier</h2>
+                            <p class="text-justify text-light">
+                                Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet. 
+                            </p>
+                            <div class="row">
+                                <div class="col-3">
+                                </div>
+                                <div class="col-6">
+                                    <a href="#" class="btn col-12 btn-outline-light">Überprüfen</a>
+                                </div>
+                                <div class="col-3">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+{% endblock page_content %}
