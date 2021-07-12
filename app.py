@@ -116,13 +116,13 @@ def home():
 
 # Impdaten anzeigen
 
-@app.route("/patient")
+@app.route("/patient",methods=['POST', 'GET'])
 @app.route("/patient/<string:sort>", methods=['POST', 'GET'])
 @app.route("/patient/<string:sort>/<string:search>", methods=['POST', 'GET'])
 #@login_required
 def patient_home(sort='date', search=''):
 
-    branch = Proof_of_vaccination.query.all() 
+    
     page = request.args.get('page', 1, type=int)
     form = SearchVaccine()
     vaccine_search = False
