@@ -55,21 +55,70 @@
     </nav>
     <div class="container my-5">
         <div class="row">
-            <div class="col-2"></div>
+            <div class="col-2">
+                <div class="sidebar-header">
+                    <h5>Aktionen</h5>
+                </div>
+            
+                <div>
+                    
+            
+                    <form method="POST" action="">
+                        <!-- The hidden_tag() method includes a csrf(cross-side-request-...)-token, which protects with the secrect_key the application -->
+                        {{ form.hidden_tag() }}
+            
+                        <div class="form-row mt-3">
+                            <div class="col-6">
+                                <div class="form-group">
+                                    {% if form.name.errors %}
+                                        {{ form.name(class="form-control is-invalid") }}
+                                        <div class="invalid-feedback">
+                                            {% for error in form.name.errors %}
+                                                <span>{{ error }}</span>
+                                            {% endfor %}
+                                        </div>
+                    
+                                    {% else %}
+                                        {{ form.name(class="form-control") }}
+                    
+                                    {% endif %}
+                                </div>
+                            </div>
+                            <div class="col-6">
+                                <div class="form-group">
+                                    {{ form.submit(class="btn btn-outline-success btn-block") }}
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+            
+                    <div class="dropdown show mt-0">
+                        <a class="btn btn-secondary btn-block dropdown-toggle" href="{{ url_for('patient_home', sort=sort) }}" role="button" id="dropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                          Sortieren nach:
+                        </a>
+                      
+                        <div class="dropdown-menu" aria-labelledby="dropdownMenuLink">
+                            <a class="dropdown-item" href="{{ url_for('patient_home', sort='date') }}">Sort by date</a>
+                            <a class="dropdown-item" href="{{ url_for('patient_home', sort='Standard') }}">Standardimpfung</a>
+                        </div>
+                    </div>
+                </div>
+            
+            </div>
             <div class="col-8">
             
-                 <div class="row">
-                     <div class="col text-start">
-                       <a href=""><svg xmlns="http://www.w3.org/2000/svg" width="25" height="25" fill="#349B73" class="bi bi-upload" viewBox="0 0 16 16" >
+                 <div class="row" style="background-color: rgb(231, 231, 231);">
+                     <div class="col my-3 text-start">
+                       <a href=""><svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" fill="#349B73" class="bi bi-upload" viewBox="0 0 16 16" >
                         <path d="M.5 9.9a.5.5 0 0 1 .5.5v2.5a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-2.5a.5.5 0 0 1 1 0v2.5a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2v-2.5a.5.5 0 0 1 .5-.5z"/>
                         <path d="M7.646 1.146a.5.5 0 0 1 .708 0l3 3a.5.5 0 0 1-.708.708L8.5 2.707V11.5a.5.5 0 0 1-1 0V2.707L5.354 4.854a.5.5 0 1 1-.708-.708l3-3z"/>
                     </svg></a>
                     
                     </div>
-                    <div class="col">
+                    <div class="col my-3 ">
                     <h1 >Mein Impfpass</h1> </div>
-                    <div class="col text-end">
-                      <a href="{{ url_for('patient_vaccination_entry') }}"><svg xmlns="http://www.w3.org/2000/svg" width="25" height="25" fill="#349B73" class="bi bi-plus-square-fill" viewBox="0 0 16 16" >
+                    <div class="col my-3 text-end">
+                      <a href="{{ url_for('patient_vaccination_entry') }}"><svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" fill="#349B73" class="bi bi-plus-square-fill" viewBox="0 0 16 16" >
                         <path d="M2 0a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2H2zm6.5 4.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3a.5.5 0 0 1 1 0z"/>
                       </svg></a>
                     </div>
@@ -81,36 +130,61 @@
                         <div class="row">                            
                             <h5 class="mt-2">
                                 <div class="row my-1">
-                                    <div class="col-2"><h4>Datum</h4></div>
-                                    <div class="col-2"><h4>Impfstoff</h4></div>
-                                    <div class="col-2"><h4>Kategorie</h4></div>
-                                    <div class="col-2"><h4>Chargen-Nr.</h4></div>
-                                    <div class="col-2"><h4>Med. Einrichtung</h4></div>
-                                    <div class="col-2"><h4>Zertifikat</h4></div>
+                                    <div class="col-1 text-center"><h5> <b> ID</b></h5></div>
+                                    <div class="col-2 text-center"><h5> <b> Datum</b></h5></div>
+                                    <div class="col-2 text-center"><h5><b> Impfstoff </b></h5></div>
+                                    <div class="col-2 text-center"><h5><b> Kategorie</b></h5></div>
+                                    <div class="col-2 text-center"><h5><b> Chargen-Nr.</b></h5></div>
+                                    <div class="col-1 text-center"><h5><b>Issuer </b> </h5></div>
+                                    <div class="col-2 text-center"><h5><b> Zertifikat</b></h5></div>
                                 </div>
                             </h5>
-                        
                         </div>
-                            {% if vaccination %}       
-                            {% for entry in vaccination %}
+                        {% if branch %}       
+                        {% for entry in branch.items %}
                             <div class="row">                           
-                                <h5 class="card mt-2">
+                                <h5 class="card mt-2 ">
                                     <div class="row my-2">
-                                        <div class="col-2">{{ entry.date_of_vaccination }}</div>
-                                        <div class="col-2">{{ entry.vaccine }}</div>
-                                        <div class="col-2"> {{ entry.vaccine_category }}</div>
-                                        <div class="col-2"> {{ entry.batch_number }}</div>
-                                        <div class="col-2"> {{ entry.unique_issuer_identifier }}</div>
-                                        <div class="col-2" style="text-align: center;"> <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" fill="#349B73" class="bi bi-upc-scan" viewBox="0 0 16 16">
-                                            <path d="M1.5 1a.5.5 0 0 0-.5.5v3a.5.5 0 0 1-1 0v-3A1.5 1.5 0 0 1 1.5 0h3a.5.5 0 0 1 0 1h-3zM11 .5a.5.5 0 0 1 .5-.5h3A1.5 1.5 0 0 1 16 1.5v3a.5.5 0 0 1-1 0v-3a.5.5 0 0 0-.5-.5h-3a.5.5 0 0 1-.5-.5zM.5 11a.5.5 0 0 1 .5.5v3a.5.5 0 0 0 .5.5h3a.5.5 0 0 1 0 1h-3A1.5 1.5 0 0 1 0 14.5v-3a.5.5 0 0 1 .5-.5zm15 0a.5.5 0 0 1 .5.5v3a1.5 1.5 0 0 1-1.5 1.5h-3a.5.5 0 0 1 0-1h3a.5.5 0 0 0 .5-.5v-3a.5.5 0 0 1 .5-.5zM3 4.5a.5.5 0 0 1 1 0v7a.5.5 0 0 1-1 0v-7zm2 0a.5.5 0 0 1 1 0v7a.5.5 0 0 1-1 0v-7zm2 0a.5.5 0 0 1 1 0v7a.5.5 0 0 1-1 0v-7zm2 0a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 .5.5v7a.5.5 0 0 1-.5.5h-1a.5.5 0 0 1-.5-.5v-7zm3 0a.5.5 0 0 1 1 0v7a.5.5 0 0 1-1 0v-7z"/>
-                                        </svg> </div>
+                                        <div class="col-1 align-self-center text-center ">{{ entry.unique_certificate_identifier }}</div>
+                                        <div class="col-2 align-self-center text-center ">{{ entry.date_of_vaccination}}</div>
+                                        <div class="col-2 align-self-center text-center ">{{ entry.vaccine }}</div>
+                                        <div class="col-2 align-self-center text-center "> {{ entry.vaccine_category }}</div>
+                                        <div class="col-2 align-self-center text-center "> {{ entry.batch_number }}</div>
+                                        <div class="col-1 align-self-center text-center "> {{ entry.unique_issuer_identifier }}</div>
+                                        <div class="col-2 align-self-center text-center "> 
+                                            
+                                            <form action="{{ url_for('open_QR', unique_certificate_identifier=entry.unique_certificate_identifier) }}" method="Post">
+                                                <button class="btn btn-light" type="submit"><svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" fill="#349B73" class="bi bi-upc-scan" viewBox="0 0 16 16">
+                                                    <path d="M1.5 1a.5.5 0 0 0-.5.5v3a.5.5 0 0 1-1 0v-3A1.5 1.5 0 0 1 1.5 0h3a.5.5 0 0 1 0 1h-3zM11 .5a.5.5 0 0 1 .5-.5h3A1.5 1.5 0 0 1 16 1.5v3a.5.5 0 0 1-1 0v-3a.5.5 0 0 0-.5-.5h-3a.5.5 0 0 1-.5-.5zM.5 11a.5.5 0 0 1 .5.5v3a.5.5 0 0 0 .5.5h3a.5.5 0 0 1 0 1h-3A1.5 1.5 0 0 1 0 14.5v-3a.5.5 0 0 1 .5-.5zm15 0a.5.5 0 0 1 .5.5v3a1.5 1.5 0 0 1-1.5 1.5h-3a.5.5 0 0 1 0-1h3a.5.5 0 0 0 .5-.5v-3a.5.5 0 0 1 .5-.5zM3 4.5a.5.5 0 0 1 1 0v7a.5.5 0 0 1-1 0v-7zm2 0a.5.5 0 0 1 1 0v7a.5.5 0 0 1-1 0v-7zm2 0a.5.5 0 0 1 1 0v7a.5.5 0 0 1-1 0v-7zm2 0a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 .5.5v7a.5.5 0 0 1-.5.5h-1a.5.5 0 0 1-.5-.5v-7zm3 0a.5.5 0 0 1 1 0v7a.5.5 0 0 1-1 0v-7z"/>
+                                                </svg></button>
+                                            </form>
+                                        </div>    
                                     </div>
                                 </h5>
-                                
                             </div>
+                    
                             {% endfor %}
+                            {% for page_num in branch.iter_pages(left_edge=1, right_edge=1, left_current=1, right_current=2) %}
+                                {% if page_num %}
+                                    {% if branch.page == page_num %}
+                                         <a class="btn btn-dark mb-4" href="{{ url_for('patient_home', page=page_num) }}">{{ page_num }}</a>
+                                    {% else %}
+                                        <a class="btn btn-outline-dark mb-4" href="{{ url_for('patient_home', page=page_num) }}">{{ page_num }}</a>
+                                {% endif %}
+                                {% else %}
+                                ...
+                                {% endif %}
+                            {% endfor %}
+
+                        {% else %}
+                            {% if search %}
+                                <h3>Kein Impfeintrag gefunden!</h3>
+                            {% else %}
+                                <h3>Diese Seite scheint leer zu sein.</h3>
                             {% endif %}
-                    </div>
+                        {% endif %}
+                </div>
+            </div>
         
                 
 
