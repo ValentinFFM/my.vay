@@ -1,5 +1,5 @@
 from flask_wtf import Form
-from wtforms import TextField, StringField, DateTimeField, BooleanField, SubmitField, IntegerField, DateField, PasswordField
+from wtforms import TextField, StringField, DateTimeField, BooleanField, SubmitField, IntegerField, DateField, PasswordField, SelectField
 from wtforms.fields.html5 import DateTimeLocalField
 from wtforms.validators import EqualTo, DataRequired, Length, ValidationError, Email
 #from models import Patient
@@ -46,10 +46,10 @@ class AddVaccination(Form):
 
     # Creation of all inputfields and the submit button
     
-    date_of_vaccination = DateField('Datum (*)', validators=[DataRequired(), Length(max=30)])
+    date_of_vaccination = DateField('Datum (*)', validators=[DataRequired(), Length(max=30)], render_kw={"placeholder": "%Y-%m-%d"})
     vaccine = StringField('Impfstoff (*)')
     batch_number = StringField('Chargennummer(*)')
-    vaccine_category = StringField('Impfkategorie(*)')
+    vaccine_category = SelectField(u'Impfkategorie(*)', choices=[(1,'Standard'),(2, 'Gelbfieber')])
     unique_issuer_identifier = StringField('Issuer ID')
     submit = SubmitField('Speichern')
 
@@ -62,3 +62,8 @@ class ScanQRForm(Form):
     remember = BooleanField('Angemeldet bleiben')
     submit = SubmitField('Login')
 
+class SearchVaccine(Form):
+
+    # Creation of all inputfields and the submit button
+    name = StringField('Impfname:')
+    submit = SubmitField('Suchen!')

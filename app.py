@@ -7,7 +7,7 @@ from flask import Flask, render_template, abort, url_for, redirect, flash, reque
 from flask_sqlalchemy import SQLAlchemy
 from qrcode.main import QRCode
 from wtforms.meta import DefaultMeta
-from forms import ImpfnachweisForm, LoginForm, AddVaccination, ScanQRForm
+from forms import ImpfnachweisForm, LoginForm, AddVaccination, ScanQRForm, SearchVaccine
 
 import qrcode
 import pyqrcode
@@ -117,10 +117,35 @@ def home():
 # Impdaten anzeigen
 
 @app.route("/patient")
-def patient_home():
+@app.route("/patient/<string:sort>", methods=['POST', 'GET'])
+@app.route("/patient/<string:sort>/<string:search>", methods=['POST', 'GET'])
+#@login_required
+def patient_home(sort='date', search=''):
 
     branch = Proof_of_vaccination.query.all() 
-    return render_template('patient/patient_vaccination_certificate.html', branch=branch)
+    page = request.args.get('page', 1, type=int)
+    form = SearchVaccine()
+    vaccine_search = False
+
+    # Checks if a search term is used. If yes then patients first and last name are searched for the search term. Otherwise all patients of the doctor are executed
+    if search:
+        vaccine_search = True
+        search = '%' + search + '%'
+        branch = Proof_of_vaccination.query.filter(Proof_of_vaccination.unique_patient_identifier == 1).filter(Proof_of_vaccination.vaccine.like(search)).paginate(page=page, per_page=10)
+    else: 
+        # Depending on an argument in the url, the patients are sorted in different ways.
+        if sort == 'date':
+            branch = Proof_of_vaccination.query.filter_by(unique_patient_identifier=1).paginate(page=page, per_page=10)
+        elif sort == 'Standard':
+            branch = Proof_of_vaccination.query.filter_by(unique_patient_identifier=1).filter_by(Proof_of_vaccination.vaccine_category.like(sort)).paginate(page=page, per_page=10)
+        else:
+            abort(404)
+
+    # If the validation is correct, then a flash message is displayed and the user is redirected to the login page.
+    if form.is_submitted():
+        return redirect(url_for('patient_home', sort='date', search=form.name.data))
+
+    return render_template('patient/patient_vaccination_certificate.html', branch=branch, sort=sort, form=form, search=vaccine_search)
 
 @app.route("/patientQR/<int:unique_certificate_identifier>", methods=['POST', 'GET'])
 def open_QR(unique_certificate_identifier):

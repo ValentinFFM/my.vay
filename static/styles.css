@@ -5,6 +5,9 @@ h1{
 
 .card{
     border: #349B73 solid 1px;
+    
+    box-shadow: 0 3px 10px 0 rgba(100, 100, 100, 0.26);
+      
 }
 
 .form-control{

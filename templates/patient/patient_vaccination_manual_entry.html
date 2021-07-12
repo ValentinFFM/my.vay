@@ -52,18 +52,30 @@
         </nav>
 
         <div class="container my-5">
-            <h1>Neuen Impfeintrag erstellen</h1>
+            
             
             <div class="row">
              <div class="col-md-3"></div>
-             <div class="col-md-6 border">
+             <div class="col-md-6">
+                <div class="row align-items-center">
+                    <div class="col-1" >
+                    
+                        <a href="{{ url_for('patient_home') }}"><button class="btn"><svg xmlns="http://www.w3.org/2000/svg" width="25" height="25" fill="#349B73" class="bi bi-caret-left-fill" viewBox="0 0 16 16">
+                            <path d="m3.86 8.753 5.482 4.796c.646.566 1.658.106 1.658-.753V3.204a1 1 0 0 0-1.659-.753l-5.48 4.796a1 1 0 0 0 0 1.506z"/>
+                          </svg></button></a>
+                    </div>
+                    <div class="col-11 ">
+                        <h1>Neuen Impfeintrag erstellen</h1>
+                    </div>
+                    
+                </div>
                 <form method="POST" action= "{{ url_for('addVaccination') }}"> 
 
                     
                     <fieldset class="form-group">
                    
-                        <div class="col-12 col-md-6 col-xl-4">
-                            <div class="form-group mt-2">
+                        <div class="test">
+                            <div class="form-group mt-2" >
                                 {{ form.date_of_vaccination.label() }}
     
                                 {% if form.date_of_vaccination.errors %}
@@ -79,7 +91,7 @@
                             </div>
                         </div>
 
-                    <div class="col-12 col-md-6 col-xl-4">
+                    <div class="test">
                         <div class="form-group mt-2">
                             {{ form.vaccine.label() }}
 
@@ -97,7 +109,7 @@
                     </div>
 
 
-                    <div class="col-12 col-md-6 col-xl-4">
+                    <div class="test">
                         <div class="form-group mt-2">
                             {{ form.batch_number.label() }}
 
@@ -115,7 +127,7 @@
                     </div>
 
 
-                    <div class="col-12 col-md-6 col-xl-4">
+                    <div class="test">
                         <div class="form-group mt-2">
                             {{ form.vaccine_category.label() }}
 
@@ -133,7 +145,7 @@
                     </div>
 
 
-                    <div class="col-12 col-md-6 col-xl-4">
+                    <div class="test">
                         <div class="form-group mt-2">
                             {{ form.unique_issuer_identifier.label() }}
 
@@ -154,10 +166,7 @@
                     </div>
                 </fieldset>
                 </form>
-                <div class="col" style="text-align: center;">
                 
-                    <a href="{{ url_for('patient_home') }}"><button class="btn btn-danger">Zurück</button></a>
-                  </div>
                     </div>
                 
         <div class="col-md-3"></div>
