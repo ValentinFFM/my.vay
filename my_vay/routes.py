@@ -1,25 +1,29 @@
 # 
 # Imports
 #
+
+
 from my_vay import app, db
 
 # General imports for Flask
 from flask import Flask, render_template, abort, url_for, redirect, flash, request, session
 
 # Imports for forms
-from my_vay.forms import ImpfnachweisForm, PatientLoginForm, AddVaccination, PatientRegistrationForm, IssuerRegistrationForm, IssuerLoginForm, IssuerUpdateForm, PatientUpdateForm, ScanQRForm, SearchVaccine
+from my_vay.forms import AddSideeffects, ImpfnachweisForm, PatientLoginForm, AddVaccination, PatientRegistrationForm, IssuerRegistrationForm, IssuerLoginForm, IssuerUpdateForm, PatientUpdateForm, ScanQRForm, SearchVaccine
 
 # Imports for user handeling
 from flask_login import login_user, current_user, logout_user, login_required, UserMixin, LoginManager
 
-from my_vay.models import Patient, Issuer, Proof_of_vaccination
+from my_vay.models import Patient, Issuer, Proof_of_vaccination, Sideeffects
 
 from base64 import b64encode
 import io
 from qrcode.main import QRCode
 import cv2
 import ast
-import datetime as date
+import datetime
+from datetime import date
+
 
 
 
@@ -53,11 +57,11 @@ def logout():
 @app.route("/patient/<string:sort>/<string:search>", methods=['POST', 'GET'])
 @login_required
 def patient_home(sort='date', search=''):
-
+    from datetime import date
     page = request.args.get('page', 1, type=int)
     form = SearchVaccine()
     vaccine_search = False
-    today = date.today().strftime('%Y-%m-%d')
+    
 
     # Checks if a search term is used. If yes then patients first and last name are searched for the search term. Otherwise all patients of the doctor are executed
     if search:
@@ -68,7 +72,15 @@ def patient_home(sort='date', search=''):
         # Depending on an argument in the url, the patients are sorted in different ways.
         if sort == 'date':
             branch = Proof_of_vaccination.query.filter_by(unique_patient_identifier=current_user.unique_patient_identifier).order_by(Proof_of_vaccination.date_of_vaccination.desc()).paginate(page=page, per_page=10)
-          
+            test = Sideeffects.query.all()
+            today = date.today()
+            for i in range (1):
+                 today-= datetime.timedelta(days=1)
+            today = today.strftime('%Y-%m-%d')
+            print(today)
+            
+            
+
         elif sort == 'Standard':
             branch = Proof_of_vaccination.query.filter_by(unique_patient_identifier=current_user.unique_patient_identifier).filter(Proof_of_vaccination.vaccine_category.like(sort)).paginate(page=page, per_page=10)
         elif sort == 'Gelbfieber':
@@ -84,7 +96,28 @@ def patient_home(sort='date', search=''):
     if form.is_submitted():
         return redirect(url_for('patient_home', sort='date', search=form.name.data))
 
-    return render_template('patient/patient_vaccination_certificate.html', branch=branch, sort=sort, form=form, search=vaccine_search, today=today)
+    return render_template('patient/patient_vaccination_certificate.html', branch=branch, sort=sort, form=form, search=vaccine_search, today=today, test=test)
+
+@app.route("/patient/sideeffects/<int:unique_certificate_identifier>", methods=['POST', 'GET'])
+def new_sideeffect(unique_certificate_identifier):
+    branch = Proof_of_vaccination.query.filter_by(unique_certificate_identifier=unique_certificate_identifier).first()
+
+    form = AddSideeffects()
+    
+    # If the form is submitted and validated then...
+    if form.is_submitted():
+        unique_entry_identifier = 1
+        while Sideeffects.query.filter_by(unique_entry_identifier=unique_entry_identifier).first() is not None:
+            unique_entry_identifier = unique_entry_identifier + 1
+        # a new patient is added to the database
+        new_sideeffects = Sideeffects(unique_entry_identifier=unique_entry_identifier, unique_certificate_identifier=unique_certificate_identifier ,headache=form.headache.data, arm_hurts=form.arm_hurts.data, rash=form.rash.data, fever=form.fever.data, tummyache=form.tummyache.data, sideeffects=form.sideeffects.data)
+        db.session.add(new_sideeffects)
+        db.session.commit()
+        
+        return redirect(url_for('patient_home'))
+    
+
+    return render_template('patient/patient_sideeffects.html', branch = branch, form=form )
 
 @app.route("/patientQR/<int:unique_certificate_identifier>", methods=['POST', 'GET'])
 def open_QR(unique_certificate_identifier):
