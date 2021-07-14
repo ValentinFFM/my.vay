@@ -19,6 +19,7 @@ import io
 from qrcode.main import QRCode
 import cv2
 import ast
+import datetime as date
 
 
 
@@ -56,18 +57,26 @@ def patient_home(sort='date', search=''):
     page = request.args.get('page', 1, type=int)
     form = SearchVaccine()
     vaccine_search = False
+    today = date.today().strftime('%Y-%m-%d')
 
     # Checks if a search term is used. If yes then patients first and last name are searched for the search term. Otherwise all patients of the doctor are executed
     if search:
         vaccine_search = True
         search = '%' + search + '%'
-        branch = Proof_of_vaccination.query.filter(Proof_of_vaccination.unique_patient_identifier == 1).filter(Proof_of_vaccination.vaccine.like(search)).paginate(page=page, per_page=10)
+        branch = Proof_of_vaccination.query.filter(Proof_of_vaccination.unique_patient_identifier == current_user.unique_patient_identifier).filter(Proof_of_vaccination.vaccine.like(search)).paginate(page=page, per_page=10)
     else: 
         # Depending on an argument in the url, the patients are sorted in different ways.
         if sort == 'date':
-            branch = Proof_of_vaccination.query.filter_by(unique_patient_identifier=1).paginate(page=page, per_page=10)
+            branch = Proof_of_vaccination.query.filter_by(unique_patient_identifier=current_user.unique_patient_identifier).order_by(Proof_of_vaccination.date_of_vaccination.desc()).paginate(page=page, per_page=10)
+          
         elif sort == 'Standard':
-            branch = Proof_of_vaccination.query.filter_by(unique_patient_identifier=1).filter_by(Proof_of_vaccination.vaccine_category.like(sort)).paginate(page=page, per_page=10)
+            branch = Proof_of_vaccination.query.filter_by(unique_patient_identifier=current_user.unique_patient_identifier).filter(Proof_of_vaccination.vaccine_category.like(sort)).paginate(page=page, per_page=10)
+        elif sort == 'Gelbfieber':
+            branch = Proof_of_vaccination.query.filter_by(unique_patient_identifier=current_user.unique_patient_identifier).filter(Proof_of_vaccination.vaccine_category.like(sort)).paginate(page=page, per_page=10)
+        elif sort == 'Grippe':
+            branch = Proof_of_vaccination.query.filter_by(unique_patient_identifier=current_user.unique_patient_identifier).filter(Proof_of_vaccination.vaccine_category.like(sort)).paginate(page=page, per_page=10)
+        elif sort == 'Zusatz':
+            branch = Proof_of_vaccination.query.filter_by(unique_patient_identifier=current_user.unique_patient_identifier).filter(Proof_of_vaccination.vaccine_category.like(sort)).paginate(page=page, per_page=10)
         else:
             abort(404)
 
@@ -75,7 +84,7 @@ def patient_home(sort='date', search=''):
     if form.is_submitted():
         return redirect(url_for('patient_home', sort='date', search=form.name.data))
 
-    return render_template('patient/patient_vaccination_certificate.html', branch=branch, sort=sort, form=form, search=vaccine_search)
+    return render_template('patient/patient_vaccination_certificate.html', branch=branch, sort=sort, form=form, search=vaccine_search, today=today)
 
 @app.route("/patientQR/<int:unique_certificate_identifier>", methods=['POST', 'GET'])
 def open_QR(unique_certificate_identifier):
@@ -176,9 +185,9 @@ def addVaccination():
             unique_certificate_identifier = unique_certificate_identifier + 1
 
         #unique_patient_identifier ?
-        #print(form.date_of_vaccination.data)
+        print(form.vaccine_category.data)
         #date_of_vaccinaion = datetime.date(form.date_of_vaccination.data)
-        new_vaccination = Proof_of_vaccination(unique_certificate_identifier=unique_certificate_identifier, unique_patient_identifier= 1, date_of_vaccination = form.date_of_vaccination.data, vaccine = form.vaccine.data, batch_number=form.batch_number.data, vaccine_category=form.vaccine_category.data, unique_issuer_identifier=form.unique_issuer_identifier.data, disease= "/", vaccine_marketing_authorization_holder= "/", issued_at= "2000-02-01 00:00:00")
+        new_vaccination = Proof_of_vaccination(unique_certificate_identifier=unique_certificate_identifier, unique_patient_identifier= current_user.unique_patient_identifier, date_of_vaccination = form.date_of_vaccination.data, vaccine = form.vaccine.data, batch_number=form.batch_number.data, vaccine_category=form.vaccine_category.data, unique_issuer_identifier=form.unique_issuer_identifier.data, disease= "/", vaccine_marketing_authorization_holder= "/", issued_at= "1900-01-01 00:00:00")
         db.session.add(new_vaccination)
         db.session.commit()
         

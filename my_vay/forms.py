@@ -81,11 +81,11 @@ class IssuerUpdateForm(Form):
 class AddVaccination(Form):
 
     # Creation of all inputfields and the submit button
-    date_of_vaccination = DateField('Datum (*)', validators=[DataRequired(), Length(max=30)], render_kw={"placeholder": "%Y-%m-%d"})
+    date_of_vaccination = DateField('Datum (*)', validators=[DataRequired(), Length(max=30)], render_kw={"placeholder": "YYYY-mm-dd"})
     vaccine = StringField('Impfstoff (*)')
     batch_number = StringField('Chargennummer(*)')
-    vaccine_category = SelectField(u'Impfkategorie(*)', choices=[(1,'Standard'),(2, 'Gelbfieber')])
-    unique_issuer_identifier = StringField('Issuer ID')
+    vaccine_category = SelectField(u'Impfkategorie(*)', choices=[('Gelbfieber', 'Gelbfieber'),('Grippe', 'Grippe'),('Standard','Standard'),('Zusatz','Zusatz')])
+    unique_issuer_identifier = SelectField('Issuer ID', choices=[(1,'Impfzentrum A'),(2,'Impfzentrum B')])
     submit = SubmitField('Speichern')
     
 class ScanQRForm(Form):

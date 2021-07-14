@@ -57,19 +57,34 @@
     {% if branch %}    
     
     <div class="container my-5">
+
+        
     
     <div class="row">
         <div class="col-2"></div>
         <div class="col-8">
-        <h3 style="text-align: center;">Impfpassdaten:</h3>                           
-            <h5 class="card mt-2">
+        <h1 style="text-align: center;">Impfpassdaten</h1>  
+        
+                                  
+            <h5 class="mt-5">
+                <div class="row my-1">
+                    <div class="col-2 text-center"><h5> <b> ID</b></h5></div>
+                    <div class="col-2 text-center"><h5> <b> Datum</b></h5></div>
+                    <div class="col-2 text-center"><h5><b> Impfstoff </b></h5></div>
+                    <div class="col-2 text-center"><h5><b> Kategorie</b></h5></div>
+                    <div class="col-2 text-center"><h5><b> Chargen-Nr.</b></h5></div>
+                    <div class="col-2 text-center"><h5><b>Issuer </b> </h5></div>
+                </div>
+            </h5>
+        
+            <h5 class="card  card-vaccination my-3">
                 <div class="row my-2">
-                    <div class="col-2">{{ branch.unique_certificate_identifier }}</div>
-                    <div class="col-2">{{ branch.date_of_vaccination}}</div>
-                    <div class="col-2">{{ branch.vaccine }}</div>
-                    <div class="col-2"> {{ branch.vaccine_category }}</div>
-                    <div class="col-2"> {{ branch.batch_number }}</div>
-                    <div class="col-2"> {{ branch.unique_issuer_identifier }}</div>
+                    <div class="col-2 text-center">{{ branch.unique_certificate_identifier }}</div>
+                    <div class="col-2 text-center">{{ branch.date_of_vaccination}}</div>
+                    <div class="col-2 text-center">{{ branch.vaccine }}</div>
+                    <div class="col-2 text-center"> {{ branch.vaccine_category }}</div>
+                    <div class="col-2 text-center"> {{ branch.batch_number }}</div>
+                    <div class="col-2 text-center"> {{ branch.unique_issuer_identifier }}</div>
                        
                 </div>
             </h5>

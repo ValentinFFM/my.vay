@@ -53,58 +53,10 @@
             </ul>
         </div>
     </nav>
+    
     <div class="container my-5">
         <div class="row">
-            <div class="col-2">
-                <div class="sidebar-header">
-                    <h5>Aktionen</h5>
-                </div>
-            
-                <div>
-                    
-            
-                    <form method="POST" action="">
-                        <!-- The hidden_tag() method includes a csrf(cross-side-request-...)-token, which protects with the secrect_key the application -->
-                        {{ form.hidden_tag() }}
-            
-                        <div class="form-row mt-3">
-                            <div class="col-6">
-                                <div class="form-group">
-                                    {% if form.name.errors %}
-                                        {{ form.name(class="form-control is-invalid") }}
-                                        <div class="invalid-feedback">
-                                            {% for error in form.name.errors %}
-                                                <span>{{ error }}</span>
-                                            {% endfor %}
-                                        </div>
-                    
-                                    {% else %}
-                                        {{ form.name(class="form-control") }}
-                    
-                                    {% endif %}
-                                </div>
-                            </div>
-                            <div class="col-6">
-                                <div class="form-group">
-                                    {{ form.submit(class="btn btn-outline-success btn-block") }}
-                                </div>
-                            </div>
-                        </div>
-                    </form>
-            
-                    <div class="dropdown show mt-0">
-                        <a class="btn btn-secondary btn-block dropdown-toggle" href="{{ url_for('patient_home', sort=sort) }}" role="button" id="dropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                          Sortieren nach:
-                        </a>
-                      
-                        <div class="dropdown-menu" aria-labelledby="dropdownMenuLink">
-                            <a class="dropdown-item" href="{{ url_for('patient_home', sort='date') }}">Sort by date</a>
-                            <a class="dropdown-item" href="{{ url_for('patient_home', sort='Standard') }}">Standardimpfung</a>
-                        </div>
-                    </div>
-                </div>
-            
-            </div>
+            <div class="col-2"> </div>
             <div class="col-8">
             
                  <div class="row" style="background-color: rgb(231, 231, 231);">
@@ -123,10 +75,58 @@
                       </svg></a>
                     </div>
                 </div>
-                <br><br>
-                
+                <br>
         
                     <div class="content-section">
+                        <div class="row mb-5">
+                            <div class="col-6 align-self-center">
+                                <form method="POST" action="">
+                                    <!-- The hidden_tag() method includes a csrf(cross-side-request-...)-token, which protects with the secrect_key the application -->
+                                    {{ form.hidden_tag() }}
+                        
+                                    <div class="row ">
+                                        <div class="col-6">
+                                            <div class="form-group">
+                                                {% if form.name.errors %}
+                                                    {{ form.name(class="form-control is-invalid") }}
+                                                    <div class="invalid-feedback">
+                                                        {% for error in form.name.errors %}
+                                                            <span>{{ error }}</span>
+                                                        {% endfor %}
+                                                    </div>
+                                
+                                                {% else %}
+                                                    {{ form.name(class="form-control") }}
+                                
+                                                {% endif %}
+                                            </div>
+                                        </div>
+                                        <div class="col-6 ">
+                                            <div class="form-group">
+                                                {{ form.submit(class="btn btn-outline-success btn-block") }}
+                                            </div>
+                                        </div>
+                                    </div>
+                                </form>
+                            </div>
+                            <div class="col-6 align-self-center text-end">
+                                <div class="dropdown show mt-0">
+
+                                    <a class="btn btn-secondary btn-block dropdown-toggle" href="{{ url_for('patient_home', sort=sort) }}" role="button" id="dropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                      Sortieren nach:
+                                    </a> 
+                                   
+                                    <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                                        <a class="dropdown-item" href="{{ url_for('patient_home', sort='Standard') }}">Standardimpfung</a>
+                                        <a class="dropdown-item" href="{{ url_for('patient_home', sort='Gelbfieber') }}">Gelbfieberimpfung</a>
+                                        <a class="dropdown-item" href="{{ url_for('patient_home', sort='Grippe') }}">Grippeimpfung</a>
+                                        <a class="dropdown-item" href="{{ url_for('patient_home', sort='Zusatz') }}">Zusatzimpfung</a>
+                                    </div>
+                                    <a class="btn btn-outline-success btn-block" href="{{ url_for('patient_home', sort='date') }}">Filter aufheben</a></button>
+                                </div>
+                            </div>
+                        </div>
+                        
                         <div class="row">                            
                             <h5 class="mt-2">
                                 <div class="row my-1">
@@ -143,7 +143,7 @@
                         {% if branch %}       
                         {% for entry in branch.items %}
                             <div class="row">                           
-                                <h5 class="card mt-2 ">
+                                <h5 class="card card-vaccination mt-2 ">
                                     <div class="row my-2">
                                         <div class="col-1 align-self-center text-center ">{{ entry.unique_certificate_identifier }}</div>
                                         <div class="col-2 align-self-center text-center ">{{ entry.date_of_vaccination}}</div>
@@ -162,14 +162,14 @@
                                     </div>
                                 </h5>
                             </div>
-                    
+                            <div class="col 12 text-end">
                             {% endfor %}
                             {% for page_num in branch.iter_pages(left_edge=1, right_edge=1, left_current=1, right_current=2) %}
                                 {% if page_num %}
                                     {% if branch.page == page_num %}
-                                         <a class="btn btn-dark mb-4" href="{{ url_for('patient_home', page=page_num) }}">{{ page_num }}</a>
+                                         <a class="btn btn-secondary mb-4" href="{{ url_for('patient_home', page=page_num) }}">{{ page_num }}</a>
                                     {% else %}
-                                        <a class="btn btn-outline-dark mb-4" href="{{ url_for('patient_home', page=page_num) }}">{{ page_num }}</a>
+                                        <a class="btn btn-outline-secondary mb-4 " href="{{ url_for('patient_home', page=page_num) }}">{{ page_num }}</a>
                                 {% endif %}
                                 {% else %}
                                 ...
@@ -183,14 +183,14 @@
                                 <h3>Diese Seite scheint leer zu sein.</h3>
                             {% endif %}
                         {% endif %}
+                    </div>
                 </div>
             </div>
         
                 
-
-            </div>
             <div class="col-md-2">  </div>
+            </div>
+          
         </div>            
-        </div>
         
 {% endblock %}
