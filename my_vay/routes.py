@@ -71,11 +71,11 @@ def patient_home(sort='date', search=''):
     if search:
         vaccine_search = True
         search = '%' + search + '%'
-        branch = Proof_of_vaccination.query.filter(Proof_of_vaccination.unique_patient_identifier == current_user.unique_patient_identifier).filter(Proof_of_vaccination.vaccine.like(search)).paginate(page=page, per_page=10)
+        branch = Proof_of_vaccination.query.filter(Proof_of_vaccination.unique_patient_identifier == current_user.unique_patient_identifier).filter(Proof_of_vaccination.vaccine.like(search)).paginate(page=page, per_page=5)
     else: 
         # Depending on an argument in the url, the patients are sorted in different ways.
         if sort == 'date':
-            branch = Proof_of_vaccination.query.filter_by(unique_patient_identifier=current_user.unique_patient_identifier).order_by(Proof_of_vaccination.date_of_vaccination.desc()).paginate(page=page, per_page=10)
+            branch = Proof_of_vaccination.query.filter_by(unique_patient_identifier=current_user.unique_patient_identifier).order_by(Proof_of_vaccination.date_of_vaccination.desc()).paginate(page=page, per_page=5)
             sf_show = Proof_of_vaccination.query.filter_by(unique_patient_identifier=current_user.unique_patient_identifier).all()
             test = Sideeffects.query.all()
             today = date.today()
@@ -105,13 +105,13 @@ def patient_home(sort='date', search=''):
             
             
         elif sort == 'Standard':
-            branch = Proof_of_vaccination.query.filter_by(unique_patient_identifier=current_user.unique_patient_identifier).filter(Proof_of_vaccination.vaccine_category.like(sort)).paginate(page=page, per_page=10)
+            branch = Proof_of_vaccination.query.filter_by(unique_patient_identifier=current_user.unique_patient_identifier).filter(Proof_of_vaccination.vaccine_category.like(sort)).paginate(page=page, per_page=5)
         elif sort == 'Gelbfieber':
-            branch = Proof_of_vaccination.query.filter_by(unique_patient_identifier=current_user.unique_patient_identifier).filter(Proof_of_vaccination.vaccine_category.like(sort)).paginate(page=page, per_page=10)
+            branch = Proof_of_vaccination.query.filter_by(unique_patient_identifier=current_user.unique_patient_identifier).filter(Proof_of_vaccination.vaccine_category.like(sort)).paginate(page=page, per_page=5)
         elif sort == 'Grippe':
-            branch = Proof_of_vaccination.query.filter_by(unique_patient_identifier=current_user.unique_patient_identifier).filter(Proof_of_vaccination.vaccine_category.like(sort)).paginate(page=page, per_page=10)
+            branch = Proof_of_vaccination.query.filter_by(unique_patient_identifier=current_user.unique_patient_identifier).filter(Proof_of_vaccination.vaccine_category.like(sort)).paginate(page=page, per_page=5)
         elif sort == 'Zusatz':
-            branch = Proof_of_vaccination.query.filter_by(unique_patient_identifier=current_user.unique_patient_identifier).filter(Proof_of_vaccination.vaccine_category.like(sort)).paginate(page=page, per_page=10)
+            branch = Proof_of_vaccination.query.filter_by(unique_patient_identifier=current_user.unique_patient_identifier).filter(Proof_of_vaccination.vaccine_category.like(sort)).paginate(page=page, per_page=5)
         else:
             abort(404)
 
