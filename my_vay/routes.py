@@ -50,39 +50,95 @@ def logout():
 # Patient routes
 #
 
-@app.route("/test")
-def test_route():
-    print("Unique patient identifier: " + str(current_user.unique_patient_identifier), file=sys.stderr)
-    
-    
+
+def check_for_vac_notifications():
+    # Returns the proof_of_vaccinations of the logged-in-user from the database
     list_of_proof_of_vaccinations = Proof_of_vaccination.query.filter_by(unique_patient_identifier=current_user.unique_patient_identifier).all()
     
+    # Iterates through the proof_of_vaccinations
     for entry_in_proof_of_vaccinations in list_of_proof_of_vaccinations:
         
+        # Returns the associated vaccination from proof_of_vaccinations
         associated_entry_in_vaccination = Vaccination.query.get(entry_in_proof_of_vaccinations.vaccination_id)
         next_vaccination_id = associated_entry_in_vaccination.next_vaccination_id
         
+        notification_dict = {
+            "next_vaccination_possible" : False,
+            "next_vaccination_not_exisisting" : False,
+            "beginn_age_reached": False,
+            "end_age_not_reached": False,
+            "dist_between_current_and_next_correct": False
+        }
+        
+        # If this vaccination has a following vaccination...
         if next_vaccination_id:
+            notification_dict["next_vaccination_possible"] = True
+            
+            #... then it's checked, if the following vaccination is missing.
             next_vaccination_already_existing = Proof_of_vaccination.query.filter_by(vaccination_id=next_vaccination_id).first()
-
+            
             if next_vaccination_already_existing is None:
-                print("Next vaccination is missing!")
+                notification_dict["next_vaccination_not_exisisting"] = True
                 
+                # Date of birth from current_user and today's date is detected
                 user_date_of_birth = current_user.date_of_birth
                 date_today = date.today()
                 
-                print("user_date_of_birth: " + str(user_date_of_birth), file=sys.stderr)
-                print("date_today: " + str(date_today), file=sys.stderr)
+                print("user_date_of_birth: " + str(type(user_date_of_birth)), file=sys.stderr)
+                print("date_today: " + str(type(date_today)), file=sys.stderr)
                 
-                difference = date_today - user_date_of_birth
-                print(difference.month, difference.year)
+                # Calculate difference in months between date_of_birth and today (Age in months)
+                age = relativedelta.relativedelta(date_today, user_date_of_birth)
+                age_in_months = age.months + age.years * 12
                 
-                # difference_in_month = difference.month + difference.years * 12
+                # Returns the next vaccination from database
+                next_vaccination = Vaccination.query.get(next_vaccination_id)
                 
+                # Beginn_age, end_age and distance to previous vaccination are read-out
+                next_vaccination_beginn_age = next_vaccination.beginn_age
+                next_vaccination_end_age = next_vaccination.end_age
+                next_vaccination_dist_to_pre_vac = next_vaccination.distance_to_pre_vaccination
                 
-            else:
-                print("Next vaccination is already existing!")
+                if next_vaccination_beginn_age:
+                    if age_in_months >= next_vaccination_beginn_age:
+                        notification_dict["beginn_age_reached"] = True
+                    else:
+                        notification_dict["beginn_age_reached"] = False
+                else:
+                    notification_dict["beginn_age_reached"] = True
+
+                if next_vaccination_end_age:
+                    if age_in_months <= next_vaccination_end_age:
+                        notification_dict["end_age_not_reached"] = True
+                    else:
+                        notification_dict["end_age_not_reached"] = False
+                else:
+                    notification_dict["end_age_not_reached"] = True
+                
+                if next_vaccination_dist_to_pre_vac:
         
+                    date_of_current_vac = entry_in_proof_of_vaccinations.date_of_vaccination
+                    dist_between_current_and_next_vac = relativedelta.relativedelta(date_today, date_of_current_vac)
+                    dist_between_current_and_next_vac_in_months = dist_between_current_and_next_vac.months + dist_between_current_and_next_vac.years * 12
+                        
+                    if next_vaccination_dist_to_pre_vac <=  dist_between_current_and_next_vac_in_months:
+                        notification_dict["dist_between_current_and_next_correct"] = True
+                    else:
+                        notification_dict["dist_between_current_and_next_correct"] = False
+                else:
+                    notification_dict["dist_between_current_and_next_correct"] = True
+            else:
+                notification_dict["next_vaccination_not_exisisting"] = False
+        else:
+            notification_dict["next_vaccination_possible"] = False
+            
+        if notification_dict["beginn_age_reached"] == True and notification_dict["end_age_not_reached"] == True and notification_dict["dist_between_current_and_next_correct"] == True and notification_dict["next_vaccination_not_exisisting"] == True and notification_dict["next_vaccination_possible"] == True:
+            print("Test")
+    
+
+@app.route("/test")
+def test_route():
+    check_for_vac_notifications()
     return render_template('html_container.html')
     
 
