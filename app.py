@@ -166,6 +166,7 @@ def patient_kalender():
 def gen_frames():
         camera = cv2.VideoCapture(0)
         
+        
         while True:
             # Read-in camera frame
             success, frame = camera.read()
@@ -283,7 +284,7 @@ def issuer_create_qr():
     qr = {}
     img = []
     file_object = io.BytesIO()
-## Clicking on the submit button is creating JSON-Object with input data
+## Clicking on the submit button is creating with input data
     if form.is_submitted():
         proof_of_vaccination= {}
         proof_of_vaccination['f_name']= form.f_name.data
@@ -297,15 +298,14 @@ def issuer_create_qr():
         proof_of_vaccination['batch_number'] = form.batch_number.data
         proof_of_vaccination['issued_at'] = form.issued_at.data
         proof_of_vaccination['unique_issuer_identifier'] = form.unique_issuer_identifier.data
-        proof_of_vaccination['unique_certificate_identifier'] = uuid.uuid4() 
+        proof_of_vaccination['unique_certificate_identifier'] = '1'
         qr = QRCode(version=1, box_size=3,border=3)
         qr.add_data(proof_of_vaccination)
         qr.make()
         #qr = qrcode.make(proof_of_vaccination)
         img = qr.make_image (fill = 'black', back_color = 'white')
         img.save(file_object,'PNG')
-        
-
+    
     return render_template("/issuer/issuer_create_qr.html", form=form, qr="data:image/png;base64,"+b64encode(file_object.getvalue()).decode('ascii'))
 
 
