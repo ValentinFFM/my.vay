@@ -124,6 +124,11 @@
                     </div>
                 </div>
                 <br><br>
+
+                <h5>Test</h5>
+                {% for entry in Proof_of_vaccinations.items %}    
+                    <p>{{ entry.date_of_vaccination }}</p>
+                {% endfor %}
                 
         
                     <div class="content-section">

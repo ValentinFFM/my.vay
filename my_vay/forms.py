@@ -100,9 +100,3 @@ class SearchVaccine(Form):
     # Creation of all inputfields and the submit button
     name = StringField('Impfname:')
     submit = SubmitField('Suchen!')
-
-
-    
-
-
-

@@ -1,6 +1,7 @@
 # 
 # Imports
 #
+from werkzeug.exceptions import PreconditionRequired
 from my_vay import app, db
 
 # General imports for Flask
@@ -12,14 +13,17 @@ from my_vay.forms import ImpfnachweisForm, PatientLoginForm, AddVaccination, Pat
 # Imports for user handeling
 from flask_login import login_user, current_user, logout_user, login_required, UserMixin, LoginManager
 
-from my_vay.models import Patient, Issuer, Proof_of_vaccination
+from my_vay.models import Patient, Issuer, Proof_of_vaccination, Vaccination
 
 from base64 import b64encode
 import io
 from qrcode.main import QRCode
 import cv2
 import ast
+import sys
 
+from datetime import datetime, date, timedelta
+from dateutil import relativedelta
 
 
 
@@ -45,6 +49,42 @@ def logout():
 #
 # Patient routes
 #
+
+@app.route("/test")
+def test_route():
+    print("Unique patient identifier: " + str(current_user.unique_patient_identifier), file=sys.stderr)
+    
+    
+    list_of_proof_of_vaccinations = Proof_of_vaccination.query.filter_by(unique_patient_identifier=current_user.unique_patient_identifier).all()
+    
+    for entry_in_proof_of_vaccinations in list_of_proof_of_vaccinations:
+        
+        associated_entry_in_vaccination = Vaccination.query.get(entry_in_proof_of_vaccinations.vaccination_id)
+        next_vaccination_id = associated_entry_in_vaccination.next_vaccination_id
+        
+        if next_vaccination_id:
+            next_vaccination_already_existing = Proof_of_vaccination.query.filter_by(vaccination_id=next_vaccination_id).first()
+
+            if next_vaccination_already_existing is None:
+                print("Next vaccination is missing!")
+                
+                user_date_of_birth = current_user.date_of_birth
+                date_today = date.today()
+                
+                print("user_date_of_birth: " + str(user_date_of_birth), file=sys.stderr)
+                print("date_today: " + str(date_today), file=sys.stderr)
+                
+                difference = date_today - user_date_of_birth
+                print(difference.month, difference.year)
+                
+                # difference_in_month = difference.month + difference.years * 12
+                
+                
+            else:
+                print("Next vaccination is already existing!")
+        
+    return render_template('html_container.html')
+    
 
 # Patient - Landing page route
 @app.route("/patient",methods=['POST', 'GET'])
@@ -76,7 +116,7 @@ def patient_home(sort='date', search=''):
         return redirect(url_for('patient_home', sort='date', search=form.name.data))
 
     return render_template('patient/patient_vaccination_certificate.html', branch=branch, sort=sort, form=form, search=vaccine_search)
-
+    
 @app.route("/patientQR/<int:unique_certificate_identifier>", methods=['POST', 'GET'])
 def open_QR(unique_certificate_identifier):
     branch = Proof_of_vaccination.query.filter_by(unique_certificate_identifier=unique_certificate_identifier).first()
