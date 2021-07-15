@@ -61,6 +61,10 @@ def patient_home(sort='date', search=''):
     page = request.args.get('page', 1, type=int)
     form = SearchVaccine()
     vaccine_search = False
+    today = 0
+    test=0
+    list1=[]
+    
     
 
     # Checks if a search term is used. If yes then patients first and last name are searched for the search term. Otherwise all patients of the doctor are executed
@@ -72,15 +76,34 @@ def patient_home(sort='date', search=''):
         # Depending on an argument in the url, the patients are sorted in different ways.
         if sort == 'date':
             branch = Proof_of_vaccination.query.filter_by(unique_patient_identifier=current_user.unique_patient_identifier).order_by(Proof_of_vaccination.date_of_vaccination.desc()).paginate(page=page, per_page=10)
+            sf_show = Proof_of_vaccination.query.filter_by(unique_patient_identifier=current_user.unique_patient_identifier).all()
             test = Sideeffects.query.all()
             today = date.today()
             for i in range (1):
                  today-= datetime.timedelta(days=1)
             today = today.strftime('%Y-%m-%d')
             print(today)
-            
-            
 
+            for entry in sf_show:
+                classifier= False
+                print(entry)
+                print('no')
+                if entry.date_of_vaccination.strftime('%Y-%m-%d') == today:
+                    print('geht')
+                    for val in test:
+                            if entry.unique_certificate_identifier == val.unique_certificate_identifier:
+                                print('bricht ab')
+                                classifier = True
+                                break
+                    if classifier == False:
+                        list1.append(entry)
+                        print('yes')
+                    
+                
+            
+            print(list1)
+            
+            
         elif sort == 'Standard':
             branch = Proof_of_vaccination.query.filter_by(unique_patient_identifier=current_user.unique_patient_identifier).filter(Proof_of_vaccination.vaccine_category.like(sort)).paginate(page=page, per_page=10)
         elif sort == 'Gelbfieber':
@@ -96,7 +119,7 @@ def patient_home(sort='date', search=''):
     if form.is_submitted():
         return redirect(url_for('patient_home', sort='date', search=form.name.data))
 
-    return render_template('patient/patient_vaccination_certificate.html', branch=branch, sort=sort, form=form, search=vaccine_search, today=today, test=test)
+    return render_template('patient/patient_vaccination_certificate.html', branch=branch, sort=sort, form=form, search=vaccine_search, today=today, test=test, list1=list1)
 
 @app.route("/patient/sideeffects/<int:unique_certificate_identifier>", methods=['POST', 'GET'])
 def new_sideeffect(unique_certificate_identifier):

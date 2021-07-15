@@ -78,43 +78,35 @@
                 <br>
         
                     <div class="content-section">
-                        {% if branch %}     
-                            {% for entry in branch.items %}
-                                {% if entry.date_of_vaccination.strftime('%Y-%m-%d') == today%}
-                                    {% if test %}  
-                                      {% for val in test %}
-                                        {% if entry.unique_certificate_identifier == val.unique_certificate_identifier%}
-                                            {%break%}
-                                        {%endif%}
-                                        {% endfor %}
-                                    {% endif %}
-                                            <div class="card my-2" style="border: 1px solid rgb(151, 151, 151);">
-                                                <div class="mt-2 mx-2">
-                                                
-                                                <div class="row">
-                                                    <div class="col-1 align-self-center">
-                                                        <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" fill="#349B73" class="bi bi-question-lg" viewBox="0 0 16 16">
-                                                            <path d="M3 4.075a.423.423 0 0 0 .43.44H4.9c.247 0 .442-.2.475-.445.159-1.17.962-2.022 2.393-2.022 1.222 0 2.342.611 2.342 2.082 0 1.132-.668 1.652-1.72 2.444-1.2.872-2.15 1.89-2.082 3.542l.005.386c.003.244.202.44.446.44h1.445c.247 0 .446-.2.446-.446v-.188c0-1.278.487-1.652 1.8-2.647 1.086-.826 2.217-1.743 2.217-3.667C12.667 1.301 10.393 0 7.903 0 5.645 0 3.17 1.053 3.001 4.075zm2.776 10.273c0 .95.758 1.652 1.8 1.652 1.085 0 1.832-.702 1.832-1.652 0-.985-.747-1.675-1.833-1.675-1.04 0-1.799.69-1.799 1.675z"/>
-                                                        </svg>
-                                                    </div>
-                                                    <div class="col-8">
-                                                        <h5 style="color: #349B73;">Impfreaktionen</h5>
-                                                        <p style="color: rgb(151, 151, 151);">Wie haben Sie ihre gestrige "{{entry.vaccine}}"-Impfung vertragen? Dokumentieren Sie Ihre Impfnebenwirkungen, um diese anonym der Forschung bereitszustellen!</p> 
-                                                    </div>
-                                                    <div class="col-3 align-self-center ">
-                                                        <a class="btn btn-outline-success" href="{{ url_for('new_sideeffect', unique_certificate_identifier=entry.unique_certificate_identifier) }}">Zum Formular</a>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                                
-                                            </div>
-                                        
+                        {%if list1%}
+                            {%for object in list1%}
+                            
+                           
+                            <div class="card my-2" style="border: 1px solid rgb(151, 151, 151);">
+                                <div class="mt-2 mx-2">
+                                
+                                <div class="row">
+                                    <div class="col-1 align-self-center">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" fill="#349B73" class="bi bi-question-lg" viewBox="0 0 16 16">
+                                            <path d="M3 4.075a.423.423 0 0 0 .43.44H4.9c.247 0 .442-.2.475-.445.159-1.17.962-2.022 2.393-2.022 1.222 0 2.342.611 2.342 2.082 0 1.132-.668 1.652-1.72 2.444-1.2.872-2.15 1.89-2.082 3.542l.005.386c.003.244.202.44.446.44h1.445c.247 0 .446-.2.446-.446v-.188c0-1.278.487-1.652 1.8-2.647 1.086-.826 2.217-1.743 2.217-3.667C12.667 1.301 10.393 0 7.903 0 5.645 0 3.17 1.053 3.001 4.075zm2.776 10.273c0 .95.758 1.652 1.8 1.652 1.085 0 1.832-.702 1.832-1.652 0-.985-.747-1.675-1.833-1.675-1.04 0-1.799.69-1.799 1.675z"/>
+                                        </svg>
+                                    </div>
+                                    <div class="col-8">
+                                        <h5 style="color: #349B73;">Impfreaktionen</h5>
+                                        <p style="color: rgb(151, 151, 151);">Wie haben Sie ihre gestrige "{{object.unique_certificate_identifier}}"-Impfung vertragen? Dokumentieren Sie Ihre Impfnebenwirkungen, um diese anonym der Forschung bereitszustellen!</p> 
+                                    </div>
+                                    <div class="col-3 align-self-center ">
+                                        <a class="btn btn-outline-success" href="{{ url_for('new_sideeffect', unique_certificate_identifier=object.unique_certificate_identifier) }}">Zum Formular</a>
+                                    </div>
+                                </div>
+                            </div>
+                                
+                            </div>
+                            {%endfor%}
+                            
+                        {%endif%}
+                        
 
-                                            
-                                        
-                                {%endif%}
-                            {% endfor %}
-                        {% endif %}
                         <div class=" row hintergrund mb-2 mt-3">
                         <div class="row mb-4 mt-3">
                             <div class="col-6 align-self-center">
