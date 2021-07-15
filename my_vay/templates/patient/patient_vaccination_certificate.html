@@ -124,14 +124,35 @@
                     </div>
                 </div>
                 <br><br>
-
-                <h5>Test</h5>
-                {% for entry in Proof_of_vaccinations.items %}    
-                    <p>{{ entry.date_of_vaccination }}</p>
-                {% endfor %}
-                
         
                     <div class="content-section">
+                        {%if vac_notifications%}
+                            {%for vac_notification in vac_notifications%}
+                                <div class="card my-2" style="border: 1px solid rgb(151, 151, 151);">
+                                    <div class="mt-2 mx-2">
+                                    
+                                    <div class="row">
+                                        <div class="col-1 align-self-center">
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" fill="rgb(223, 71, 89)" class="bi bi-bell-fill" viewBox="0 0 16 16">
+                                                <path d="M8 16a2 2 0 0 0 2-2H6a2 2 0 0 0 2 2zm.995-14.901a1 1 0 1 0-1.99 0A5.002 5.002 0 0 0 3 6c0 1.098-.5 6-2 7h14c-1.5-1-2-5.902-2-7 0-2.42-1.72-4.44-4.005-4.901z"/>
+                                              </svg>
+                                        </div>
+                                        <div class="col-11">
+                                            <h5 style="color: rgb(223, 71, 89);">Empfohlene Impfung fällig</h5>
+                                            <p style="color: rgb(151, 151, 151);">Sie wurden am {{ vac_notification.current_date_of_vaccination }} gegen {{ vac_notification.disease }} geimpft. Nach der Empfehlung des RKI's sollten Sie sich nun erneut gegen {{ vac_notification.disease }} ({{ vac_notification.next_vaccine_category }}) impfen lassen.</p>
+                                        </div>
+                                    </div>
+                                </div>
+                                    
+                                </div>
+                            {%endfor%}
+                            
+                        {%endif%}
+
+
+
+
+
                         <div class="row">                            
                             <h5 class="mt-2">
                                 <div class="row my-1">

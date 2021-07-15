@@ -138,7 +138,10 @@ def check_for_vac_notifications():
             
             notification = {
                 "disease" : next_vaccination.disease,
-                "vaccine_category" : next_vaccination.vaccine_category
+                "current_unique_certificate_identifier" : entry_in_proof_of_vaccinations.unique_certificate_identifier,
+                "current_date_of_vaccination": entry_in_proof_of_vaccinations.date_of_vaccination,
+                "current_vaccine_category" : associated_entry_in_vaccination.vaccine_category,
+                "next_vaccine_category" : next_vaccination.vaccine_category
             }
             
             notifications.append(notification)
