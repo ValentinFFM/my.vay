@@ -30,6 +30,8 @@ from pyzbar import pyzbar
 #import numpy as np
 from pyzbar.pyzbar import _decode_symbols, decode
 
+import ast
+
 # 
 # Initialization of Flask Application
 #
@@ -161,80 +163,66 @@ def patient_kalender():
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 def gen_frames():
         camera = cv2.VideoCapture(0)
         
         while True:
-            success, frame = camera.read()  # read the camera frame
+            # Read-in camera frame
+            success, frame = camera.read()
             
             if not success:
                 break
             else:
-                QRidentified,vaccination_JSON  = decode(frame)
-                if QRidentified == True:
-                    break
+                decodedObject = decode(frame)
 
-                #print(vaccination_JSON)
-               
-                    #return redirect (url_for('checkQR', vaccination_data = vaccination_JSON)) # ab dem Redirect hängt es
-                
+                if decodedObject:
+                    decodedObjectConverted = decodedObject[2:-1]
+                    decodedObjectConverted = decodedObjectConverted.replace("'","\"")
+                    decodedObjectAsDict = ast.literal_eval(decodedObjectConverted)
+                    print(str(decodedObjectAsDict))
+                    
+                    break
+                    
+                     # ab dem Redirect hängt es
                 else:   
                     ret, buffer = cv2.imencode('.jpg', frame)
                     frame_buffer = buffer.tobytes()
-                    yield (b'--frame\r\n'b'Content-Type: image/jpeg\r\n\r\n' + frame_buffer + b'\r\n') 
-               
-                       
-                  
+                    yield (b'--frame\r\n' b'Content-Type: image/jpeg\r\n\r\n' + frame_buffer + b'\r\n')
+        return redirect(url_for('checkQR', vaccination_data = decodedObjectAsDict))
               
 def decode(frame):
-    decodedObject = pyzbar.decode(frame) # decode QR-Code
+    # Decode QR-Code
+    decodedObject = pyzbar.decode(frame)
+    
+    # If decodedObject exists, then the data is returned as string
     if decodedObject:
-        print (decodedObject, file=sys.stderr)
-        return True, decodedObject
+        return str(decodedObject[0].data)
 
-        
-        
 @app.route("/patient/impfeintrag/scan",methods =["GET", "POST"])
 def patient_scan():
-    return Response(gen_frames(), mimetype='multipart/x-mixed-replace; boundary=frame')
+    frame_response = Response(gen_frames(), mimetype='multipart/x-mixed-replace; boundary=frame')
+    return frame_response
 
 @app.route("/patient/impfeintrag/checkQR",methods =["GET", "POST"])
 def checkQR(vaccination_data):
-    form = CheckQRForm()
-    form.f_name.default = vaccination_data['f_name']
-    form.l_name.default = vaccination_data['l_name']
-    form.date_of_birth.default = vaccination_data['date_of_birth']
-    form.date_of_vaccination.default = vaccination_data['date_of_vaccination']
-    form.vaccine_category.default = vaccination_data['vaccine_category']
-    form.disease.default = vaccination_data['disease']
-    form.vaccine_marketing_authorization_holder.default = vaccination_data['vaccine_marketing_authorization_holder']
-    form.batch_number.default = vaccination_data['batch_number']
-    form.issued_at.default = vaccination_data['issued_at']
-    form.unique_issuer_identifier.default = vaccination_data['unique_issuer_identifier']
-    form.unique_certificate_identifier.default = vaccination_data['unique_certificate_identifier']
+    # form = CheckQRForm()
+    # form.f_name.default = vaccination_data['f_name']
+    # form.l_name.default = vaccination_data['l_name']
+    # form.date_of_birth.default = vaccination_data['date_of_birth']
+    # form.date_of_vaccination.default = vaccination_data['date_of_vaccination']
+    # form.vaccine_category.default = vaccination_data['vaccine_category']
+    # form.disease.default = vaccination_data['disease']
+    # form.vaccine_marketing_authorization_holder.default = vaccination_data['vaccine_marketing_authorization_holder']
+    # form.batch_number.default = vaccination_data['batch_number']
+    # form.issued_at.default = vaccination_data['issued_at']
+    # form.unique_issuer_identifier.default = vaccination_data['unique_issuer_identifier']
+    # form.unique_certificate_identifier.default = vaccination_data['unique_certificate_identifier']
 
-    if form.validate_on_submit():
-        new_entry = Proof_of_vaccination(unique_certificate_identifier = vaccination_data['unique_certificate_identifier'], f_name =vaccination_data['f_name'], l_name = vaccination_data['l_name'], date_of_vaccination = vaccination_data['date_of_vaccination'], vaccine = vaccination_data['vaccine'], batch_number=vaccination_data['batch_number'], vaccine_category=vaccination_data['vaccine_category'], unique_issuer_identifier=vaccination_data['uniqe_certificate_identifier'], disease= vaccination_data['disease'], vaccine_marketing_authorization_holder= vaccination_data['vaccine_marketing_authorization_holder'], issued_at= vaccination_data['issued_at'])
-        db.session.add(new_entry)
-        db.session.commit()
-        return redirect(url_for('patient_home'))
+    # if form.validate_on_submit():
+    #     new_entry = Proof_of_vaccination(unique_certificate_identifier = vaccination_data['unique_certificate_identifier'], f_name =vaccination_data['f_name'], l_name = vaccination_data['l_name'], date_of_vaccination = vaccination_data['date_of_vaccination'], vaccine = vaccination_data['vaccine'], batch_number=vaccination_data['batch_number'], vaccine_category=vaccination_data['vaccine_category'], unique_issuer_identifier=vaccination_data['uniqe_certificate_identifier'], disease= vaccination_data['disease'], vaccine_marketing_authorization_holder= vaccination_data['vaccine_marketing_authorization_holder'], issued_at= vaccination_data['issued_at'])
+    #     db.session.add(new_entry)
+    #     db.session.commit()
+    #     return redirect(url_for('patient_home'))
     return render_template("/patient/patient_checkQR.html", form=form)
 
 
