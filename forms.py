@@ -9,13 +9,13 @@ class ImpfnachweisForm (Form):
     f_name = TextField("Vorname des Geimpften: ")
     l_name = TextField("Nachname des Geimpften: ")
     date_of_birth = DateField("Geburtsdatum des Geimpften: ",format='%m/%d/%y')
-    date_of_vaccination= DateField("Datum der Impfung: ",format='%m/%d/%y')
+    date_of_vaccination= DateField("Datum der Impfung: ", format='%m/%d/%y')
     vaccine_category = TextField("Impfkategorie (Standardimpfung, Auffrischimpfung,...): ")
     disease = StringField("Impfung für folgende Krankheit: ")
     vaccine = StringField("Impfstoff: ")
     vaccine_marketing_authorization_holder = TextField("Hersteller: ")
     batch_number = StringField("Chargennummer: ")
-    issued_at = DateTimeLocalField ("Ausgestellt am: ", format='%m/%d/%y')
+    issued_at = DateTimeLocalField ("Ausgestellt am: ",format='%m/%d/%y')
     unique_issuer_identifier = StringField("Ihre Zertifikatsnummer: ")
     generate_certificate =  SubmitField("Impfnachweis erstellen")
 
@@ -61,3 +61,20 @@ class ScanQRForm(Form):
     remember = BooleanField('Angemeldet bleiben')
     submit = SubmitField('Login')
 
+class CheckQRForm():
+    f_name = TextField("Vorname: ")
+    l_name = TextField("Nachname: ")
+    date_of_birth = DateField("Geburtsdatum: ",format='%m/%d/%y')
+    date_of_vaccination= DateField("Datum der Impfung: ",format='%m/%d/%y')
+    vaccine_category = TextField("Impfkategorie (Standardimpfung, Auffrischimpfung,...): ")
+    disease = StringField("Impfung für folgende Krankheit: ")
+    vaccine = StringField("Erhaltener Impfstoff: ")
+    vaccine_marketing_authorization_holder = TextField("Hersteller: ")
+    batch_number = StringField("Chargennummer: ")
+    issued_at = DateTimeLocalField ("Ausgestellt am: ", format='%m/%d/%y')
+    unique_issuer_identifier = StringField("Zertifikatsnummer des Arztes/Ärtzliche Einrichtung : ")
+    unique_certificate_identifier = StringField("Ihre Zertifikatsnummer: ")
+    new_vaccination_entry =  SubmitField("Daten in digitalen Impfpass übertragen")
+    #cancellation = SubmitField("Code erneut einscannen")
+
+    

@@ -6,8 +6,10 @@ from types import DynamicClassAttribute, new_class
 from flask import Flask, render_template, abort, url_for, redirect, flash, request, Response
 from flask_sqlalchemy import SQLAlchemy
 from qrcode.main import QRCode
+from werkzeug.exceptions import default_exceptions
+import wtforms
 from wtforms.meta import DefaultMeta
-from forms import ImpfnachweisForm, LoginForm, AddVaccination, ScanQRForm
+from forms import ImpfnachweisForm, LoginForm, AddVaccination, ScanQRForm, CheckQRForm
 import sys
 
 import cv2
@@ -26,7 +28,7 @@ import uuid
 from pyzbar import pyzbar
 #import pyzbar.pyzbar as pyzbar
 #import numpy as np
-from pyzbar.pyzbar import decode
+from pyzbar.pyzbar import _decode_symbols, decode
 
 # 
 # Initialization of Flask Application
@@ -121,11 +123,6 @@ def home():
 
 @app.route("/patient")
 def patient_home():
-
-    # if request.method == "POST":
-    #     branch = Impfung.query.all()
-        # return render_template('patient_vaccination_certificate.html', branch=branch)
-    
     return render_template('patient/patient_vaccination_certificate.html')
 
 @app.route("/patient/impfeintrag")
@@ -135,16 +132,12 @@ def patient_vaccination_entry():
 @app.route("/patient/impfeintrag/manuell", methods=['POST', 'GET'])
 #@login_required
 def addVaccination():
-
     form = AddVaccination()
     new_vaccination = {}
-
     if form.validate_on_submit():
-
         #unique_certificate_identifier = 1
         #while Proof_of_vaccination.query.filter_by(unique_certificate_identifier=unique_certificate_identifier).first() is not None:
          #   unique_certificate_identifier = unique_certificate_identifier + 1
-
         #unique_patient_identifier ?
         new_vaccination = Proof_of_vaccination(unique_certificate_identifier='1', date_of_vaccination = form.date_of_vaccination.data, vaccine = form.vaccine.data, batch_number=form.batch_number.data, vaccine_category=form.vaccine_category.data, unique_issuer_identifier=form.unique_issuer_identifier.data, disease= "/", vaccine_marketing_authorization_holder= "/", issued_at= "/")
         db.session.add(new_vaccination)
@@ -164,51 +157,120 @@ def patient_impfwissen():
 def patient_kalender():
     return render_template("/patient/patient_calendar.html")
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 def gen_frames():
         camera = cv2.VideoCapture(0)
         
         while True:
             success, frame = camera.read()  # read the camera frame
+            
             if not success:
                 break
             else:
-                QR_identified, vaccination_JSON = decode(frame)
-                
-                if QR_identified == True:
+                QRidentified,vaccination_JSON  = decode(frame)
+                if QRidentified == True:
                     break
-                    # redirect to new page with variable vaccination_JSON
-                    #   display page with form filled in vaccination_JSON data
-                    #   Button to submit form to add data to database
-                    #   return redirect(url_for('issuer_home', vaccination_data = vaccination_JSON))
-                else:
-                    # Display video stream
+
+                #print(vaccination_JSON)
+               
+                    #return redirect (url_for('checkQR', vaccination_data = vaccination_JSON)) # ab dem Redirect hängt es
+                
+                else:   
                     ret, buffer = cv2.imencode('.jpg', frame)
                     frame_buffer = buffer.tobytes()
-                    yield (b'--frame\r\n'
-                        b'Content-Type: image/jpeg\r\n\r\n' + frame_buffer + b'\r\n')  #concat frame one by one and show result
-                
-
+                    yield (b'--frame\r\n'b'Content-Type: image/jpeg\r\n\r\n' + frame_buffer + b'\r\n') 
+               
+                       
+                  
+              
 def decode(frame):
-    decodedObjects = pyzbar.decode(frame) # decode QR-Code
-    
-    if decodedObjects:
-        print (decodedObjects, file=sys.stderr)
-        return True, decodedObjects
-    
-    # for objects in decodedObjects:
-    #     bytstr = objects.data
-    #     dictstr = bytstr.decode('utf-8')
-    #     certificate_data = ast.literal_eval(dictstr)
-        
-        # new_entry = Proof_of_vaccination(unique_certificate_identifier = '3', f_name =certificate_data['f_name'], date_of_vaccination = certificate_data['date_of_vaccination'], vaccine = certificate_data['vaccine'], batch_number=certificate_data['batch_number'], vaccine_category=certificate_data['vaccine_category'], unique_issuer_identifier=certificate_data['certificate_issuer'], disease= certificate_data['disease'], vaccine_marketing_authorization_holder= certificate_data['vaccine_marketing_authorization_holder'], issued_at= certificate_data['issued_at'])
-        # db.session.add(new_entry)
-        # db.session.commit()
-        
-        
+    decodedObject = pyzbar.decode(frame) # decode QR-Code
+    if decodedObject:
+        print (decodedObject, file=sys.stderr)
+        return True, decodedObject
 
+        
+        
 @app.route("/patient/impfeintrag/scan",methods =["GET", "POST"])
 def patient_scan():
     return Response(gen_frames(), mimetype='multipart/x-mixed-replace; boundary=frame')
+
+@app.route("/patient/impfeintrag/checkQR",methods =["GET", "POST"])
+def checkQR(vaccination_data):
+    form = CheckQRForm()
+    form.f_name.default = vaccination_data['f_name']
+    form.l_name.default = vaccination_data['l_name']
+    form.date_of_birth.default = vaccination_data['date_of_birth']
+    form.date_of_vaccination.default = vaccination_data['date_of_vaccination']
+    form.vaccine_category.default = vaccination_data['vaccine_category']
+    form.disease.default = vaccination_data['disease']
+    form.vaccine_marketing_authorization_holder.default = vaccination_data['vaccine_marketing_authorization_holder']
+    form.batch_number.default = vaccination_data['batch_number']
+    form.issued_at.default = vaccination_data['issued_at']
+    form.unique_issuer_identifier.default = vaccination_data['unique_issuer_identifier']
+    form.unique_certificate_identifier.default = vaccination_data['unique_certificate_identifier']
+
+    if form.validate_on_submit():
+        new_entry = Proof_of_vaccination(unique_certificate_identifier = vaccination_data['unique_certificate_identifier'], f_name =vaccination_data['f_name'], l_name = vaccination_data['l_name'], date_of_vaccination = vaccination_data['date_of_vaccination'], vaccine = vaccination_data['vaccine'], batch_number=vaccination_data['batch_number'], vaccine_category=vaccination_data['vaccine_category'], unique_issuer_identifier=vaccination_data['uniqe_certificate_identifier'], disease= vaccination_data['disease'], vaccine_marketing_authorization_holder= vaccination_data['vaccine_marketing_authorization_holder'], issued_at= vaccination_data['issued_at'])
+        db.session.add(new_entry)
+        db.session.commit()
+        return redirect(url_for('patient_home'))
+    return render_template("/patient/patient_checkQR.html", form=form)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 @app.route("/patient/profil")
 def patient_profil():
