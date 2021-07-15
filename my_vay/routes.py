@@ -55,6 +55,8 @@ def check_for_vac_notifications():
     # Returns the proof_of_vaccinations of the logged-in-user from the database
     list_of_proof_of_vaccinations = Proof_of_vaccination.query.filter_by(unique_patient_identifier=current_user.unique_patient_identifier).all()
     
+    notifications = []
+    
     # Iterates through the proof_of_vaccinations
     for entry_in_proof_of_vaccinations in list_of_proof_of_vaccinations:
         
@@ -133,13 +135,23 @@ def check_for_vac_notifications():
             notification_dict["next_vaccination_possible"] = False
             
         if notification_dict["beginn_age_reached"] == True and notification_dict["end_age_not_reached"] == True and notification_dict["dist_between_current_and_next_correct"] == True and notification_dict["next_vaccination_not_exisisting"] == True and notification_dict["next_vaccination_possible"] == True:
-            print("Test")
+            
+            notification = {
+                "disease" : next_vaccination.disease,
+                "vaccine_category" : next_vaccination.vaccine_category
+            }
+            
+            notifications.append(notification)
+    
+    return notifications
+        
     
 
-@app.route("/test")
-def test_route():
-    check_for_vac_notifications()
-    return render_template('html_container.html')
+# @app.route("/test")
+# def test_route():
+#     notifications = check_for_vac_notifications()
+#     print(notifications)
+#     return render_template('html_container.html')
     
 
 # Patient - Landing page route
@@ -170,8 +182,10 @@ def patient_home(sort='date', search=''):
     # If the validation is correct, then a flash message is displayed and the user is redirected to the login page.
     if form.is_submitted():
         return redirect(url_for('patient_home', sort='date', search=form.name.data))
+    
+    vac_notifications = check_for_vac_notifications()
 
-    return render_template('patient/patient_vaccination_certificate.html', branch=branch, sort=sort, form=form, search=vaccine_search)
+    return render_template('patient/patient_vaccination_certificate.html', branch=branch, sort=sort, form=form, search=vaccine_search, vac_notifications=vac_notifications)
     
 @app.route("/patientQR/<int:unique_certificate_identifier>", methods=['POST', 'GET'])
 def open_QR(unique_certificate_identifier):
