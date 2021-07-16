@@ -53,58 +53,10 @@
             </ul>
         </div>
     </nav>
+    
     <div class="container my-5">
         <div class="row">
-            <div class="col-2">
-                <div class="sidebar-header">
-                    <h5>Aktionen</h5>
-                </div>
-            
-                <div>
-                    
-            
-                    <form method="POST" action="">
-                        <!-- The hidden_tag() method includes a csrf(cross-side-request-...)-token, which protects with the secrect_key the application -->
-                        {{ form.hidden_tag() }}
-            
-                        <div class="form-row mt-3">
-                            <div class="col-6">
-                                <div class="form-group">
-                                    {% if form.name.errors %}
-                                        {{ form.name(class="form-control is-invalid") }}
-                                        <div class="invalid-feedback">
-                                            {% for error in form.name.errors %}
-                                                <span>{{ error }}</span>
-                                            {% endfor %}
-                                        </div>
-                    
-                                    {% else %}
-                                        {{ form.name(class="form-control") }}
-                    
-                                    {% endif %}
-                                </div>
-                            </div>
-                            <div class="col-6">
-                                <div class="form-group">
-                                    {{ form.submit(class="btn btn-outline-success btn-block") }}
-                                </div>
-                            </div>
-                        </div>
-                    </form>
-            
-                    <div class="dropdown show mt-0">
-                        <a class="btn btn-secondary btn-block dropdown-toggle" href="{{ url_for('patient_home', sort=sort) }}" role="button" id="dropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                          Sortieren nach:
-                        </a>
-                      
-                        <div class="dropdown-menu" aria-labelledby="dropdownMenuLink">
-                            <a class="dropdown-item" href="{{ url_for('patient_home', sort='date') }}">Sort by date</a>
-                            <a class="dropdown-item" href="{{ url_for('patient_home', sort='Standard') }}">Standardimpfung</a>
-                        </div>
-                    </div>
-                </div>
-            
-            </div>
+            <div class="col-2"> </div>
             <div class="col-8">
             
                  <div class="row" style="background-color: rgb(231, 231, 231);">
@@ -123,7 +75,7 @@
                       </svg></a>
                     </div>
                 </div>
-                <br><br>
+                <br>
         
                     <div class="content-section">
                         {%if vac_notifications%}
@@ -148,14 +100,92 @@
                             {%endfor%}
                             
                         {%endif%}
+                        
+                        {%if list1%}
+                            {%for object in list1%}
+                            
+                           
+                            <div class="card my-2" style="border: 1px solid rgb(151, 151, 151);">
+                                <div class="mt-2 mx-2">
+                                
+                                <div class="row">
+                                    <div class="col-1 align-self-center">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" fill="#349B73" class="bi bi-question-lg" viewBox="0 0 16 16">
+                                            <path d="M3 4.075a.423.423 0 0 0 .43.44H4.9c.247 0 .442-.2.475-.445.159-1.17.962-2.022 2.393-2.022 1.222 0 2.342.611 2.342 2.082 0 1.132-.668 1.652-1.72 2.444-1.2.872-2.15 1.89-2.082 3.542l.005.386c.003.244.202.44.446.44h1.445c.247 0 .446-.2.446-.446v-.188c0-1.278.487-1.652 1.8-2.647 1.086-.826 2.217-1.743 2.217-3.667C12.667 1.301 10.393 0 7.903 0 5.645 0 3.17 1.053 3.001 4.075zm2.776 10.273c0 .95.758 1.652 1.8 1.652 1.085 0 1.832-.702 1.832-1.652 0-.985-.747-1.675-1.833-1.675-1.04 0-1.799.69-1.799 1.675z"/>
+                                        </svg>
+                                    </div>
+                                    <div class="col-8">
+                                        <h5 style="color: #349B73;">Impfreaktionen</h5>
+                                        <p style="color: rgb(151, 151, 151);">Wie haben Sie ihre gestrige "{{object.vaccine}}"-Impfung vertragen? Dokumentieren Sie Ihre Impfnebenwirkungen, um diese anonym der Forschung bereitszustellen!</p> 
+                                    </div>
+                                    <div class="col-3 align-self-center ">
+                                        <a class="btn btn-outline-success" href="{{ url_for('new_sideeffect', unique_certificate_identifier=object.unique_certificate_identifier) }}">Zum Formular</a>
+                                    </div>
+                                </div>
+                            </div>
+                                
+                            </div>
+                            {%endfor%}
+                            
+                        {%endif%}
+                        
 
+                        <div class=" row hintergrund mb-2 mt-3">
+                        <div class="row mb-4 mt-3">
+                            <div class="col-6 align-self-center">
+                                <form method="POST" action="">
+                                    <!-- The hidden_tag() method includes a csrf(cross-side-request-...)-token, which protects with the secrect_key the application -->
+                                    {{ form.hidden_tag() }}
+                        
+                                    <div class="row ">
+                                        <div class="col-6">
+                                            <div class="form-group">
+                                                {% if form.name.errors %}
+                                                    {{ form.name(class="form-control is-invalid") }}
+                                                    <div class="invalid-feedback">
+                                                        {% for error in form.name.errors %}
+                                                            <span>{{ error }}</span>
+                                                        {% endfor %}
+                                                    </div>
+                                
+                                                {% else %}
+                                                    {{ form.name(class="form-control") }}
+                                
+                                                {% endif %}
+                                            </div>
+                                        </div>
+                                        <div class="col-6 ">
+                                            <div class="form-group">
+                                                {{ form.submit(class="btn btn-outline-success btn-block") }}
+                                            </div>
+                                        </div>
+                                    </div>
+                                </form>
+                            </div>
+                            <div class="col-6 align-self-center text-end">
+                                
+                                <div class="dropdown show ">
 
-
-
-
-                        <div class="row">                            
-                            <h5 class="mt-2">
-                                <div class="row my-1">
+                                    <a class="btn btn-secondary btn-block dropdown-toggle" href="{{ url_for('patient_home', sort=sort) }}" role="button" id="dropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                      Sortieren nach:
+                                    </a> 
+                                   
+                                    <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                                        <a class="dropdown-item" href="{{ url_for('patient_home', sort='Standard') }}">Standardimpfung</a>
+                                        <a class="dropdown-item" href="{{ url_for('patient_home', sort='Gelbfieber') }}">Gelbfieberimpfung</a>
+                                        <a class="dropdown-item" href="{{ url_for('patient_home', sort='Grippe') }}">Grippeimpfung</a>
+                                        <a class="dropdown-item" href="{{ url_for('patient_home', sort='Zusatz') }}">Zusatzimpfung</a>
+                                    </div>
+                                    <a class="btn btn-outline-success btn-block" href="{{ url_for('patient_home', sort='date') }}">Filter aufheben</a></button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                        
+                        
+                                                   
+                            <h5 class="">
+                                <div class="row mt-3">
                                     <div class="col-1 text-center"><h5> <b> ID</b></h5></div>
                                     <div class="col-2 text-center"><h5> <b> Datum</b></h5></div>
                                     <div class="col-2 text-center"><h5><b> Impfstoff </b></h5></div>
@@ -165,11 +195,12 @@
                                     <div class="col-2 text-center"><h5><b> Zertifikat</b></h5></div>
                                 </div>
                             </h5>
-                        </div>
-                        {% if branch %}       
+                        
+                    
+                        {% if branch %}     
                         {% for entry in branch.items %}
                             <div class="row">                           
-                                <h5 class="card mt-2 ">
+                                <div class="card card-vaccination mt-2 ">
                                     <div class="row my-2">
                                         <div class="col-1 align-self-center text-center ">{{ entry.unique_certificate_identifier }}</div>
                                         <div class="col-2 align-self-center text-center ">{{ entry.date_of_vaccination}}</div>
@@ -180,22 +211,22 @@
                                         <div class="col-2 align-self-center text-center "> 
                                             
                                             <form action="{{ url_for('open_QR', unique_certificate_identifier=entry.unique_certificate_identifier) }}" method="Post">
-                                                <button class="btn btn-light" type="submit"><svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" fill="#349B73" class="bi bi-upc-scan" viewBox="0 0 16 16">
+                                                <button class="btn btn-light" type="submit"><svg xmlns="http://www.w3.org/2000/svg" width="25" height="25" fill="#349B73" class="bi bi-upc-scan" viewBox="0 0 16 16">
                                                     <path d="M1.5 1a.5.5 0 0 0-.5.5v3a.5.5 0 0 1-1 0v-3A1.5 1.5 0 0 1 1.5 0h3a.5.5 0 0 1 0 1h-3zM11 .5a.5.5 0 0 1 .5-.5h3A1.5 1.5 0 0 1 16 1.5v3a.5.5 0 0 1-1 0v-3a.5.5 0 0 0-.5-.5h-3a.5.5 0 0 1-.5-.5zM.5 11a.5.5 0 0 1 .5.5v3a.5.5 0 0 0 .5.5h3a.5.5 0 0 1 0 1h-3A1.5 1.5 0 0 1 0 14.5v-3a.5.5 0 0 1 .5-.5zm15 0a.5.5 0 0 1 .5.5v3a1.5 1.5 0 0 1-1.5 1.5h-3a.5.5 0 0 1 0-1h3a.5.5 0 0 0 .5-.5v-3a.5.5 0 0 1 .5-.5zM3 4.5a.5.5 0 0 1 1 0v7a.5.5 0 0 1-1 0v-7zm2 0a.5.5 0 0 1 1 0v7a.5.5 0 0 1-1 0v-7zm2 0a.5.5 0 0 1 1 0v7a.5.5 0 0 1-1 0v-7zm2 0a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 .5.5v7a.5.5 0 0 1-.5.5h-1a.5.5 0 0 1-.5-.5v-7zm3 0a.5.5 0 0 1 1 0v7a.5.5 0 0 1-1 0v-7z"/>
                                                 </svg></button>
                                             </form>
                                         </div>    
                                     </div>
-                                </h5>
+                                </div>
                             </div>
-                    
+                            <div class="col 12 text-end">
                             {% endfor %}
                             {% for page_num in branch.iter_pages(left_edge=1, right_edge=1, left_current=1, right_current=2) %}
                                 {% if page_num %}
                                     {% if branch.page == page_num %}
-                                         <a class="btn btn-dark mb-4" href="{{ url_for('patient_home', page=page_num) }}">{{ page_num }}</a>
+                                         <a class="btn btn-secondary mb-4 mt-2" href="{{ url_for('patient_home', page=page_num) }}">{{ page_num }}</a>
                                     {% else %}
-                                        <a class="btn btn-outline-dark mb-4" href="{{ url_for('patient_home', page=page_num) }}">{{ page_num }}</a>
+                                        <a class="btn btn-outline-secondary mb-4 mt-2" href="{{ url_for('patient_home', page=page_num) }}">{{ page_num }}</a>
                                 {% endif %}
                                 {% else %}
                                 ...
@@ -209,14 +240,14 @@
                                 <h3>Diese Seite scheint leer zu sein.</h3>
                             {% endif %}
                         {% endif %}
+                    </div>
                 </div>
             </div>
         
                 
-
-            </div>
             <div class="col-md-2">  </div>
+            </div>
+          
         </div>            
-        </div>
         
 {% endblock %}

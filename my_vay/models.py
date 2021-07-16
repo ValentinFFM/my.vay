@@ -75,9 +75,28 @@ class Vaccination(db.Model):
     
     next_vaccination_id = db.Column(db.Integer, db.ForeignKey('vaccination.vaccination_id'))
     last_vaccination_id = db.relationship('Vaccination', backref = 'vaccination', uselist = False, remote_side=[vaccination_id]) 
+    unique_issuer_identifier = db.Column(db.Integer, db.ForeignKey('issuer.unique_issuer_identifier'), nullable=False)
+
+    proof_of_vaccination_identifier = db.relationship('Sideeffects', backref = 'proof_of_vaccination') 
     
     # Defining relationship to proof of vaccinations
     proof_of_vaccinations = db.relationship('Proof_of_vaccination', backref = 'vaccination') 
+
+class Sideeffects(db.Model):
+    # Primary Key for patient is the username
+    unique_entry_identifier = db.Column(db.Integer, primary_key = True)
+    
+    # Defining all required attributes
+    headache = db.Column(db.String, nullable = False)
+    arm_hurts = db.Column(db.String, nullable = False)
+    rash = db.Column(db.String, nullable = False)
+    tummyache= db.Column(db.String, nullable = False)
+    fever = db.Column(db.String, nullable = False)
+    sideeffects = db.Column(db.String, nullable = False)
+    
+    # Defining relationship to proof_of_vaccination
+    unique_certificate_identifier = db.Column(db.Integer, db.ForeignKey('proof_of_vaccination.unique_certificate_identifier'), nullable=False)
+    
 
 # Create tables
 db.create_all()

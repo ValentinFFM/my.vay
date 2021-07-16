@@ -13,7 +13,7 @@ app.config['SECRET_KEY'] = 'test'
 #
 # Initializing database with SQLAlchemy
 #
-app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://postgres:Master123@localhost:5432/vaccination_database'
+app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://postgres:1234@localhost:5432/vaccination_database'
 app.config['SQLALCHEMY_ECHO'] = True
 db = SQLAlchemy(app)
 
