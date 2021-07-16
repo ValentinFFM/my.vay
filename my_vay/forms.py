@@ -84,7 +84,7 @@ class AddVaccination(Form):
     date_of_vaccination = DateField('Datum (*)', validators=[DataRequired(), Length(max=30)], render_kw={"placeholder": "YYYY-mm-dd"})
     vaccine = StringField('Impfstoff (*)')
     batch_number = StringField('Chargennummer(*)')
-    vaccine_category = SelectField(u'Impfkategorie(*)', choices=[('Gelbfieber', 'Gelbfieber'),('Grippe', 'Grippe'),('Standard','Standard'),('Zusatz','Zusatz')])
+    vaccination_id = SelectField(u'Impfkategorie(*)')
     unique_issuer_identifier = SelectField('Issuer ID', choices=[(1,'Impfzentrum A'),(2,'Impfzentrum B')])
     submit = SubmitField('Speichern')
 

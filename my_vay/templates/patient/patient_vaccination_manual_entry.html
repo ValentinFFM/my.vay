@@ -129,17 +129,17 @@
 
                     <div class="test">
                         <div class="form-group mt-2">
-                            {{ form.vaccine_category.label() }}
+                            {{ form.vaccination_id.label() }}
 
-                            {% if form.vaccine_category.errors %}
-                                {{ form.vaccine_category(class="form-control is-invalid") }}
+                            {% if form.vaccination_id.errors %}
+                                {{ form.vaccination_id(class="form-control is-invalid") }}
                                 <div class="invalid-feedback">
-                                    {% for error in form.vaccine_category.errors %}
+                                    {% for error in form.vaccination_id.errors %}
                                         <span>{{ error }}</span>
                                     {% endfor %}
                                 </div>
                             {% else %}
-                                {{ form.vaccine_category(class="form-control") }}
+                                {{ form.vaccination_id(class="form-control") }}
                             {% endif %}
                         </div>
                     </div>

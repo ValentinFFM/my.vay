@@ -186,7 +186,7 @@ def patient_home(sort='date', search=''):
             test = Sideeffects.query.all()
             today = date.today()
             for i in range (1):
-                 today-= datetime.timedelta(days=1)
+                 today-= timedelta(days=1)
             today = today.strftime('%Y-%m-%d')
             print(today)
 
@@ -211,7 +211,7 @@ def patient_home(sort='date', search=''):
             
             
         elif sort == 'Standard':
-            branch = Proof_of_vaccination.query.filter_by(unique_patient_identifier=current_user.unique_patient_identifier).filter(Proof_of_vaccination.vaccine_category.like(sort)).paginate(page=page, per_page=5)
+            branch = Proof_of_vaccination.query.filter_by(unique_patient_identifier=current_user.unique_patient_identifier).filter(Proof_of_vaccination.disease.like(sort)).paginate(page=page, per_page=5)
         elif sort == 'Gelbfieber':
             branch = Proof_of_vaccination.query.filter_by(unique_patient_identifier=current_user.unique_patient_identifier).filter(Proof_of_vaccination.vaccine_category.like(sort)).paginate(page=page, per_page=5)
         elif sort == 'Grippe':
@@ -342,15 +342,18 @@ def patient_vaccination_entry():
 def addVaccination():
 
     form = AddVaccination()
+    
+    form.vaccination_id.choices = [(int(vaccination.vaccination_id), vaccination.disease + " (" + vaccination.vaccine_category + ")") for vaccination in Vaccination.query.all()]
+    
     if form.is_submitted():
         unique_certificate_identifier = 1
         while Proof_of_vaccination.query.filter_by(unique_certificate_identifier=unique_certificate_identifier).first() is not None:
             unique_certificate_identifier = unique_certificate_identifier + 1
 
         #unique_patient_identifier ?
-        print(form.vaccine_category.data)
+        # print(form.vaccine_category.data)
         #date_of_vaccinaion = datetime.date(form.date_of_vaccination.data)
-        new_vaccination = Proof_of_vaccination(unique_certificate_identifier=unique_certificate_identifier, unique_patient_identifier= current_user.unique_patient_identifier, date_of_vaccination = form.date_of_vaccination.data, vaccine = form.vaccine.data, batch_number=form.batch_number.data, vaccine_category=form.vaccine_category.data, unique_issuer_identifier=form.unique_issuer_identifier.data, disease= "/", vaccine_marketing_authorization_holder= "/", issued_at= "1900-01-01 00:00:00")
+        new_vaccination = Proof_of_vaccination(unique_certificate_identifier=unique_certificate_identifier, unique_patient_identifier= current_user.unique_patient_identifier, date_of_vaccination = form.date_of_vaccination.data, vaccine = form.vaccine.data, batch_number=form.batch_number.data, vaccination_id=form.vaccination_id.data, unique_issuer_identifier=form.unique_issuer_identifier.data, vaccine_marketing_authorization_holder= "/", issued_at= "1900-01-01 00:00:00")
         db.session.add(new_vaccination)
         db.session.commit()
         

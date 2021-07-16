@@ -131,56 +131,58 @@
                         
 
                         <div class=" row hintergrund mb-2 mt-3">
-                        <div class="row mb-4 mt-3">
-                            <div class="col-6 align-self-center">
-                                <form method="POST" action="">
-                                    <!-- The hidden_tag() method includes a csrf(cross-side-request-...)-token, which protects with the secrect_key the application -->
-                                    {{ form.hidden_tag() }}
-                        
-                                    <div class="row ">
-                                        <div class="col-6">
-                                            <div class="form-group">
-                                                {% if form.name.errors %}
-                                                    {{ form.name(class="form-control is-invalid") }}
-                                                    <div class="invalid-feedback">
-                                                        {% for error in form.name.errors %}
-                                                            <span>{{ error }}</span>
-                                                        {% endfor %}
+                            <div col="col-12">
+                                <div class="row mb-4 mt-3">
+                                    <div class="col-6 align-self-center">
+                                        <form method="POST" action="">
+                                            <!-- The hidden_tag() method includes a csrf(cross-side-request-...)-token, which protects with the secrect_key the application -->
+                                            {{ form.hidden_tag() }}
+                                
+                                            <div class="row ">
+                                                <div class="col-6">
+                                                    <div class="form-group">
+                                                        {% if form.name.errors %}
+                                                            {{ form.name(class="form-control is-invalid") }}
+                                                            <div class="invalid-feedback">
+                                                                {% for error in form.name.errors %}
+                                                                    <span>{{ error }}</span>
+                                                                {% endfor %}
+                                                            </div>
+                                        
+                                                        {% else %}
+                                                            {{ form.name(class="form-control") }}
+                                        
+                                                        {% endif %}
                                                     </div>
-                                
-                                                {% else %}
-                                                    {{ form.name(class="form-control") }}
-                                
-                                                {% endif %}
+                                                </div>
+                                                <div class="col-6 ">
+                                                    <div class="form-group">
+                                                        {{ form.submit(class="btn btn-outline-success btn-block") }}
+                                                    </div>
+                                                </div>
                                             </div>
-                                        </div>
-                                        <div class="col-6 ">
-                                            <div class="form-group">
-                                                {{ form.submit(class="btn btn-outline-success btn-block") }}
+                                        </form>
+                                    </div>
+                                    <div class="col-6 align-self-center text-end">
+                                        
+                                        <div class="dropdown show ">
+        
+                                            <a class="btn btn-secondary dropdown-toggle" href="{{ url_for('patient_home', sort=sort) }}" role="button" id="dropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                              Sortieren nach:
+                                            </a> 
+                                           
+                                            <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                                                <a class="dropdown-item" href="{{ url_for('patient_home', sort='Standard') }}">Standardimpfung</a>
+                                                <a class="dropdown-item" href="{{ url_for('patient_home', sort='Gelbfieber') }}">Gelbfieberimpfung</a>
+                                                <a class="dropdown-item" href="{{ url_for('patient_home', sort='Grippe') }}">Grippeimpfung</a>
+                                                <a class="dropdown-item" href="{{ url_for('patient_home', sort='Zusatz') }}">Zusatzimpfung</a>
                                             </div>
+                                            <a class="btn btn-outline-success" href="{{ url_for('patient_home', sort='date') }}">Filter aufheben</a>
                                         </div>
                                     </div>
-                                </form>
-                            </div>
-                            <div class="col-6 align-self-center text-end">
-                                
-                                <div class="dropdown show ">
-
-                                    <a class="btn btn-secondary btn-block dropdown-toggle" href="{{ url_for('patient_home', sort=sort) }}" role="button" id="dropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                      Sortieren nach:
-                                    </a> 
-                                   
-                                    <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-                                        <a class="dropdown-item" href="{{ url_for('patient_home', sort='Standard') }}">Standardimpfung</a>
-                                        <a class="dropdown-item" href="{{ url_for('patient_home', sort='Gelbfieber') }}">Gelbfieberimpfung</a>
-                                        <a class="dropdown-item" href="{{ url_for('patient_home', sort='Grippe') }}">Grippeimpfung</a>
-                                        <a class="dropdown-item" href="{{ url_for('patient_home', sort='Zusatz') }}">Zusatzimpfung</a>
-                                    </div>
-                                    <a class="btn btn-outline-success btn-block" href="{{ url_for('patient_home', sort='date') }}">Filter aufheben</a></button>
                                 </div>
                             </div>
                         </div>
-                    </div>
                         
                         
                                                    
