@@ -168,14 +168,12 @@
                                         <div class="dropdown show ">
         
                                             <a class="btn btn-secondary dropdown-toggle" href="{{ url_for('patient_home', sort=sort) }}" role="button" id="dropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                              Sortieren nach:
+                                              Filtern nach:
                                             </a> 
                                            
                                             <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-                                                <a class="dropdown-item" href="{{ url_for('patient_home', sort='Standard') }}">Standardimpfung</a>
-                                                <a class="dropdown-item" href="{{ url_for('patient_home', sort='Gelbfieber') }}">Gelbfieberimpfung</a>
-                                                <a class="dropdown-item" href="{{ url_for('patient_home', sort='Grippe') }}">Grippeimpfung</a>
-                                                <a class="dropdown-item" href="{{ url_for('patient_home', sort='Zusatz') }}">Zusatzimpfung</a>
+                                                <a class="dropdown-item" href="{{ url_for('patient_home', sort='Pneumokokken') }}">Pneumokokken</a>
+                                                <a class="dropdown-item" href="{{ url_for('patient_home', sort='Hepatitis B') }}">Hepatitis B</a>
                                             </div>
                                             <a class="btn btn-outline-success" href="{{ url_for('patient_home', sort='date') }}">Filter aufheben</a>
                                         </div>
@@ -186,28 +184,33 @@
                         
                         
                                                    
-                            <h5 class="">
+                            <h5>
                                 <div class="row mt-3">
-                                    <div class="col-1 text-center"><h5> <b> ID</b></h5></div>
-                                    <div class="col-2 text-center"><h5> <b> Datum</b></h5></div>
-                                    <div class="col-2 text-center"><h5><b> Impfstoff </b></h5></div>
-                                    <div class="col-2 text-center"><h5><b> Kategorie</b></h5></div>
-                                    <div class="col-2 text-center"><h5><b> Chargen-Nr.</b></h5></div>
-                                    <div class="col-1 text-center"><h5><b>Issuer </b> </h5></div>
-                                    <div class="col-2 text-center"><h5><b> Zertifikat</b></h5></div>
+                                    <div class="col-2 text-center"> <b>Datum</b></div>
+                                    <div class="col-2 text-center"><b>Impfstoff </b></div>
+                                    <div class="col-2 text-center"><b>Krankheit</b></div>
+                                    <div class="col-1 text-center"><b>Art</b></div>
+                                    <div class="col-2 text-center"><b>Chargen-Nr.</b></div>
+                                    <div class="col-1 text-center"><b>Issuer</b></div>
+                                    <div class="col-2 text-center"><b>Zertifikat</b></div>
                                 </div>
                             </h5>
                         
                     
                         {% if branch %}     
                         {% for entry in branch.items %}
+                            {%if vaccination%}
+                            {%for val in vaccination%}
+                            {%if val.vaccination_id == entry.vaccination_id%}
+
+                        
                             <div class="row">                           
                                 <div class="card card-vaccination mt-2 ">
                                     <div class="row my-2">
-                                        <div class="col-1 align-self-center text-center ">{{ entry.unique_certificate_identifier }}</div>
                                         <div class="col-2 align-self-center text-center ">{{ entry.date_of_vaccination}}</div>
                                         <div class="col-2 align-self-center text-center ">{{ entry.vaccine }}</div>
-                                        <div class="col-2 align-self-center text-center "> {{ entry.vaccine_category }}</div>
+                                        <div class="col-2 align-self-center text-center "> {{ val.disease }}</div>
+                                        <div class="col-1 align-self-center text-center "> {{ val.vaccine_category }}</div>
                                         <div class="col-2 align-self-center text-center "> {{ entry.batch_number }}</div>
                                         <div class="col-1 align-self-center text-center "> {{ entry.unique_issuer_identifier }}</div>
                                         <div class="col-2 align-self-center text-center "> 
@@ -221,6 +224,13 @@
                                     </div>
                                 </div>
                             </div>
+                            {%endif%}
+                            {%endfor%}
+                            {%endif%}
+
+                            
+                            
+                             
                             <div class="col 12 text-end">
                             {% endfor %}
                             {% for page_num in branch.iter_pages(left_edge=1, right_edge=1, left_current=1, right_current=2) %}

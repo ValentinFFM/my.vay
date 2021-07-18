@@ -109,5 +109,5 @@ class ScanQRForm(Form):
 class SearchVaccine(Form):
 
     # Creation of all inputfields and the submit button
-    name = StringField('Impfname:')
+    name = StringField('Impfname:', render_kw={"placeholder": "Impfstoff"})
     submit = SubmitField('Suchen!')

@@ -170,6 +170,7 @@ def patient_home(sort='date', search=''):
     today = 0
     test=0
     list1=[]
+    sorting = []
     
     
 
@@ -178,10 +179,12 @@ def patient_home(sort='date', search=''):
         vaccine_search = True
         search = '%' + search + '%'
         branch = Proof_of_vaccination.query.filter(Proof_of_vaccination.unique_patient_identifier == current_user.unique_patient_identifier).filter(Proof_of_vaccination.vaccine.like(search)).paginate(page=page, per_page=5)
+        vaccination = Vaccination.query.filter(Proof_of_vaccination.vaccination_id == Vaccination.vaccination_id).first()
     else: 
         # Depending on an argument in the url, the patients are sorted in different ways.
         if sort == 'date':
             branch = Proof_of_vaccination.query.filter_by(unique_patient_identifier=current_user.unique_patient_identifier).order_by(Proof_of_vaccination.date_of_vaccination.desc()).paginate(page=page, per_page=5)
+            vaccination = Vaccination.query.filter(Proof_of_vaccination.vaccination_id == Vaccination.vaccination_id).all()
             sf_show = Proof_of_vaccination.query.filter_by(unique_patient_identifier=current_user.unique_patient_identifier).all()
             test = Sideeffects.query.all()
             today = date.today()
@@ -210,14 +213,17 @@ def patient_home(sort='date', search=''):
             print(list1)
             
             
-        elif sort == 'Standard':
-            branch = Proof_of_vaccination.query.filter_by(unique_patient_identifier=current_user.unique_patient_identifier).filter(Proof_of_vaccination.disease.like(sort)).paginate(page=page, per_page=5)
-        elif sort == 'Gelbfieber':
-            branch = Proof_of_vaccination.query.filter_by(unique_patient_identifier=current_user.unique_patient_identifier).filter(Proof_of_vaccination.vaccine_category.like(sort)).paginate(page=page, per_page=5)
-        elif sort == 'Grippe':
-            branch = Proof_of_vaccination.query.filter_by(unique_patient_identifier=current_user.unique_patient_identifier).filter(Proof_of_vaccination.vaccine_category.like(sort)).paginate(page=page, per_page=5)
-        elif sort == 'Zusatz':
-            branch = Proof_of_vaccination.query.filter_by(unique_patient_identifier=current_user.unique_patient_identifier).filter(Proof_of_vaccination.vaccine_category.like(sort)).paginate(page=page, per_page=5)
+        elif sort == 'Pneumokokken':
+            branch = Proof_of_vaccination.query.filter(Proof_of_vaccination.unique_patient_identifier == current_user.unique_patient_identifier).paginate(page=page, per_page=5)
+            vaccination = Vaccination.query.filter(Vaccination.disease == sort).all()
+        
+            
+            
+        elif sort == 'Hepatitis B':
+            branch = Proof_of_vaccination.query.filter(Proof_of_vaccination.unique_patient_identifier == current_user.unique_patient_identifier).paginate(page=page, per_page=5)
+            vaccination = Vaccination.query.filter(Vaccination.disease == sort).all()
+            print('test')
+          
         else:
             abort(404)
 
@@ -227,7 +233,7 @@ def patient_home(sort='date', search=''):
     
     vac_notifications = check_for_vac_notifications()
 
-    return render_template('patient/patient_vaccination_certificate.html', branch=branch, sort=sort, form=form, search=vaccine_search, vac_notifications=vac_notifications, list1=list1)
+    return render_template('patient/patient_vaccination_certificate.html', branch=branch, sort=sort, form=form, search=vaccine_search, vac_notifications=vac_notifications, list1=list1, vaccination=vaccination)
 
 @app.route("/patient/sideeffects/<int:unique_certificate_identifier>", methods=['POST', 'GET'])
 def new_sideeffect(unique_certificate_identifier):
@@ -252,6 +258,7 @@ def new_sideeffect(unique_certificate_identifier):
 @app.route("/patientQR/<int:unique_certificate_identifier>", methods=['POST', 'GET'])
 def open_QR(unique_certificate_identifier):
     branch = Proof_of_vaccination.query.filter_by(unique_certificate_identifier=unique_certificate_identifier).first()
+    vaccination = Vaccination.query.filter(Proof_of_vaccination.vaccination_id == Vaccination.vaccination_id).first()
 
     qr = {}
     img = []
@@ -261,8 +268,7 @@ def open_QR(unique_certificate_identifier):
     proof_of_vaccination['unique_certificate_identifier']= branch.unique_certificate_identifier
     proof_of_vaccination['date_of_vaccination']= branch.date_of_vaccination
     proof_of_vaccination['vaccine']= branch.vaccine
-    proof_of_vaccination['vaccine_category']= branch.vaccine_category
-    proof_of_vaccination['disease']= branch.disease
+    proof_of_vaccination['vaccination_id'] = branch.vaccination_id
     proof_of_vaccination['vaccine_marketing_authorization_holder']= branch.vaccine_marketing_authorization_holder
     proof_of_vaccination['batch_number']= branch.batch_number
     proof_of_vaccination['issued_at']= branch.issued_at
@@ -278,7 +284,7 @@ def open_QR(unique_certificate_identifier):
     img = qr.make_image (fill = 'black', back_color = 'white')
     img.save(file_object,'PNG')
 
-    return render_template('patient/patient_show_QR.html', branch = branch, qr="data:image/png;base64,"+b64encode(file_object.getvalue()).decode('ascii'))
+    return render_template('patient/patient_show_QR.html', branch = branch, vaccination=vaccination, qr="data:image/png;base64,"+b64encode(file_object.getvalue()).decode('ascii'))
 
 
 # Patient - Login route

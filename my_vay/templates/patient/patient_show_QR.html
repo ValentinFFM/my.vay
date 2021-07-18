@@ -55,6 +55,7 @@
     </nav>
 
     {% if branch %}    
+    {%if vaccination%}
     
     <div class="container my-5">
 
@@ -68,23 +69,23 @@
                                   
             <h5 class="mt-5">
                 <div class="row my-1">
-                    <div class="col-2 text-center"><h5> <b> ID</b></h5></div>
-                    <div class="col-2 text-center"><h5> <b> Datum</b></h5></div>
-                    <div class="col-2 text-center"><h5><b> Impfstoff </b></h5></div>
-                    <div class="col-2 text-center"><h5><b> Kategorie</b></h5></div>
-                    <div class="col-2 text-center"><h5><b> Chargen-Nr.</b></h5></div>
-                    <div class="col-2 text-center"><h5><b>Issuer </b> </h5></div>
+                    <div class="col-2 text-center"> <b>Datum</b></div>
+                    <div class="col-2 text-center"><b>Impfstoff </b></div>
+                    <div class="col-2 text-center"><b>Krankheit</b></div>
+                    <div class="col-2 text-center"><b>Art</b></div>
+                    <div class="col-2 text-center"><b>Chargen-Nr.</b></div>
+                    <div class="col-2 text-center"><b>Issuer</b></div>
                 </div>
             </h5>
         
             <h5 class="card  card-vaccination my-3">
                 <div class="row my-2">
-                    <div class="col-2 text-center">{{ branch.unique_certificate_identifier }}</div>
-                    <div class="col-2 text-center">{{ branch.date_of_vaccination}}</div>
-                    <div class="col-2 text-center">{{ branch.vaccine }}</div>
-                    <div class="col-2 text-center"> {{ branch.vaccine_category }}</div>
-                    <div class="col-2 text-center"> {{ branch.batch_number }}</div>
-                    <div class="col-2 text-center"> {{ branch.unique_issuer_identifier }}</div>
+                    <div class="col-2 align-self-center text-center ">{{ branch.date_of_vaccination}}</div>
+                    <div class="col-2 align-self-center text-center ">{{ branch.vaccine }}</div>
+                    <div class="col-2 align-self-center text-center "> {{ vaccination.disease }}</div>
+                    <div class="col-2 align-self-center text-center "> {{ vaccination.vaccine_category }}</div>
+                    <div class="col-2 align-self-center text-center "> {{ branch.batch_number }}</div>
+                    <div class="col-2 align-self-center text-center "> {{ branch.unique_issuer_identifier }}</div>
                        
                 </div>
             </h5>
@@ -109,6 +110,6 @@
             
         
     
-    
+    {%endif%}
     {% endif %}
 {% endblock %}
