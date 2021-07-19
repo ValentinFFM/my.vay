@@ -179,7 +179,7 @@ def patient_home(sort='date', search=''):
         vaccine_search = True
         search = '%' + search + '%'
         branch = Proof_of_vaccination.query.filter(Proof_of_vaccination.unique_patient_identifier == current_user.unique_patient_identifier).filter(Proof_of_vaccination.vaccine.like(search)).paginate(page=page, per_page=5)
-        vaccination = Vaccination.query.filter(Proof_of_vaccination.vaccination_id == Vaccination.vaccination_id).first()
+        vaccination = Vaccination.query.filter(Proof_of_vaccination.vaccination_id == Vaccination.vaccination_id).all()
     else: 
         # Depending on an argument in the url, the patients are sorted in different ways.
         if sort == 'date':
