@@ -536,23 +536,33 @@ def decode(frame):
 
     # If decodedObject exists, then the data is returned as string
     if decodedObject:
-        return str(decodedObject[0].data)
+        decodedObjectData = decodedObject[0].data
+        # print("decodedObjectData:" + str(decodedObjectData))
+        
+        decodedObjectDataUTF = decodedObjectData.decode('utf-8')
+        # print("decodedObjectDataUTF:" + str(decodedObjectDataUTF))
+        
+        decodedObjectDict = ast.literal_eval(decodedObjectDataUTF)
+        # print("decodedObjectDict:" + str(decodedObjectDict))
+        
+        return decodedObjectDict
     
 def verify_QR_Code():
     camera = cv2.VideoCapture(0)
         
     while True:
-        success, frame = camera.read()  # read the camera frame
+        success, frame = camera.read()
+
         if not success:
             break
         else:
             decodedObject = decode(frame)
+            # print("decodedObject: "+ str(decodedObject))
             
             if decodedObject:
-                decodedObjectConverted = decodedObject[2:-1]
-                decodedObjectConverted = decodedObjectConverted.replace("'","\"")
-                decodedObjectAsDict = ast.literal_eval(decodedObjectConverted)
-                return decodedObjectAsDict
+                break
+    
+    return str(decodedObject)
 
 
 @app.route("/verifier/videostream")
@@ -562,65 +572,33 @@ def verifier_video_stream():
         camera = cv2.VideoCapture(0)
         
         while True:
-            success, frame = camera.read()  # read the camera frame
+            success, frame = camera.read()
+
             if not success:
                 break
             else:
-                decodedObject = decode(frame)
-                
-                if decodedObject:
-                    # decodedObjectConverted = decodedObject[2:-1]
-                    # decodedObjectConverted = decodedObjectConverted.replace("'","\"")
-                    # decodedObjectAsDict = ast.literal_eval(decodedObjectConverted)
-                    
-                    # proof_of_vaccination = Proof_of_vaccination(unique_certificate_identifier = decodedObjectAsDict["unique_certificate_identifier"], date_of_vaccination = decodedObjectAsDict["date_of_vaccination"], vaccine = decodedObjectAsDict["vaccine"], vaccine_marketing_authorization_holder = decodedObjectAsDict["vaccine_marketing_authorization_holder"], batch_number = decodedObjectAsDict["batch_number"], issued_at = decodedObjectAsDict["issued_at"], unique_patient_identifier = decodedObjectAsDict["unique_patient_identifier"], unique_issuer_identifier = decodedObjectAsDict["unique_issuer_identifier"], vaccination_id = decodedObjectAsDict["vaccination_id"])
-                    # proof_of_vaccination = Proof_of_vaccination(unique_certificate_identifier = 4, date_of_vaccination = "2021-09-20", vaccine = "Hepatitis B", vaccine_marketing_authorization_holder = "Excel", batch_number = "12345", issued_at = "2012-04-15 00:00:00", unique_patient_identifier = 1, unique_issuer_identifier = 1, vaccination_id = 2)
-                    # db.session.add(proof_of_vaccination)
-                    # db.session.commit()
-                    
-                    break
-                    # return redirect(url_for('home'))
-                else:   
-                    ret, buffer = cv2.imencode('.jpg', frame)
-                    frame = buffer.tobytes()
-                    yield b'--frame\r\n' b'Content-Type: image/jpeg\r\n\r\n' + frame + b'\r\n'
-    
+                ret, buffer = cv2.imencode('.jpg', frame)
+                frame = buffer.tobytes()
+                yield b'--frame\r\n' b'Content-Type: image/jpeg\r\n\r\n' + frame + b'\r\n'
+
     return Response(gen_frames(), mimetype='multipart/x-mixed-replace; boundary=frame')
-
-
 
 @app.route("/verifier", methods =["GET", "POST"])
 def verifier_scan():
-    form = ScanQRCode()
-    
-    # if form.validate_on_submit:
-    #     decodedObject = verify_QR_Code()
-    #     print(decodedObject)
-    
-    return render_template("verifier/verifier_scan.html", form=form)
+    return render_template("verifier/verifier_scan.html")
+
+@app.route("/verifier/scan")
+def scan():
+    decodedObject = verify_QR_Code()
+    return render_template("scan_test.html", decodedObject=decodedObject)
 
 
 
+# decodedObjectConverted = decodedObject[2:-1]
+# decodedObjectConverted = decodedObjectConverted.replace("'","\"")
+# decodedObjectAsDict = ast.literal_eval(decodedObjectConverted)
 
-# @app.route('/showvaccination', methods=['POST'])
-# def showvaccination():
-#     if request.method == "POST":
-#         branch = Impfung.query.all()
-#         return render_template('patient_vaccination_certificate.html', branch=branch)
-
-#Neuer manueller Impfeintrag
-
-# @app.route('/addvaccination', methods=['POST'])
-# def addvaccination():
-#     if request.method == "POST":
-#         Impfdatum = request.form['Impfdatum']
-#         Impfstoff = request.form['Impfstoff']
-#         Chargennummer = request.form['Chargennummer']
-#         Impfkategorie = request.form['Impfkategorie']
-#         Medizinische_Einrichtung = request.form['Medizinische_Einrichtung']
-#         state_ = request.form['state_']
-#         data = Impfung(Impfdatum, Impfstoff, Chargennummer, Impfkategorie, Medizinische_Einrichtung)
-#         db.session.add(data)
-#         db.session.commit()
-#         branch = Impfung.query.all()
-#         return render_template('patient_vaccination_certificate.html', branch = branch)
+# proof_of_vaccination = Proof_of_vaccination(unique_certificate_identifier = decodedObjectAsDict["unique_certificate_identifier"], date_of_vaccination = decodedObjectAsDict["date_of_vaccination"], vaccine = decodedObjectAsDict["vaccine"], vaccine_marketing_authorization_holder = decodedObjectAsDict["vaccine_marketing_authorization_holder"], batch_number = decodedObjectAsDict["batch_number"], issued_at = decodedObjectAsDict["issued_at"], unique_patient_identifier = decodedObjectAsDict["unique_patient_identifier"], unique_issuer_identifier = decodedObjectAsDict["unique_issuer_identifier"], vaccination_id = decodedObjectAsDict["vaccination_id"])
+# proof_of_vaccination = Proof_of_vaccination(unique_certificate_identifier = 4, date_of_vaccination = "2021-09-20", vaccine = "Hepatitis B", vaccine_marketing_authorization_holder = "Excel", batch_number = "12345", issued_at = "2012-04-15 00:00:00", unique_patient_identifier = 1, unique_issuer_identifier = 1, vaccination_id = 2)
+# db.session.add(proof_of_vaccination)
+# db.session.commit()

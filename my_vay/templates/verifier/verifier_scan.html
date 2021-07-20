@@ -10,14 +10,9 @@
             <div class="col-2">
     
             </div>
-            <div class="col-8">
+            <div class="col-8 text-center">
                 <img class="mb-3" src="{{ url_for('verifier_video_stream') }}" width="100%">
-                <a class="btn btn-success" href="{{ url_for('home')}}">Überprüfen</a>
-                <form method="POST" action="">
-                    <div class="form-group mx-3 my-3">
-                        {{ form.submit(class="btn btn-outline-success col-12") }}
-                    </div>
-                </form>
+                <a class="btn btn-success" href="{{ url_for('scan')}}">QR-Code-Überprüfung starten</a>
             </div>
             <div class="col-2">
                 
