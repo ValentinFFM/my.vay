@@ -42,6 +42,10 @@ class Issuer(db.Model, UserMixin):
     # Defining relationship to proof_of_vaccination
     proof_of_vaccination_identifier = db.relationship('Proof_of_vaccination', backref = 'issuer') 
 
+    # Defines the attribute that is given back, when the get_id function is called on an object of this class
+    def get_id(self):
+        return (self.unique_issuer_identifier)
+
 # Proof_of_vaccination Model
 class Proof_of_vaccination(db.Model):
     # Defining primary key
