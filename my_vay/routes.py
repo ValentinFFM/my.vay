@@ -1,7 +1,6 @@
 # 
 # Imports
 #
-from werkzeug.exceptions import PreconditionRequired
 from my_vay import app, db
 
 # General imports for Flask
@@ -11,10 +10,12 @@ from flask import Flask, render_template, abort, url_for, redirect, flash, reque
 from my_vay.forms import AddSideeffects, ImpfnachweisForm, PatientLoginForm, AddVaccination, PatientRegistrationForm, IssuerRegistrationForm, IssuerLoginForm, IssuerUpdateForm, PatientUpdateForm, ScanQRForm, SearchVaccine, ScanQRCode
 
 # Imports for user handeling
-from flask_login import login_user, current_user, logout_user, login_required, UserMixin, LoginManager
+from flask_login import login_user, current_user, logout_user, login_required
 
+# Imports for models
 from my_vay.models import Patient, Issuer, Proof_of_vaccination, Vaccination, Sideeffects
 
+# Imports for QR-Code creation and encoding
 from base64 import b64encode, decode
 import io
 from qrcode.main import QRCode
@@ -24,8 +25,8 @@ import sys
 from pyzbar import pyzbar
 from pyzbar.pyzbar import decode
 
-
-from datetime import datetime, date, timedelta
+# Imports for datetime
+from datetime import date, timedelta
 from dateutil import relativedelta
 
 
@@ -52,7 +53,6 @@ def logout():
 #
 # Patient routes
 #
-
 
 def check_for_vac_notifications():
     # Returns the proof_of_vaccinations of the logged-in-user from the database
@@ -150,7 +150,6 @@ def check_for_vac_notifications():
             notifications.append(notification)
     
     return notifications
-        
 
 # Patient - Landing page route
 @app.route("/patient",methods=['POST', 'GET'])
@@ -166,8 +165,6 @@ def patient_home(sort='date', search=''):
     test=0
     list1=[]
     sorting = []
-    
-    
 
     # Checks if a search term is used. If yes then patients first and last name are searched for the search term. Otherwise all patients of the doctor are executed
     if search:
@@ -203,17 +200,12 @@ def patient_home(sort='date', search=''):
                         list1.append(entry)
                         print('yes')
                     
-                
-            
             print(list1)
-            
             
         elif sort == 'Pneumokokken':
             branch = Proof_of_vaccination.query.filter(Proof_of_vaccination.unique_patient_identifier == current_user.unique_patient_identifier).paginate(page=page, per_page=5)
             vaccination = Vaccination.query.filter(Vaccination.disease == sort).all()
-        
-            
-            
+
         elif sort == 'Hepatitis B':
             branch = Proof_of_vaccination.query.filter(Proof_of_vaccination.unique_patient_identifier == current_user.unique_patient_identifier).paginate(page=page, per_page=5)
             vaccination = Vaccination.query.filter(Vaccination.disease == sort).all()
@@ -409,8 +401,6 @@ def patient_profil():
 # Issuer routes
 #
 
-
-
 # Issuer - Login route
 @app.route("/issuer/login", methods =["GET", "POST"])
 def issuer_login():
@@ -526,6 +516,8 @@ def issuer_profil():
 
     return render_template("/issuer/issuer_profile.html", form=form)
 
+
+
 # 
 # Verifier routes
 #
@@ -563,7 +555,6 @@ def verify_QR_Code():
                 break
     
     return str(decodedObject)
-
 
 @app.route("/verifier/videostream")
 def verifier_video_stream():
