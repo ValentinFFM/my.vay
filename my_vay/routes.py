@@ -5,22 +5,25 @@ from werkzeug.exceptions import PreconditionRequired
 from my_vay import app, db
 
 # General imports for Flask
-from flask import Flask, render_template, abort, url_for, redirect, flash, request, session
+from flask import Flask, render_template, abort, url_for, redirect, flash, request, session, Response
 
 # Imports for forms
-from my_vay.forms import AddSideeffects, ImpfnachweisForm, PatientLoginForm, AddVaccination, PatientRegistrationForm, IssuerRegistrationForm, IssuerLoginForm, IssuerUpdateForm, PatientUpdateForm, ScanQRForm, SearchVaccine
+from my_vay.forms import AddSideeffects, ImpfnachweisForm, PatientLoginForm, AddVaccination, PatientRegistrationForm, IssuerRegistrationForm, IssuerLoginForm, IssuerUpdateForm, PatientUpdateForm, ScanQRForm, SearchVaccine, ScanQRCode
 
 # Imports for user handeling
 from flask_login import login_user, current_user, logout_user, login_required, UserMixin, LoginManager
 
 from my_vay.models import Patient, Issuer, Proof_of_vaccination, Vaccination, Sideeffects
 
-from base64 import b64encode
+from base64 import b64encode, decode
 import io
 from qrcode.main import QRCode
 import cv2
 import ast
 import sys
+from pyzbar import pyzbar
+from pyzbar.pyzbar import decode
+
 
 from datetime import datetime, date, timedelta
 from dateutil import relativedelta
@@ -148,14 +151,6 @@ def check_for_vac_notifications():
     
     return notifications
         
-    
-
-# @app.route("/test")
-# def test_route():
-#     notifications = check_for_vac_notifications()
-#     print(notifications)
-#     return render_template('html_container.html')
-    
 
 # Patient - Landing page route
 @app.route("/patient",methods=['POST', 'GET'])
@@ -381,32 +376,7 @@ def patient_kalender():
 @app.route("/patient/impfeintrag/scan",methods =["GET", "POST"])
 @login_required
 def patient_scan():
-    form = ScanQRForm()
-    new_entry = {}
-    #form =ImpfnachweisForm()
-    ### open camera
-    cap = cv2.VideoCapture(0)
-    while True:
-        _,frame = cap.read() #### get next frame of the camera
-        decodedObjects = pyzbar.decode(frame) # decode QR-Code 
-        for objects in decodedObjects:
-            bytstr = objects.data
-            dictstr = bytstr.decode('utf-8')
-            certificate_data = ast.literal_eval(dictstr)
-            new_entry = Proof_of_vaccination(unique_certificate_identifier = '3', f_name =certificate_data['f_name'], date_of_vaccination = certificate_data['date_of_vaccination'], vaccine = certificate_data['vaccine'], batch_number=certificate_data['batch_number'], vaccine_category=certificate_data['vaccine_category'], unique_issuer_identifier=certificate_data['certificate_issuer'], disease= certificate_data['disease'], vaccine_marketing_authorization_holder= certificate_data['vaccine_marketing_authorization_holder'], issued_at= certificate_data['issued_at'])
-            print (certificate_data['f_name'])
-        cv2.imshow('Impfnachweis einlesen',frame) # show the frame
-        key = cv2.waitKey(1)
-        if key ==27:
-            break
-        db.session.add(new_entry)
-        db.session.commit()
-        return render_template("/patient/patient_vaccination_certificate.html",form=form)
-
-        #add_certificate_data = Proof_of_vaccination(f_name =form.f_name.data, date_of_vaccination = form.date_of_vaccination.data, vaccine = form.vaccine.data, batch_number=form.batch_number.data, vaccine_category=form.vaccine_category.data, unique_issuer_identifier=form.unique_issuer_identifier.data, disease= "/", vaccine_marketing_authorization_holder= "/", issued_at= "/")
-        #db.session.add(nadd_certificate_data)
-        #db.session.commit()
-    return render_template("/patient/patient_scan.html",form=form)
+    return render_template("/patient/patient_scan.html")
 
 @app.route("/patient/profil", methods =["GET", "POST"])
 @login_required
@@ -546,6 +516,82 @@ def issuer_profil():
         form.password.data = current_user.password
 
     return render_template("/issuer/issuer_profile.html", form=form)
+
+# 
+# Verifier routes
+#
+
+def decode(frame):
+    # Decode QR-Code
+    decodedObject = pyzbar.decode(frame)
+
+    # If decodedObject exists, then the data is returned as string
+    if decodedObject:
+        return str(decodedObject[0].data)
+    
+def verify_QR_Code():
+    camera = cv2.VideoCapture(0)
+        
+    while True:
+        success, frame = camera.read()  # read the camera frame
+        if not success:
+            break
+        else:
+            decodedObject = decode(frame)
+            
+            if decodedObject:
+                decodedObjectConverted = decodedObject[2:-1]
+                decodedObjectConverted = decodedObjectConverted.replace("'","\"")
+                decodedObjectAsDict = ast.literal_eval(decodedObjectConverted)
+                return decodedObjectAsDict
+
+
+@app.route("/verifier/videostream")
+def verifier_video_stream():
+    
+    def gen_frames():  
+        camera = cv2.VideoCapture(0)
+        
+        while True:
+            success, frame = camera.read()  # read the camera frame
+            if not success:
+                break
+            else:
+                decodedObject = decode(frame)
+                
+                if decodedObject:
+                    # decodedObjectConverted = decodedObject[2:-1]
+                    # decodedObjectConverted = decodedObjectConverted.replace("'","\"")
+                    # decodedObjectAsDict = ast.literal_eval(decodedObjectConverted)
+                    
+                    # proof_of_vaccination = Proof_of_vaccination(unique_certificate_identifier = decodedObjectAsDict["unique_certificate_identifier"], date_of_vaccination = decodedObjectAsDict["date_of_vaccination"], vaccine = decodedObjectAsDict["vaccine"], vaccine_marketing_authorization_holder = decodedObjectAsDict["vaccine_marketing_authorization_holder"], batch_number = decodedObjectAsDict["batch_number"], issued_at = decodedObjectAsDict["issued_at"], unique_patient_identifier = decodedObjectAsDict["unique_patient_identifier"], unique_issuer_identifier = decodedObjectAsDict["unique_issuer_identifier"], vaccination_id = decodedObjectAsDict["vaccination_id"])
+                    # proof_of_vaccination = Proof_of_vaccination(unique_certificate_identifier = 4, date_of_vaccination = "2021-09-20", vaccine = "Hepatitis B", vaccine_marketing_authorization_holder = "Excel", batch_number = "12345", issued_at = "2012-04-15 00:00:00", unique_patient_identifier = 1, unique_issuer_identifier = 1, vaccination_id = 2)
+                    # db.session.add(proof_of_vaccination)
+                    # db.session.commit()
+                    
+                    break
+                    # return redirect(url_for('home'))
+                else:   
+                    ret, buffer = cv2.imencode('.jpg', frame)
+                    frame = buffer.tobytes()
+                    yield b'--frame\r\n' b'Content-Type: image/jpeg\r\n\r\n' + frame + b'\r\n'
+    
+    return Response(gen_frames(), mimetype='multipart/x-mixed-replace; boundary=frame')
+
+
+
+@app.route("/verifier", methods =["GET", "POST"])
+def verifier_scan():
+    form = ScanQRCode()
+    
+    # if form.validate_on_submit:
+    #     decodedObject = verify_QR_Code()
+    #     print(decodedObject)
+    
+    return render_template("verifier/verifier_scan.html", form=form)
+
+
+
 
 # @app.route('/showvaccination', methods=['POST'])
 # def showvaccination():

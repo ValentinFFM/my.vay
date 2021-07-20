@@ -1,0 +1,27 @@
+{% extends "html_container.html" %}
+
+{% block page_title %}
+    Verifier - Scan 
+{% endblock %}
+
+{% block page_content %}
+    <div class="container my-5">
+        <div class="row">
+            <div class="col-2">
+    
+            </div>
+            <div class="col-8">
+                <img class="mb-3" src="{{ url_for('verifier_video_stream') }}" width="100%">
+                <a class="btn btn-success" href="{{ url_for('home')}}">Überprüfen</a>
+                <form method="POST" action="">
+                    <div class="form-group mx-3 my-3">
+                        {{ form.submit(class="btn btn-outline-success col-12") }}
+                    </div>
+                </form>
+            </div>
+            <div class="col-2">
+                
+            </div>
+        </div>
+    </div>
+{% endblock %}
