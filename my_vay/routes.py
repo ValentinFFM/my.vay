@@ -478,13 +478,13 @@ def issuer_create_qr():
         proof_of_vaccination= {}
         proof_of_vaccination['f_name']= form.f_name.data
         proof_of_vaccination['l_name'] = form.l_name.data
-        proof_of_vaccination['date_of_birth']=form.date_of_birth.data
-        proof_of_vaccination['date_of_vaccination'] = form.date_of_vaccination.data
+        proof_of_vaccination['date_of_birth'] = form.date_of_birth.data.strftime('%Y-%m-%d')
+        proof_of_vaccination['date_of_vaccination'] = form.date_of_vaccination.data.strftime('%Y-%m-%d')
         proof_of_vaccination['vaccination_id'] = form.vaccination_id.data
         proof_of_vaccination['vaccine'] = form.vaccine.data
         proof_of_vaccination['vaccine_marketing_authorization_holder'] = form.vaccine_marketing_authorization_holder.data
         proof_of_vaccination['batch_number'] = form.batch_number.data
-        proof_of_vaccination['issued_at'] = form.issued_at.data
+        proof_of_vaccination['issued_at'] = form.issued_at.data.strftime('%Y-%m-%d %H:%M:%S')
         proof_of_vaccination['unique_issuer_identifier'] = current_user.unique_issuer_identifier
         proof_of_vaccination['unique_certificate_identifier'] = unique_certificate_identifier
         qr = QRCode(version=1, box_size=3,border=3)
@@ -591,14 +591,3 @@ def verifier_scan():
 def scan():
     decodedObject = verify_QR_Code()
     return render_template("scan_test.html", decodedObject=decodedObject)
-
-
-
-# decodedObjectConverted = decodedObject[2:-1]
-# decodedObjectConverted = decodedObjectConverted.replace("'","\"")
-# decodedObjectAsDict = ast.literal_eval(decodedObjectConverted)
-
-# proof_of_vaccination = Proof_of_vaccination(unique_certificate_identifier = decodedObjectAsDict["unique_certificate_identifier"], date_of_vaccination = decodedObjectAsDict["date_of_vaccination"], vaccine = decodedObjectAsDict["vaccine"], vaccine_marketing_authorization_holder = decodedObjectAsDict["vaccine_marketing_authorization_holder"], batch_number = decodedObjectAsDict["batch_number"], issued_at = decodedObjectAsDict["issued_at"], unique_patient_identifier = decodedObjectAsDict["unique_patient_identifier"], unique_issuer_identifier = decodedObjectAsDict["unique_issuer_identifier"], vaccination_id = decodedObjectAsDict["vaccination_id"])
-# proof_of_vaccination = Proof_of_vaccination(unique_certificate_identifier = 4, date_of_vaccination = "2021-09-20", vaccine = "Hepatitis B", vaccine_marketing_authorization_holder = "Excel", batch_number = "12345", issued_at = "2012-04-15 00:00:00", unique_patient_identifier = 1, unique_issuer_identifier = 1, vaccination_id = 2)
-# db.session.add(proof_of_vaccination)
-# db.session.commit()
