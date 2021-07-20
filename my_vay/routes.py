@@ -450,7 +450,7 @@ def issuer_registration():
     return render_template('issuer/issuer_registration.html', form=form)
 
 
-# Landing page route
+# Issuer - Landing page route
 @app.route("/issuer", methods =["GET", "POST"])
 @login_required
 def issuer_create_qr():
@@ -556,29 +556,36 @@ def verify_QR_Code():
     
     return str(decodedObject)
 
-@app.route("/verifier/videostream")
-def verifier_video_stream():
+# Verifier - Webcam route 
+@app.route("/camera_stream")
+def camera_stream():
     
-    def gen_frames():  
+    def generate_frames():
+        # Instantiation of a camera object refering to the camera of the device
         camera = cv2.VideoCapture(0)
         
         while True:
+            # Getting frames from the camera
             success, frame = camera.read()
 
             if not success:
                 break
             else:
+                # Coverting frames to a jpg
                 ret, buffer = cv2.imencode('.jpg', frame)
                 frame = buffer.tobytes()
                 yield b'--frame\r\n' b'Content-Type: image/jpeg\r\n\r\n' + frame + b'\r\n'
 
-    return Response(gen_frames(), mimetype='multipart/x-mixed-replace; boundary=frame')
+    # Returning frames of the facecame
+    return Response(generate_frames(), mimetype='multipart/x-mixed-replace; boundary=frame')
 
+# Verifier - QR-Code scan route 
 @app.route("/verifier", methods =["GET", "POST"])
-def verifier_scan():
+def verifier_qr_scan():
     return render_template("verifier/verifier_scan.html")
 
-@app.route("/verifier/scan")
-def scan():
+# Verifier - QR-Code result route
+@app.route("/verifier/scan-result")
+def verifier_qr_result():
     decodedObject = verify_QR_Code()
-    return render_template("scan_test.html", decodedObject=decodedObject)
+    return render_template("verifier/verifier_scan_result.html", decodedObject=decodedObject)
