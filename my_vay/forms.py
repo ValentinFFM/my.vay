@@ -7,15 +7,13 @@ from my_vay.models import Patient, Issuer
 class ImpfnachweisForm (Form):
     f_name = TextField("Vorname des Geimpften: ")
     l_name = TextField("Nachname des Geimpften: ")
-    date_of_birth = DateField("Geburtsdatum des Geimpften: ",format='%Y-%m-%d')
-    date_of_vaccination= DateTimeField("Datum der Impfung: ",format='%m/%d/%y')
-    vaccine_category = TextField("Impfkategorie (Standardimpfung, Auffrischimpfung,...): ")
-    disease = StringField("Impfung für folgende Krankheit: ")
+    date_of_birth = DateField("Geburtsdatum des Geimpften: ",validators=[DataRequired(), Length(max=30)],render_kw={"placeholder": "YYYY-mm-dd"})
+    date_of_vaccination= DateField("Datum der Impfung: ", validators=[DataRequired(), Length(max=30)],render_kw={"placeholder": "YYYY-mm-dd"})
+    vaccination_id = SelectField("Impfkategorie: ")
     vaccine = StringField("Impfstoff: ")
     vaccine_marketing_authorization_holder = TextField("Hersteller: ")
     batch_number = StringField("Chargennummer: ")
-    issued_at = DateTimeLocalField ("Ausgestellt am: ", format='%m/%d/%y')
-    certificate_issuer = StringField("Ihre Zertifikatsnummer: ")
+    issued_at = DateTimeField ("Ausgestellt am: ", render_kw={"placeholder": "YYYY-mm-dd hh:mm"})
     generate_certificate =  SubmitField("Impfnachweis erstellen")
 
 class PatientLoginForm(Form):

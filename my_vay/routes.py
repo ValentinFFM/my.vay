@@ -409,36 +409,7 @@ def patient_profil():
 # Issuer routes
 #
 
-# Landing page route
-@app.route("/issuer", methods =["GET", "POST"])
-@login_required
-def issuer_home():
-    form = ImpfnachweisForm()
-    qr = {}
-    img = []
-    file_object = io.BytesIO()
 
-# Clicking on the submit button is creating JSON-Object with input data
-    if form.is_submitted():
-        proof_of_vaccination= {}
-        proof_of_vaccination['f_name']= form.f_name.data
-        proof_of_vaccination['l_name'] = form.l_name.data
-        proof_of_vaccination['date_of_birth']=form.date_of_birth.data
-        proof_of_vaccination['date_of_vaccination'] = form.date_of_vaccination.data
-        proof_of_vaccination['vaccination_category'] = form.vaccine_category.data
-        proof_of_vaccination['vaccine_marketing_authorization_holder'] = form.vaccine_marketing_authorization_holder.data
-        proof_of_vaccination['batch_number'] = form.batch_number.data
-        proof_of_vaccination['issued_at'] = form.issued_at.data
-        proof_of_vaccination['certificate_issuer'] = form.certificate_issuer.data
-        
-        qr = QRCode(version=1, box_size=6,border=4)
-        qr.add_data(proof_of_vaccination)
-        qr.make()
-        #qr = qrcode.make(proof_of_vaccination)
-        img = qr.make_image (fill = 'black', back_color = 'white')
-        img.save(file_object,'PNG')
-
-    return render_template("/issuer/issuer_create_qr.html", form=form, qr="data:image/png;base64,"+b64encode(file_object.getvalue()).decode('ascii'))
 
 # Issuer - Login route
 @app.route("/issuer/login", methods =["GET", "POST"])
@@ -447,7 +418,7 @@ def issuer_login():
     # Redirects user to the issuer landing page, if he is already signed in
     if current_user.is_authenticated:
         if session['user_type'] == 'issuer':
-            return redirect(url_for('issuer_home'))
+            return redirect(url_for('issuer_create_qr'))
     
     # Loads the IssuerLoginForm from forms.py 
     form = IssuerLoginForm()
@@ -466,7 +437,7 @@ def issuer_login():
             login_user(issuer, remember=form.remember.data)
             
             # Issuer is redirected to the issuer landing page
-            return redirect(url_for('issuer_home'))
+            return redirect(url_for('issuer_create_qr'))
 
         else:
             flash('Es existiert kein Issuer mit dieser Nutzer ID!', 'danger')
@@ -487,6 +458,44 @@ def issuer_registration():
         return redirect(url_for('issuer_login'))
     
     return render_template('issuer/issuer_registration.html', form=form)
+
+
+# Landing page route
+@app.route("/issuer", methods =["GET", "POST"])
+@login_required
+def issuer_create_qr():
+    form = ImpfnachweisForm()
+    form.vaccination_id.choices = [(int(vaccination.vaccination_id), vaccination.disease + " (" + vaccination.vaccine_category + ")") for vaccination in Vaccination.query.all()]
+    qr = {}
+    img = []
+    file_object = io.BytesIO()
+## Clicking on the submit button is creating with input data
+    if form.is_submitted():
+        unique_certificate_identifier = 1
+        while Proof_of_vaccination.query.filter_by(unique_certificate_identifier=unique_certificate_identifier).first() is not None:
+            unique_certificate_identifier = unique_certificate_identifier + 1
+    
+        proof_of_vaccination= {}
+        proof_of_vaccination['f_name']= form.f_name.data
+        proof_of_vaccination['l_name'] = form.l_name.data
+        proof_of_vaccination['date_of_birth']=form.date_of_birth.data
+        proof_of_vaccination['date_of_vaccination'] = form.date_of_vaccination.data
+        proof_of_vaccination['vaccination_id'] = form.vaccination_id.data
+        proof_of_vaccination['vaccine'] = form.vaccine.data
+        proof_of_vaccination['vaccine_marketing_authorization_holder'] = form.vaccine_marketing_authorization_holder.data
+        proof_of_vaccination['batch_number'] = form.batch_number.data
+        proof_of_vaccination['issued_at'] = form.issued_at.data
+        proof_of_vaccination['unique_issuer_identifier'] = current_user.unique_issuer_identifier
+        proof_of_vaccination['unique_certificate_identifier'] = unique_certificate_identifier
+        qr = QRCode(version=1, box_size=3,border=3)
+        qr.add_data(proof_of_vaccination)
+        qr.make()
+        #qr = qrcode.make(proof_of_vaccination)
+        img = qr.make_image (fill = 'black', back_color = 'white')
+        img.save(file_object,'PNG')
+    
+    return render_template("/issuer/issuer_create_qr.html", form=form, qr="data:image/png;base64,"+b64encode(file_object.getvalue()).decode('ascii'))
+
 
 @app.route("/issuer/impfwissen")
 @login_required
