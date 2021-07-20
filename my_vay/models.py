@@ -106,7 +106,7 @@ class Sideeffects(db.Model):
 # Create tables
 db.create_all()
 
-# try:
+
 # vaccination_1 = Vaccination(vaccination_id = 7, disease = 'Pneumokokken', vaccine_category = 'S', beginn_age = 720, next_vaccination_id = 7)
 # vaccination_2 = Vaccination(vaccination_id = 6, disease = 'Pneumokokken', vaccine_category = 'G3', beginn_age = 11, end_age = 23,  next_vaccination_id = 7, distance_to_pre_vaccination = 6)
 # vaccination_3 = Vaccination(vaccination_id = 5, disease = 'Pneumokokken', vaccine_category = 'G2', beginn_age = 4, end_age = 23,  next_vaccination_id = 6)
@@ -126,5 +126,4 @@ db.create_all()
 # db.session.add_all([vaccination_1, vaccination_2, vaccination_3, vaccination_4, vaccination_5, vaccination_6, vaccination_7, issuer_1, issuer_2, patient_1, patient_2, proof_of_vaccination_1])
 
 # db.session.commit()
-# except:
-#     print("Default data already entered")
+
