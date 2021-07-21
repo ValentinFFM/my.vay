@@ -1,15 +1,14 @@
 # 
 # Imports
 #
-from enum import unique
-from os import error
+
 from my_vay import app, db
 
 # General imports for Flask
-from flask import Flask, render_template, abort, url_for, redirect, flash, request, session, Response
+from flask import render_template, abort, url_for, redirect, flash, request, session, Response
 
 # Imports for forms
-from my_vay.forms import AddSideeffects, ImpfnachweisForm, PatientLoginForm, AddVaccination, PatientRegistrationForm, IssuerRegistrationForm, IssuerLoginForm, IssuerUpdateForm, PatientUpdateForm, ScanQRForm, SearchVaccine, ScanQRCode, AddVaccinationByQR
+from my_vay.forms import AddSideeffects, ImpfnachweisForm, PatientLoginForm, AddVaccination, PatientRegistrationForm, IssuerRegistrationForm, IssuerLoginForm, IssuerUpdateForm, PatientUpdateForm, SearchVaccine
 
 # Imports for user handeling
 from flask_login import login_user, current_user, logout_user, login_required
@@ -31,28 +30,34 @@ from pyzbar.pyzbar import decode
 from datetime import date, timedelta
 from dateutil import relativedelta
 
+#
+# Base functions
+#
 
-
+# Decoding a QR-Code in a given frame
 def decode(frame):
     # Decode QR-Code
     decodedObject = pyzbar.decode(frame)
 
     # If decodedObject exists, then the data is returned as string
     if decodedObject:
+        # Read out the data of the QR-Code
         decodedObjectData = decodedObject[0].data
-        # print("decodedObjectData:" + str(decodedObjectData))
         
+        # Decode the content with UTF-8
         decodedObjectDataUTF = decodedObjectData.decode('utf-8')
-        # print("decodedObjectDataUTF:" + str(decodedObjectDataUTF))
         
+        # Covert String to 
         decodedObjectDict = ast.literal_eval(decodedObjectDataUTF)
-        # print("decodedObjectDict:" + str(decodedObjectDict))
         
         return decodedObjectDict
-    
+
+# Calling decode(frame) for every frame of the camera
 def verify_QR_Code():
+    # Instanciation of a camera object
     camera = cv2.VideoCapture(0)
-        
+    
+    # For every frame of the camera the function decode() is called, until the decode() function returns a result
     while True:
         success, frame = camera.read()
 
@@ -60,42 +65,16 @@ def verify_QR_Code():
             break
         else:
             decodedObject = decode(frame)
-            # print("decodedObject: "+ str(decodedObject))
-            
+
             if decodedObject:
                 break
     
     return decodedObject
 
-
-
-#
-# Gerneral routes
-#
-
-# Landing page route
-@app.route("/")
-def home():
-    return render_template("landing.html")
-
-# Logout Route
-@app.route("/logout")
-@login_required
-def logout():
-    logout_user()
-
-    return redirect(url_for('home'))
-
-
-
-#
-# Patient routes
-#
-
+# Function for returning notifications for missing vaccinations
 def check_for_vac_notifications():
     # Returns the proof_of_vaccinations of the logged-in-user from the database
     list_of_proof_of_vaccinations = Proof_of_vaccination.query.filter_by(unique_patient_identifier=current_user.unique_patient_identifier).all()
-    
     notifications = []
     
     # Iterates through the proof_of_vaccinations
@@ -189,6 +168,104 @@ def check_for_vac_notifications():
     
     return notifications
 
+
+
+#
+# General routes
+#
+
+# Landing page route
+@app.route("/")
+def home():
+    return render_template("landing.html")
+
+# Logout Route
+@app.route("/logout")
+@login_required
+def logout():
+    logout_user()
+
+    return redirect(url_for('home'))
+
+#  Camera stream route 
+@app.route("/camera_stream")
+def camera_stream():
+    
+    def generate_frames():
+        # Instantiation of a camera object refering to the camera of the device
+        camera = cv2.VideoCapture(0)
+        
+        while True:
+            # Getting frames from the camera
+            success, frame = camera.read()
+
+            if not success:
+                break
+            else:
+                # Coverting frames to a jpg
+                ret, buffer = cv2.imencode('.jpg', frame)
+                frame = buffer.tobytes()
+                yield b'--frame\r\n' b'Content-Type: image/jpeg\r\n\r\n' + frame + b'\r\n'
+
+    # Returning frames of the facecame
+    return Response(generate_frames(), mimetype='multipart/x-mixed-replace; boundary=frame')
+
+
+#
+# Patient routes
+#
+
+# Patient - Login route
+@app.route("/patient/login", methods =["GET", "POST"])
+def patient_login():
+    
+    # Redirects user to the patient landing page, if he is already signed in
+    if current_user.is_authenticated:
+        if session['user_type'] == 'patient':
+            return redirect(url_for('patient_home'))
+    
+    # Loads the PatientLoginForm from forms.py 
+    form = PatientLoginForm()
+    
+    # If the form is submitted and validated then...
+    if form.validate_on_submit():
+        
+        # Database is queryed based on the unique_patient_identifier
+        patient = Patient.query.filter_by(unique_patient_identifier=form.unique_patient_identifier.data).first()
+        
+        # If a patient with the entered unique_patient_identifier exists and the password in the database is the same as in the form then...
+        if patient and patient.password == form.password.data:
+            
+            # Patient is written into a cookie and user is logged in
+            session['user_type'] = 'patient'
+            login_user(patient, remember=form.remember.data)
+            
+            # Patient is redirected to the patient landing page
+            return redirect(url_for('patient_home'))
+
+        else:
+            flash('Es existiert kein Patient mit dieser Nutzer ID!', 'danger')
+            return redirect(url_for('patient_login'))
+    
+    return render_template('patient/patient_login.html', form=form)
+
+# Patient - Registration route
+@app.route("/patient/registrierung", methods =["GET", "POST"])
+def patient_registration():
+    form = PatientRegistrationForm()
+    
+    # If the form is submitted and validated then...
+    if form.validate_on_submit():
+        
+        # a new patient is added to the database
+        new_patient = Patient(f_name=form.f_name.data, l_name=form.l_name.data, date_of_birth=form.date_of_birth.data, unique_patient_identifier=form.unique_patient_identifier.data, password=form.password.data)
+        db.session.add(new_patient)
+        db.session.commit()
+        
+        return redirect(url_for('patient_login'))
+    
+    return render_template('patient/patient_registration.html', form=form)
+
 # Patient - Landing page route
 @app.route("/patient",methods=['POST', 'GET'])
 @app.route("/patient/<string:sort>", methods=['POST', 'GET'])
@@ -260,26 +337,7 @@ def patient_home(sort='date', search=''):
 
     return render_template('patient/patient_vaccination_certificate.html', branch=branch, sort=sort, form=form, search=vaccine_search, vac_notifications=vac_notifications, list1=list1, vaccination=vaccination)
 
-@app.route("/patient/sideeffects/<int:unique_certificate_identifier>", methods=['POST', 'GET'])
-def new_sideeffect(unique_certificate_identifier):
-    branch = Proof_of_vaccination.query.filter_by(unique_certificate_identifier=unique_certificate_identifier).first()
-
-    form = AddSideeffects()
-    
-    # If the form is submitted and validated then...
-    if form.is_submitted():
-        unique_entry_identifier = 1
-        while Sideeffects.query.filter_by(unique_entry_identifier=unique_entry_identifier).first() is not None:
-            unique_entry_identifier = unique_entry_identifier + 1
-        # a new patient is added to the database
-        new_sideeffects = Sideeffects(unique_entry_identifier=unique_entry_identifier, unique_certificate_identifier=unique_certificate_identifier ,headache=form.headache.data, arm_hurts=form.arm_hurts.data, rash=form.rash.data, fever=form.fever.data, tummyache=form.tummyache.data, sideeffects=form.sideeffects.data)
-        db.session.add(new_sideeffects)
-        db.session.commit()
-        
-        return redirect(url_for('patient_home'))
-    
-    return render_template('patient/patient_sideeffects.html', branch = branch, form=form )
-
+# Patient - Show QR-Code of proof_of_vaccination
 @app.route("/patientQR/<int:unique_certificate_identifier>", methods=['POST', 'GET'])
 def open_QR(unique_certificate_identifier):
     branch = Proof_of_vaccination.query.filter_by(unique_certificate_identifier=unique_certificate_identifier).first()
@@ -311,63 +369,35 @@ def open_QR(unique_certificate_identifier):
 
     return render_template('patient/patient_show_QR.html', branch = branch, vaccination=vaccination, qr="data:image/png;base64,"+b64encode(file_object.getvalue()).decode('ascii'))
 
+# Patient - Sideeffects route
+@app.route("/patient/sideeffects/<int:unique_certificate_identifier>", methods=['POST', 'GET'])
+@login_required
+def new_sideeffect(unique_certificate_identifier):
+    branch = Proof_of_vaccination.query.filter_by(unique_certificate_identifier=unique_certificate_identifier).first()
 
-# Patient - Login route
-@app.route("/patient/login", methods =["GET", "POST"])
-def patient_login():
-    
-    # Redirects user to the patient landing page, if he is already signed in
-    if current_user.is_authenticated:
-        if session['user_type'] == 'patient':
-            return redirect(url_for('patient_home'))
-    
-    # Loads the PatientLoginForm from forms.py 
-    form = PatientLoginForm()
+    form = AddSideeffects()
     
     # If the form is submitted and validated then...
-    if form.validate_on_submit():
-        
-        # Database is queryed based on the unique_patient_identifier
-        patient = Patient.query.filter_by(unique_patient_identifier=form.unique_patient_identifier.data).first()
-        
-        # If a patient with the entered unique_patient_identifier exists and the password in the database is the same as in the form then...
-        if patient and patient.password == form.password.data:
-            
-            # Patient is written into a cookie and user is logged in
-            session['user_type'] = 'patient'
-            login_user(patient, remember=form.remember.data)
-            
-            # Patient is redirected to the patient landing page
-            return redirect(url_for('patient_home'))
-
-        else:
-            flash('Es existiert kein Patient mit dieser Nutzer ID!', 'danger')
-            return redirect(url_for('patient_login'))
-    
-    return render_template('patient/patient_login.html', form=form)
-
-# Patient - Registration route
-@app.route("/patient/registrierung", methods =["GET", "POST"])
-def patient_registration():
-    form = PatientRegistrationForm()
-    
-    # If the form is submitted and validated then...
-    if form.validate_on_submit():
-        
+    if form.is_submitted():
+        unique_entry_identifier = 1
+        while Sideeffects.query.filter_by(unique_entry_identifier=unique_entry_identifier).first() is not None:
+            unique_entry_identifier = unique_entry_identifier + 1
         # a new patient is added to the database
-        new_patient = Patient(f_name=form.f_name.data, l_name=form.l_name.data, date_of_birth=form.date_of_birth.data, unique_patient_identifier=form.unique_patient_identifier.data, password=form.password.data)
-        db.session.add(new_patient)
+        new_sideeffects = Sideeffects(unique_entry_identifier=unique_entry_identifier, unique_certificate_identifier=unique_certificate_identifier ,headache=form.headache.data, arm_hurts=form.arm_hurts.data, rash=form.rash.data, fever=form.fever.data, tummyache=form.tummyache.data, sideeffects=form.sideeffects.data)
+        db.session.add(new_sideeffects)
         db.session.commit()
         
-        return redirect(url_for('patient_login'))
+        return redirect(url_for('patient_home'))
     
-    return render_template('patient/patient_registration.html', form=form)
+    return render_template('patient/patient_sideeffects.html', branch = branch, form=form )
 
+# Patient - Proof of vaccination entry route
 @app.route("/patient/impfeintrag")
 @login_required
 def patient_vaccination_entry():
     return render_template('patient/patient_vaccination_entry.html')
 
+# Patient - Proof of vaccination manual entry route 
 @app.route("/patient/impfeintrag/manuell", methods=['POST', 'GET'])
 @login_required
 def addVaccination():
@@ -390,17 +420,7 @@ def addVaccination():
 
     return render_template('patient/patient_vaccination_manual_entry.html', form=form)
 
-@app.route("/patient/impfwissen")
-@login_required
-def patient_impfwissen():
-    return render_template("/patient/patient_vaccination_knowledge.html")
-
-@app.route("/patient/kalender")
-@login_required
-def patient_kalender():
-    return render_template("/patient/patient_calendar.html")
-
-# Patient - QR-Code route
+# Patient - Proof of vaccination QR-Code entry route
 @app.route("/patient/impfeintrag/scan",methods =["GET", "POST"])
 @login_required
 def patient_scan():
@@ -445,6 +465,19 @@ def patient_qr_result():
                             sind und ob Ihr Impfnachweis die korrekten Daten enthält."""
             return render_template("patient/patient_scan_result.html", error_message=error_message)
 
+# Patient - Vaccination knowledge route
+@app.route("/patient/impfwissen")
+@login_required
+def patient_impfwissen():
+    return render_template("/patient/patient_vaccination_knowledge.html")
+
+# Patient - Calendar route
+@app.route("/patient/kalender")
+@login_required
+def patient_kalender():
+    return render_template("/patient/patient_calendar.html")
+
+# Patient - Profile route
 @app.route("/patient/profil", methods =["GET", "POST"])
 @login_required
 def patient_profil():
@@ -524,7 +557,6 @@ def issuer_registration():
     
     return render_template('issuer/issuer_registration.html', form=form)
 
-
 # Issuer - Landing page route
 @app.route("/issuer", methods =["GET", "POST"])
 @login_required
@@ -561,12 +593,13 @@ def issuer_create_qr():
     
     return render_template("/issuer/issuer_create_qr.html", form=form, qr="data:image/png;base64,"+b64encode(file_object.getvalue()).decode('ascii'))
 
-
+# Issuer - Vaccination knowledge route
 @app.route("/issuer/impfwissen")
 @login_required
 def issuer_impfwissen():
     return render_template("issuer/issuer_vaccination_knowledge.html")
 
+# Issuer - Profile route
 @app.route("/issuer/profil", methods =["GET", "POST"])
 @login_required
 def issuer_profil():
@@ -596,28 +629,6 @@ def issuer_profil():
 # 
 # Verifier routes
 #
-# Verifier - Webcam route 
-@app.route("/camera_stream")
-def camera_stream():
-    
-    def generate_frames():
-        # Instantiation of a camera object refering to the camera of the device
-        camera = cv2.VideoCapture(0)
-        
-        while True:
-            # Getting frames from the camera
-            success, frame = camera.read()
-
-            if not success:
-                break
-            else:
-                # Coverting frames to a jpg
-                ret, buffer = cv2.imencode('.jpg', frame)
-                frame = buffer.tobytes()
-                yield b'--frame\r\n' b'Content-Type: image/jpeg\r\n\r\n' + frame + b'\r\n'
-
-    # Returning frames of the facecame
-    return Response(generate_frames(), mimetype='multipart/x-mixed-replace; boundary=frame')
 
 # Verifier - QR-Code scan route 
 @app.route("/verifier", methods =["GET", "POST"])
