@@ -1,13 +1,14 @@
 h1{
-    color: #349B73;
     text-align: center;
+}
+
+p, h1, h2, h3, h4, h5, h6{
+    color: #292b2c;
 }
 
 .card-vaccination{
     border: #349B73 solid 1px;
-    
     box-shadow: 0 3px 10px 0 rgba(100, 100, 100, 0.26);
-      
 }
 
 .form-control{
@@ -16,4 +17,27 @@ h1{
 
 .hintergrund{
     background-color: rgb(240, 239, 239);
+}
+
+.btn-outline-success{
+    border-color: #349B73;
+    color: #349B73;
+}
+
+.btn-outline-success:hover{
+    border-color: #349B73;
+    background-color: #349B73;
+    color: white
+}
+
+.btn-success{
+    border-color: #349B73;
+    background-color: #349B73;
+    color: white;
+}
+
+.btn-success:hover{
+    border-color: #2a7e5e;
+    background-color: #2a7e5e;
+    color: white;
 }
