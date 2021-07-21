@@ -349,12 +349,12 @@ def open_QR(unique_certificate_identifier):
 
     proof_of_vaccination= {}
     proof_of_vaccination['unique_certificate_identifier']= branch.unique_certificate_identifier
-    proof_of_vaccination['date_of_vaccination']= branch.date_of_vaccination
+    proof_of_vaccination['date_of_vaccination']= branch.date_of_vaccination.strftime('%Y-%m-%d')
     proof_of_vaccination['vaccine']= branch.vaccine
     proof_of_vaccination['vaccination_id'] = branch.vaccination_id
     proof_of_vaccination['vaccine_marketing_authorization_holder']= branch.vaccine_marketing_authorization_holder
     proof_of_vaccination['batch_number']= branch.batch_number
-    proof_of_vaccination['issued_at']= branch.issued_at
+    proof_of_vaccination['issued_at']= branch.issued_at.strftime('%Y-%m-%d %H:%M:%S')
     proof_of_vaccination['unique_patient_identifier']= branch.unique_patient_identifier
     proof_of_vaccination['unique_issuer_identifier']= branch.unique_issuer_identifier
 
@@ -638,23 +638,37 @@ def verifier_qr_scan():
 # Verifier - QR-Code result route
 @app.route("/verifier/scan-result")
 def verifier_qr_result():
-    decodedObject = verify_QR_Code()
+    proof_of_vaccination_correct = False
+    patient = None
     
-    unique_certificate_identifier = decodedObject["unique_certificate_identifier"]
-    date_of_vaccination = decodedObject["date_of_vaccination"]
-    vaccine = decodedObject["vaccine"]
-    vaccine_marketing_authorization_holder = decodedObject["vaccine_marketing_authorization_holder"]
-    batch_number = decodedObject["batch_number"]
-    issued_at = decodedObject["issued_at"]
-    unique_patient_identifier = decodedObject["unique_patient_identifier"]
-    unique_issuer_identifier = decodedObject["unique_issuer_identifier"]
-    vaccination_id = decodedObject["vaccination_id"]
+    proof_of_vaccination_qr = verify_QR_Code()
     
-    
-    print(decodedObject["f_name"])
-    
-    decodedObject = str(decodedObject)
-    
-    # Proof_of_vaccination.query.filter_by(unique_certificate_identifier)
-    
-    return render_template("verifier/verifier_scan_result.html", decodedObject=decodedObject)
+    # Checks if encoded QR-code contains all relevant data
+    if "unique_certificate_identifier" in proof_of_vaccination_qr and "date_of_vaccination" in proof_of_vaccination_qr and "vaccine" in proof_of_vaccination_qr and "vaccine_marketing_authorization_holder" in proof_of_vaccination_qr and "batch_number" in proof_of_vaccination_qr and "issued_at" in proof_of_vaccination_qr and "unique_patient_identifier" in proof_of_vaccination_qr and "unique_issuer_identifier" in proof_of_vaccination_qr and "vaccination_id" in proof_of_vaccination_qr:
+        
+        unique_certificate_identifier = proof_of_vaccination_qr["unique_certificate_identifier"],
+        date_of_vaccination = proof_of_vaccination_qr["date_of_vaccination"],
+        vaccine = proof_of_vaccination_qr["vaccine"],
+        vaccine_marketing_authorization_holder = proof_of_vaccination_qr["vaccine_marketing_authorization_holder"],
+        batch_number = proof_of_vaccination_qr["batch_number"],
+        issued_at = proof_of_vaccination_qr["issued_at"],
+        unique_patient_identifier = proof_of_vaccination_qr["unique_patient_identifier"],
+        unique_issuer_identifier = proof_of_vaccination_qr["unique_issuer_identifier"],
+        vaccination_id = proof_of_vaccination_qr["vaccination_id"]
+        
+        # Checks if proof_of_vaccination exists in the database
+        if Proof_of_vaccination.query.filter_by(unique_certificate_identifier = unique_certificate_identifier,
+                                            date_of_vaccination = date_of_vaccination,
+                                            vaccine = vaccine,
+                                            vaccine_marketing_authorization_holder = vaccine_marketing_authorization_holder,
+                                            batch_number = batch_number,
+                                            issued_at = issued_at,
+                                            unique_patient_identifier = unique_patient_identifier,
+                                            unique_issuer_identifier = unique_issuer_identifier,
+                                            vaccination_id = vaccination_id
+                                            ).first():
+            
+            patient = Patient.query.filter_by(unique_patient_identifier=unique_patient_identifier).first()
+            proof_of_vaccination_correct = True
+
+    return render_template("verifier/verifier_scan_result.html", proof_of_vaccination_correct=proof_of_vaccination_correct, patient=patient)

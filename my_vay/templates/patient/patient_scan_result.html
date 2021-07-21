@@ -102,17 +102,16 @@
                     <h1>Fehler beim Scannen</h1><br>
                     <p>
                         {{ error_message }}
-                    </p><br>
+                    </p>
+                    <br>
                     <div class="row">
                         <div class="col-12 text-center">
                             <a class="btn btn-success text-center" href="{{ url_for('patient_scan')}}">Erneut versuchen</a>
                         </div>
                     </div>
                 {% endif %}
-
             </div>
             <div class="col-2"></div>
         </div>
     </div>
-    
 {% endblock %}
