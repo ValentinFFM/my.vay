@@ -112,3 +112,6 @@ class SearchVaccine(Form):
     
 class ScanQRCode(Form):
     submit = SubmitField('Scan QR-Code')
+    
+class AddVaccinationByQR(Form):
+    submit = SubmitField('Speichern')

@@ -1,13 +1,15 @@
 # 
 # Imports
 #
+from enum import unique
+from os import error
 from my_vay import app, db
 
 # General imports for Flask
 from flask import Flask, render_template, abort, url_for, redirect, flash, request, session, Response
 
 # Imports for forms
-from my_vay.forms import AddSideeffects, ImpfnachweisForm, PatientLoginForm, AddVaccination, PatientRegistrationForm, IssuerRegistrationForm, IssuerLoginForm, IssuerUpdateForm, PatientUpdateForm, ScanQRForm, SearchVaccine, ScanQRCode
+from my_vay.forms import AddSideeffects, ImpfnachweisForm, PatientLoginForm, AddVaccination, PatientRegistrationForm, IssuerRegistrationForm, IssuerLoginForm, IssuerUpdateForm, PatientUpdateForm, ScanQRForm, SearchVaccine, ScanQRCode, AddVaccinationByQR
 
 # Imports for user handeling
 from flask_login import login_user, current_user, logout_user, login_required
@@ -28,6 +30,42 @@ from pyzbar.pyzbar import decode
 # Imports for datetime
 from datetime import date, timedelta
 from dateutil import relativedelta
+
+
+
+def decode(frame):
+    # Decode QR-Code
+    decodedObject = pyzbar.decode(frame)
+
+    # If decodedObject exists, then the data is returned as string
+    if decodedObject:
+        decodedObjectData = decodedObject[0].data
+        # print("decodedObjectData:" + str(decodedObjectData))
+        
+        decodedObjectDataUTF = decodedObjectData.decode('utf-8')
+        # print("decodedObjectDataUTF:" + str(decodedObjectDataUTF))
+        
+        decodedObjectDict = ast.literal_eval(decodedObjectDataUTF)
+        # print("decodedObjectDict:" + str(decodedObjectDict))
+        
+        return decodedObjectDict
+    
+def verify_QR_Code():
+    camera = cv2.VideoCapture(0)
+        
+    while True:
+        success, frame = camera.read()
+
+        if not success:
+            break
+        else:
+            decodedObject = decode(frame)
+            # print("decodedObject: "+ str(decodedObject))
+            
+            if decodedObject:
+                break
+    
+    return decodedObject
 
 
 
@@ -343,9 +381,6 @@ def addVaccination():
         while Proof_of_vaccination.query.filter_by(unique_certificate_identifier=unique_certificate_identifier).first() is not None:
             unique_certificate_identifier = unique_certificate_identifier + 1
 
-        #unique_patient_identifier ?
-        # print(form.vaccine_category.data)
-        #date_of_vaccinaion = datetime.date(form.date_of_vaccination.data)
         new_vaccination = Proof_of_vaccination(unique_certificate_identifier=unique_certificate_identifier, unique_patient_identifier= current_user.unique_patient_identifier, date_of_vaccination = form.date_of_vaccination.data, vaccine = form.vaccine.data, batch_number=form.batch_number.data, vaccination_id=form.vaccination_id.data, unique_issuer_identifier=form.unique_issuer_identifier.data, vaccine_marketing_authorization_holder= "/", issued_at= "1900-01-01 00:00:00")
         db.session.add(new_vaccination)
         db.session.commit()
@@ -365,10 +400,50 @@ def patient_impfwissen():
 def patient_kalender():
     return render_template("/patient/patient_calendar.html")
 
+# Patient - QR-Code route
 @app.route("/patient/impfeintrag/scan",methods =["GET", "POST"])
 @login_required
 def patient_scan():
     return render_template("/patient/patient_scan.html")
+
+# Patient - QR-Code result route
+@app.route("/patient/impfeintrag/scan-result")
+@login_required
+def patient_qr_result():
+    
+    # Decodes QR-Code when displayed in front of the camera
+    proof_of_vaccination_qr = verify_QR_Code()
+    
+    # Checks if proof_of_vaccination is already existing in the database. If so, then an error message is displayed.
+    if Proof_of_vaccination.query.filter_by(unique_certificate_identifier = proof_of_vaccination_qr["unique_certificate_identifier"]).first():
+        error_message = """Beim Scannen des QR-Codes ist ein Fehler aufgetreten. Dieser QR-Code wurde bereits von Ihrem oder einem anderen Konto
+                        eingescannt."""
+        return render_template("patient/patient_scan_result.html", error_message=error_message)
+    
+    # Checks if first name, last name and birthdate are the same of proof_of_vaccination and the logged in user.
+    else:
+        # If it's the same, then the proof_of_vaccination is added to the database.
+        if proof_of_vaccination_qr['f_name'] == current_user.f_name and proof_of_vaccination_qr['l_name'] == current_user.l_name and proof_of_vaccination_qr['date_of_birth'] == str(current_user.date_of_birth):
+            new_vaccination = Proof_of_vaccination(unique_certificate_identifier = proof_of_vaccination_qr["unique_certificate_identifier"], 
+                                                unique_patient_identifier = current_user.unique_patient_identifier, 
+                                                date_of_vaccination = proof_of_vaccination_qr["date_of_vaccination"], 
+                                                vaccine = proof_of_vaccination_qr["vaccine"], 
+                                                batch_number = proof_of_vaccination_qr["batch_number"], 
+                                                vaccination_id = proof_of_vaccination_qr["vaccination_id"], 
+                                                unique_issuer_identifier = proof_of_vaccination_qr["unique_issuer_identifier"], 
+                                                vaccine_marketing_authorization_holder= proof_of_vaccination_qr["vaccine_marketing_authorization_holder"], 
+                                                issued_at = proof_of_vaccination_qr["issued_at"])
+            db.session.add(new_vaccination)
+            db.session.commit()
+
+            return render_template("patient/patient_scan_result.html", proof_of_vaccination_qr=proof_of_vaccination_qr)
+
+        # If the data is not equal, then an error message is displayed.
+        else:
+            error_message = """Beim Scannen des QR-Codes ist ein Fehler aufgetreten. Sie haben versucht den QR-Code eines Impfnachweises
+                            zu Scannen, welcher nicht für Sie ausgestellt wurde. Bitte überprüfen Sie, mit welchem Konto Sie angemeldet
+                            sind und ob Ihr Impfnachweis die korrekten Daten enthält."""
+            return render_template("patient/patient_scan_result.html", error_message=error_message)
 
 @app.route("/patient/profil", methods =["GET", "POST"])
 @login_required
@@ -414,7 +489,7 @@ def issuer_login():
     form = IssuerLoginForm()
     
     # If the form is submitted and validated then...
-    if form.validate_on_submit():
+    if form.is_submitted():
         
         # Database is queryed based on the unique_issuer_identifier
         issuer = Issuer.query.filter_by(unique_issuer_identifier=form.unique_issuer_identifier.data).first()
@@ -521,41 +596,6 @@ def issuer_profil():
 # 
 # Verifier routes
 #
-
-def decode(frame):
-    # Decode QR-Code
-    decodedObject = pyzbar.decode(frame)
-
-    # If decodedObject exists, then the data is returned as string
-    if decodedObject:
-        decodedObjectData = decodedObject[0].data
-        # print("decodedObjectData:" + str(decodedObjectData))
-        
-        decodedObjectDataUTF = decodedObjectData.decode('utf-8')
-        # print("decodedObjectDataUTF:" + str(decodedObjectDataUTF))
-        
-        decodedObjectDict = ast.literal_eval(decodedObjectDataUTF)
-        # print("decodedObjectDict:" + str(decodedObjectDict))
-        
-        return decodedObjectDict
-    
-def verify_QR_Code():
-    camera = cv2.VideoCapture(0)
-        
-    while True:
-        success, frame = camera.read()
-
-        if not success:
-            break
-        else:
-            decodedObject = decode(frame)
-            # print("decodedObject: "+ str(decodedObject))
-            
-            if decodedObject:
-                break
-    
-    return str(decodedObject)
-
 # Verifier - Webcam route 
 @app.route("/camera_stream")
 def camera_stream():
@@ -588,4 +628,22 @@ def verifier_qr_scan():
 @app.route("/verifier/scan-result")
 def verifier_qr_result():
     decodedObject = verify_QR_Code()
+    
+    unique_certificate_identifier = decodedObject["unique_certificate_identifier"]
+    date_of_vaccination = decodedObject["date_of_vaccination"]
+    vaccine = decodedObject["vaccine"]
+    vaccine_marketing_authorization_holder = decodedObject["vaccine_marketing_authorization_holder"]
+    batch_number = decodedObject["batch_number"]
+    issued_at = decodedObject["issued_at"]
+    unique_patient_identifier = decodedObject["unique_patient_identifier"]
+    unique_issuer_identifier = decodedObject["unique_issuer_identifier"]
+    vaccination_id = decodedObject["vaccination_id"]
+    
+    
+    print(decodedObject["f_name"])
+    
+    decodedObject = str(decodedObject)
+    
+    # Proof_of_vaccination.query.filter_by(unique_certificate_identifier)
+    
     return render_template("verifier/verifier_scan_result.html", decodedObject=decodedObject)
