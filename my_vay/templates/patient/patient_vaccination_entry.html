@@ -62,10 +62,20 @@
             <div class="col-md-6">
 
 
-
-        <h1>Neuer Impfeintrag</h1>
+                <div class="row align-items-center">
+                    <div class="col-1">
+                        <a href="{{ url_for('patient_home') }}"><button class="btn"><svg xmlns="http://www.w3.org/2000/svg" width="25" height="25" fill="#349B73" class="bi bi-caret-left-fill" viewBox="0 0 16 16">
+                            <path d="m3.86 8.753 5.482 4.796c.646.566 1.658.106 1.658-.753V3.204a1 1 0 0 0-1.659-.753l-5.48 4.796a1 1 0 0 0 0 1.506z"/>
+                          </svg></button></a>
+                    </div>
+                    <div class="col-11">
+                        <h1>Neuer Impfeintrag</h1>
+                    </div>
+                </div>
+        
 
         <div class="card my-5" style="border: 1px solid #349B73;">
+      
         <h3  class="my-4" style="text-align: center;">Wähle die Art deines Impfeintrags</h3>
         <div class="row">
             <div class="col-6 my-2" style="text-align: center;">
@@ -74,7 +84,8 @@
                         <path d="M15.502 1.94a.5.5 0 0 1 0 .706L14.459 3.69l-2-2L13.502.646a.5.5 0 0 1 .707 0l1.293 1.293zm-1.75 2.456-2-2L4.939 9.21a.5.5 0 0 0-.121.196l-.805 2.414a.25.25 0 0 0 .316.316l2.414-.805a.5.5 0 0 0 .196-.12l6.813-6.814z"/>
                         <path fill-rule="evenodd" d="M1 13.5A1.5 1.5 0 0 0 2.5 15h11a1.5 1.5 0 0 0 1.5-1.5v-6a.5.5 0 0 0-1 0v6a.5.5 0 0 1-.5.5h-11a.5.5 0 0 1-.5-.5v-11a.5.5 0 0 1 .5-.5H9a.5.5 0 0 0 0-1H2.5A1.5 1.5 0 0 0 1 2.5v11z"/>
                         </svg></button> 
-                    </a> <p>Manueller Eintrag</p>
+                    </a> 
+                    <p>Manueller Eintrag</p>
             </div>
             <div class="col-6 my-2" style="text-align: center;">
                     
@@ -85,10 +96,7 @@
                 </a> <p> Scan</p>
             </div>
         </div>
-        <div class="col my-4" style="text-align: center;">
-                
-            <a href="{{ url_for('patient_home') }}"><button class="btn btn-secondary">Zurück</button></a>
-          </div>
+        
         </div>
         </div>
             <div class="col-md-3"></div>

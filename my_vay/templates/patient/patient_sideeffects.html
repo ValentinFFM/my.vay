@@ -56,6 +56,7 @@
     </nav>
 <br>
 
+<!-- Container with the sideeffect form  -->
 <div class="container my-5">
             
             
@@ -64,36 +65,36 @@
      <div class="col-md-6">
         <div class="row ">
             <div class="col-1" >
-            
-                <a href="{{ url_for('patient_home') }}"><button class="btn"><svg xmlns="http://www.w3.org/2000/svg" width="25" height="25" fill="#349B73" class="bi bi-caret-left-fill" viewBox="0 0 16 16">
-                    <path d="m3.86 8.753 5.482 4.796c.646.566 1.658.106 1.658-.753V3.204a1 1 0 0 0-1.659-.753l-5.48 4.796a1 1 0 0 0 0 1.506z"/>
-                  </svg></button></a>
+                <!-- way back to landing page  -->
+                <a href="{{ url_for('patient_home') }}">
+                    <button class="btn"><svg xmlns="http://www.w3.org/2000/svg" width="25" height="25" fill="#349B73" class="bi bi-caret-left-fill" viewBox="0 0 16 16">
+                    <path d="m3.86 8.753 5.482 4.796c.646.566 1.658.106 1.658-.753V3.204a1 1 0 0 0-1.659-.753l-5.48 4.796a1 1 0 0 0 0 1.506z"/></svg></button>
+                </a>
             </div>
             <div class="col-11 ">
                 {% if branch %}    
                 <h1>Nebenwirkungen eintragen*</h1>
-                
             </div>
-            <div class="row">
+        </div>
+        <div class="row">
+            <div class="col-12">
                 <h4 >Bitte tragen Sie Ihre Nebenwirkungen für die <br> "{{branch.vaccine}}"-Impfung ein:</h4>
             </div>
-            
         </div>
+            
+        <!-- sideeffect form  -->
         <form method="POST" action= "{{ url_for('new_sideeffect', unique_certificate_identifier=branch.unique_certificate_identifier) }}"> 
 
-            
             <fieldset class="form-group">
-           
                 <div class="test">
                     <div class="form-group mt-2" >
                         {{ form.headache.label() }}
-
                         {% if form.headache.errors %}
                             {{ form.headache(class="form-control is-invalid") }}
                             <div class="invalid-feedback">
-                                {% for error in form.headache.errors %}
-                                    <span>{{ error }}</span>
-                                {% endfor %}
+                            {% for error in form.headache.errors %}
+                                <span>{{ error }}</span>
+                            {% endfor %}
                             </div>
                         {% else %}
                             {{ form.headache(class="form-control") }}
@@ -101,96 +102,97 @@
                     </div>
                 </div>
 
-            <div class="test">
-                <div class="form-group mt-2">
-                    {{ form.arm_hurts.label() }}
+                <div class="test">
+                    <div class="form-group mt-2">
+                        {{ form.arm_hurts.label() }}
 
-                    {% if form.arm_hurts.errors %}
-                        {{ form.arm_hurts(class="form-control is-invalid") }}
-                        <div class="invalid-feedback">
+                        {% if form.arm_hurts.errors %}
+                            {{ form.arm_hurts(class="form-control is-invalid") }}
+                            <div class="invalid-feedback">
                             {% for error in form.arm_hurts.errors %}
                                 <span>{{ error }}</span>
                             {% endfor %}
                         </div>
-                    {% else %}
-                        {{ form.arm_hurts(class="form-control") }}
-                    {% endif %}
+                        {% else %}
+                            {{ form.arm_hurts(class="form-control") }}
+                        {% endif %}
+                    </div>
                 </div>
-            </div>
 
 
-            <div class="test">
-                <div class="form-group mt-2">
-                    {{ form.fever.label() }}
+                <div class="test">
+                    <div class="form-group mt-2">
+                        {{ form.fever.label() }}
 
-                    {% if form.fever.errors %}
-                        {{ form.fever(class="form-control is-invalid") }}
-                        <div class="invalid-feedback">
-                            {% for error in form.fever.errors %}
-                                <span>{{ error }}</span>
-                            {% endfor %}
-                        </div>
-                    {% else %}
-                        {{ form.fever(class="form-control") }}
-                    {% endif %}
+                        {% if form.fever.errors %}
+                            {{ form.fever(class="form-control is-invalid") }}
+                            <div class="invalid-feedback">
+                                {% for error in form.fever.errors %}
+                                    <span>{{ error }}</span>
+                                {% endfor %}
+                            </div>
+                        {% else %}
+                            {{ form.fever(class="form-control") }}
+                        {% endif %}
+                    </div>
                 </div>
-            </div>
 
 
-            <div class="test">
-                <div class="form-group mt-2">
-                    {{ form.rash.label() }}
+                <div class="test">
+                    <div class="form-group mt-2">
+                        {{ form.rash.label() }}
 
-                    {% if form.rash.errors %}
-                        {{ form.rash(class="form-control is-invalid") }}
-                        <div class="invalid-feedback">
-                            {% for error in form.rash.errors %}
-                                <span>{{ error }}</span>
-                            {% endfor %}
-                        </div>
-                    {% else %}
-                        {{ form.rash(class="form-control") }}
-                    {% endif %}
+                        {% if form.rash.errors %}
+                            {{ form.rash(class="form-control is-invalid") }}
+                            <div class="invalid-feedback">
+                                {% for error in form.rash.errors %}
+                                    <span>{{ error }}</span>
+                                {% endfor %}
+                            </div>
+                        {% else %}
+                            {{ form.rash(class="form-control") }}
+                        {% endif %}
+                    </div>
                 </div>
-            </div>
 
 
-            <div class="test">
-                <div class="form-group mt-2">
-                    {{ form.tummyache.label() }}
+                <div class="test">
+                    <div class="form-group mt-2">
+                        {{ form.tummyache.label() }}
 
-                    {% if form.tummyache.errors %}
-                        {{ form.tummyache(class="form-control is-invalid") }}
-                        <div class="invalid-feedback">
-                            {% for error in form.tummyache.errors %}
-                                <span>{{ error }}</span>
-                            {% endfor %}
-                        </div>
-                    {% else %}
-                        {{ form.tummyache(class="form-control") }}
-                    {% endif %}
+                        {% if form.tummyache.errors %}
+                            {{ form.tummyache(class="form-control is-invalid") }}
+                            <div class="invalid-feedback">
+                                {% for error in form.tummyache.errors %}
+                                    <span>{{ error }}</span>
+                                {% endfor %}
+                            </div>
+                        {% else %}
+                            {{ form.tummyache(class="form-control") }}
+                        {% endif %}
+                    </div>
                 </div>
-            </div>
 
-            <div class="test">
-                <div class="form-group mt-2">
-                    {{ form.sideeffects.label() }}
+                <div class="test">
+                    <div class="form-group mt-2">
+                        {{ form.sideeffects.label() }}
 
-                    {% if form.sideeffects.errors %}
-                        {{ form.sideeffects(class="form-control is-invalid") }}
-                        <div class="invalid-feedback">
-                            {% for error in form.sideeffects.errors %}
-                                <span>{{ error }}</span>
-                            {% endfor %}
-                        </div>
-                    {% else %}
-                        {{ form.sideeffects(class="form-control") }}
-                    {% endif %}
+                        {% if form.sideeffects.errors %}
+                            {{ form.sideeffects(class="form-control is-invalid") }}
+                            <div class="invalid-feedback">
+                                {% for error in form.sideeffects.errors %}
+                                    <span>{{ error }}</span>
+                                {% endfor %}
+                            </div>
+                        {% else %}
+                            {{ form.sideeffects(class="form-control") }}
+                        {% endif %}
+                    </div>
                 </div>
-            </div>
-            <div class="form-group my-2">
-                {{ form.submit(class="btn btn-outline-success btn-block") }}
-            </div>
+                <!-- submits form  -->
+                <div class="form-group my-2">
+                    {{ form.submit(class="btn btn-outline-success btn-block") }}
+                </div>
             {%endif%}
         </fieldset>
         </form>
