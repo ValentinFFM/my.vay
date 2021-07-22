@@ -13,7 +13,7 @@ class ImpfnachweisForm (Form):
     vaccine = StringField("Impfstoff: ")
     vaccine_marketing_authorization_holder = TextField("Hersteller: ")
     batch_number = StringField("Chargennummer: ")
-    issued_at = DateTimeField ("Ausgestellt am: ", render_kw={"placeholder": "YYYY-mm-dd hh:mm"})
+    issued_at = DateTimeField ("Ausgestellt am: ", render_kw={"placeholder": "YYYY-mm-dd hh:mm:ss"})
     generate_certificate =  SubmitField("Impfnachweis erstellen")
 
 class PatientLoginForm(Form):
@@ -108,4 +108,4 @@ class SearchVaccine(Form):
 
     # Creation of all inputfields and the submit button
     name = StringField('Impfname:', render_kw={"placeholder": "Impfstoff"})
-    submit = SubmitField('Suchen!')
+    submit = SubmitField('Suchen')

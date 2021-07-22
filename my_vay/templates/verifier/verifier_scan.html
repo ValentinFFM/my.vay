@@ -1,0 +1,22 @@
+{% extends "html_container.html" %}
+
+{% block page_title %}
+    Verifier - Scan 
+{% endblock %}
+
+{% block page_content %}
+    <div class="container my-5">
+        <div class="row">
+            <div class="col-2">
+    
+            </div>
+            <div class="col-8 text-center">
+                <img class="mb-3" src="{{ url_for('camera_stream') }}" width="100%">
+                <a class="btn btn-success" href="{{ url_for('verifier_qr_result')}}">QR-Code-Überprüfung starten</a>
+            </div>
+            <div class="col-2">
+                
+            </div>
+        </div>
+    </div>
+{% endblock %}

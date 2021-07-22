@@ -1,60 +1,80 @@
 # 
 # Imports
 #
-from werkzeug.exceptions import PreconditionRequired
+
 from my_vay import app, db
 
 # General imports for Flask
-from flask import Flask, render_template, abort, url_for, redirect, flash, request, session
+from flask import render_template, abort, url_for, redirect, flash, request, session, Response
 
 # Imports for forms
-from my_vay.forms import AddSideeffects, ImpfnachweisForm, PatientLoginForm, AddVaccination, PatientRegistrationForm, IssuerRegistrationForm, IssuerLoginForm, IssuerUpdateForm, PatientUpdateForm, ScanQRForm, SearchVaccine
+from my_vay.forms import AddSideeffects, ImpfnachweisForm, PatientLoginForm, AddVaccination, PatientRegistrationForm, IssuerRegistrationForm, IssuerLoginForm, IssuerUpdateForm, PatientUpdateForm, SearchVaccine
 
 # Imports for user handeling
-from flask_login import login_user, current_user, logout_user, login_required, UserMixin, LoginManager
+from flask_login import login_user, current_user, logout_user, login_required
 
+# Imports for models
 from my_vay.models import Patient, Issuer, Proof_of_vaccination, Vaccination, Sideeffects
 
-from base64 import b64encode
+# Imports for QR-Code creation and encoding
+from base64 import b64encode, decode
 import io
 from qrcode.main import QRCode
 import cv2
 import ast
 import sys
+from pyzbar import pyzbar
+from pyzbar.pyzbar import decode
 
-from datetime import datetime, date, timedelta
+# Imports for datetime
+from datetime import date, timedelta
 from dateutil import relativedelta
 
-
-
 #
-# Gerneral routes
+# Base functions
 #
 
-# Landing page route
-@app.route("/")
-def home():
-    return render_template("landing.html")
+# Decoding a QR-Code in a given frame
+def decode(frame):
+    # Decode QR-Code
+    decodedObject = pyzbar.decode(frame)
 
-# Logout Route
-@app.route("/logout")
-@login_required
-def logout():
-    logout_user()
+    # If decodedObject exists, then the data is returned as string
+    if decodedObject:
+        # Read out the data of the QR-Code
+        decodedObjectData = decodedObject[0].data
+        
+        # Decode the content with UTF-8
+        decodedObjectDataUTF = decodedObjectData.decode('utf-8')
+        
+        # Covert String to 
+        decodedObjectDict = ast.literal_eval(decodedObjectDataUTF)
+        
+        return decodedObjectDict
 
-    return redirect(url_for('home'))
+# Calling decode(frame) for every frame of the camera
+def verify_QR_Code():
+    # Instanciation of a camera object
+    camera = cv2.VideoCapture(0)
+    
+    # For every frame of the camera the function decode() is called, until the decode() function returns a result
+    while True:
+        success, frame = camera.read()
 
+        if not success:
+            break
+        else:
+            decodedObject = decode(frame)
 
+            if decodedObject:
+                break
+    
+    return decodedObject
 
-#
-# Patient routes
-#
-
-
+# Function for returning notifications for missing vaccinations
 def check_for_vac_notifications():
     # Returns the proof_of_vaccinations of the logged-in-user from the database
     list_of_proof_of_vaccinations = Proof_of_vaccination.query.filter_by(unique_patient_identifier=current_user.unique_patient_identifier).all()
-    
     notifications = []
     
     # Iterates through the proof_of_vaccinations
@@ -147,145 +167,53 @@ def check_for_vac_notifications():
             notifications.append(notification)
     
     return notifications
-        
-    
 
-# @app.route("/test")
-# def test_route():
-#     notifications = check_for_vac_notifications()
-#     print(notifications)
-#     return render_template('html_container.html')
-    
 
-# Patient - Landing page route
-@app.route("/patient",methods=['POST', 'GET'])
-@app.route("/patient/<string:sort>", methods=['POST', 'GET'])
-@app.route("/patient/<string:sort>/<string:search>", methods=['POST', 'GET'])
+
+#
+# General routes
+#
+
+# Landing page route
+@app.route("/")
+def home():
+    return render_template("landing.html")
+
+# Logout Route
+@app.route("/logout")
 @login_required
-def patient_home(sort='date', search=''):
-    from datetime import date
-    page = request.args.get('page', 1, type=int)
-    form = SearchVaccine()
-    vaccine_search = False
-    today = 0
-    test=0
-    list1=[]
-    sorting = []
-    
-    
+def logout():
+    logout_user()
 
-    # Checks if a search term is used. If yes then patients first and last name are searched for the search term. Otherwise all patients of the doctor are executed
-    if search:
-        vaccine_search = True
-        search = '%' + search + '%'
-        branch = Proof_of_vaccination.query.filter(Proof_of_vaccination.unique_patient_identifier == current_user.unique_patient_identifier).filter(Proof_of_vaccination.vaccine.like(search)).paginate(page=page, per_page=5)
-        vaccination = Vaccination.query.filter(Proof_of_vaccination.vaccination_id == Vaccination.vaccination_id).all()
-    else: 
-        # Depending on an argument in the url, the patients are sorted in different ways.
-        if sort == 'date':
-            branch = Proof_of_vaccination.query.filter_by(unique_patient_identifier=current_user.unique_patient_identifier).order_by(Proof_of_vaccination.date_of_vaccination.desc()).paginate(page=page, per_page=5)
-            vaccination = Vaccination.query.filter(Proof_of_vaccination.vaccination_id == Vaccination.vaccination_id).all()
-            sf_show = Proof_of_vaccination.query.filter_by(unique_patient_identifier=current_user.unique_patient_identifier).all()
-            test = Sideeffects.query.all()
-            today = date.today()
-            for i in range (1):
-                 today-= timedelta(days=1)
-            today = today.strftime('%Y-%m-%d')
-            print(today)
+    return redirect(url_for('home'))
 
-            for entry in sf_show:
-                classifier= False
-                print(entry)
-                print('no')
-                if entry.date_of_vaccination.strftime('%Y-%m-%d') == today:
-                    print('geht')
-                    for val in test:
-                            if entry.unique_certificate_identifier == val.unique_certificate_identifier:
-                                print('bricht ab')
-                                classifier = True
-                                break
-                    if classifier == False:
-                        list1.append(entry)
-                        print('yes')
-                    
-                
-            
-            print(list1)
-            
-            
-        elif sort == 'Pneumokokken':
-            branch = Proof_of_vaccination.query.filter(Proof_of_vaccination.unique_patient_identifier == current_user.unique_patient_identifier).paginate(page=page, per_page=5)
-            vaccination = Vaccination.query.filter(Vaccination.disease == sort).all()
+#  Camera stream route 
+@app.route("/camera_stream")
+def camera_stream():
+    
+    def generate_frames():
+        # Instantiation of a camera object refering to the camera of the device
+        camera = cv2.VideoCapture(0)
         
-            
-            
-        elif sort == 'Hepatitis B':
-            branch = Proof_of_vaccination.query.filter(Proof_of_vaccination.unique_patient_identifier == current_user.unique_patient_identifier).paginate(page=page, per_page=5)
-            vaccination = Vaccination.query.filter(Vaccination.disease == sort).all()
-            print('test')
-          
-        else:
-            abort(404)
+        while True:
+            # Getting frames from the camera
+            success, frame = camera.read()
 
-    # If the validation is correct, then a flash message is displayed and the user is redirected to the login page.
-    if form.is_submitted():
-        return redirect(url_for('patient_home', sort='date', search=form.name.data))
-    
-    vac_notifications = check_for_vac_notifications()
+            if not success:
+                break
+            else:
+                # Coverting frames to a jpg
+                ret, buffer = cv2.imencode('.jpg', frame)
+                frame = buffer.tobytes()
+                yield b'--frame\r\n' b'Content-Type: image/jpeg\r\n\r\n' + frame + b'\r\n'
 
-    return render_template('patient/patient_vaccination_certificate.html', branch=branch, sort=sort, form=form, search=vaccine_search, vac_notifications=vac_notifications, list1=list1, vaccination=vaccination)
+    # Returning frames of the facecame
+    return Response(generate_frames(), mimetype='multipart/x-mixed-replace; boundary=frame')
 
-@app.route("/patient/sideeffects/<int:unique_certificate_identifier>", methods=['POST', 'GET'])
-def new_sideeffect(unique_certificate_identifier):
-    branch = Proof_of_vaccination.query.filter_by(unique_certificate_identifier=unique_certificate_identifier).first()
 
-    form = AddSideeffects()
-    
-    # If the form is submitted and validated then...
-    if form.is_submitted():
-        unique_entry_identifier = 1
-        while Sideeffects.query.filter_by(unique_entry_identifier=unique_entry_identifier).first() is not None:
-            unique_entry_identifier = unique_entry_identifier + 1
-        # a new patient is added to the database
-        new_sideeffects = Sideeffects(unique_entry_identifier=unique_entry_identifier, unique_certificate_identifier=unique_certificate_identifier ,headache=form.headache.data, arm_hurts=form.arm_hurts.data, rash=form.rash.data, fever=form.fever.data, tummyache=form.tummyache.data, sideeffects=form.sideeffects.data)
-        db.session.add(new_sideeffects)
-        db.session.commit()
-        
-        return redirect(url_for('patient_home'))
-    
-    return render_template('patient/patient_sideeffects.html', branch = branch, form=form )
-
-@app.route("/patientQR/<int:unique_certificate_identifier>", methods=['POST', 'GET'])
-def open_QR(unique_certificate_identifier):
-    branch = Proof_of_vaccination.query.filter_by(unique_certificate_identifier=unique_certificate_identifier).first()
-    vaccination = Vaccination.query.filter(Proof_of_vaccination.vaccination_id == Vaccination.vaccination_id).first()
-
-    qr = {}
-    img = []
-    file_object = io.BytesIO()
-
-    proof_of_vaccination= {}
-    proof_of_vaccination['unique_certificate_identifier']= branch.unique_certificate_identifier
-    proof_of_vaccination['date_of_vaccination']= branch.date_of_vaccination
-    proof_of_vaccination['vaccine']= branch.vaccine
-    proof_of_vaccination['vaccination_id'] = branch.vaccination_id
-    proof_of_vaccination['vaccine_marketing_authorization_holder']= branch.vaccine_marketing_authorization_holder
-    proof_of_vaccination['batch_number']= branch.batch_number
-    proof_of_vaccination['issued_at']= branch.issued_at
-    proof_of_vaccination['unique_patient_identifier']= branch.unique_patient_identifier
-    proof_of_vaccination['unique_issuer_identifier']= branch.unique_issuer_identifier
-
-    print(proof_of_vaccination)
-
-    qr = QRCode(version=1, box_size=6,border=4)
-    qr.add_data(proof_of_vaccination)
-    qr.make()
-        #qr = qrcode.make(proof_of_vaccination)
-    img = qr.make_image (fill = 'black', back_color = 'white')
-    img.save(file_object,'PNG')
-
-    return render_template('patient/patient_show_QR.html', branch = branch, vaccination=vaccination, qr="data:image/png;base64,"+b64encode(file_object.getvalue()).decode('ascii'))
-
+#
+# Patient routes
+#
 
 # Patient - Login route
 @app.route("/patient/login", methods =["GET", "POST"])
@@ -338,11 +266,138 @@ def patient_registration():
     
     return render_template('patient/patient_registration.html', form=form)
 
+# Patient - Landing page route
+@app.route("/patient",methods=['POST', 'GET'])
+@app.route("/patient/<string:sort>", methods=['POST', 'GET'])
+@app.route("/patient/<string:sort>/<string:search>", methods=['POST', 'GET'])
+@login_required
+def patient_home(sort='date', search=''):
+    from datetime import date
+    page = request.args.get('page', 1, type=int)
+    form = SearchVaccine()
+    vaccine_search = False
+    today = 0
+    test=0
+    list1=[]
+    sorting = []
+
+    # Checks if a search term is used. If yes then patients first and last name are searched for the search term. Otherwise all patients of the doctor are executed
+    if search:
+        vaccine_search = True
+        search = '%' + search + '%'
+        branch = Proof_of_vaccination.query.filter(Proof_of_vaccination.unique_patient_identifier == current_user.unique_patient_identifier).filter(Proof_of_vaccination.vaccine.like(search)).paginate(page=page, per_page=5)
+        vaccination = Vaccination.query.filter(Proof_of_vaccination.vaccination_id == Vaccination.vaccination_id).all()
+    else: 
+        # Depending on an argument in the url, the patients are sorted in different ways.
+        if sort == 'date':
+            branch = Proof_of_vaccination.query.filter_by(unique_patient_identifier=current_user.unique_patient_identifier).order_by(Proof_of_vaccination.date_of_vaccination.desc()).paginate(page=page, per_page=5)
+            vaccination = Vaccination.query.filter(Proof_of_vaccination.vaccination_id == Vaccination.vaccination_id).all()
+            sf_show = Proof_of_vaccination.query.filter_by(unique_patient_identifier=current_user.unique_patient_identifier).all()
+            test = Sideeffects.query.all()
+            today = date.today()
+            for i in range (1):
+                 today-= timedelta(days=1)
+            today = today.strftime('%Y-%m-%d')
+            print(today)
+
+            for entry in sf_show:
+                classifier= False
+                print(entry)
+                print('no')
+                if entry.date_of_vaccination.strftime('%Y-%m-%d') == today:
+                    print('geht')
+                    for val in test:
+                            if entry.unique_certificate_identifier == val.unique_certificate_identifier:
+                                print('bricht ab')
+                                classifier = True
+                                break
+                    if classifier == False:
+                        list1.append(entry)
+                        print('yes')
+                    
+            print(list1)
+            
+        elif sort == 'Pneumokokken':
+            branch = Proof_of_vaccination.query.filter(Proof_of_vaccination.unique_patient_identifier == current_user.unique_patient_identifier).paginate(page=page, per_page=5)
+            vaccination = Vaccination.query.filter(Vaccination.disease == sort).all()
+
+        elif sort == 'Hepatitis B':
+            branch = Proof_of_vaccination.query.filter(Proof_of_vaccination.unique_patient_identifier == current_user.unique_patient_identifier).paginate(page=page, per_page=5)
+            vaccination = Vaccination.query.filter(Vaccination.disease == sort).all()
+            print('test')
+          
+        else:
+            abort(404)
+
+    # If the validation is correct, then a flash message is displayed and the user is redirected to the login page.
+    if form.is_submitted():
+        return redirect(url_for('patient_home', sort='date', search=form.name.data))
+    
+    vac_notifications = check_for_vac_notifications()
+
+    return render_template('patient/patient_vaccination_certificate.html', branch=branch, sort=sort, form=form, search=vaccine_search, vac_notifications=vac_notifications, list1=list1, vaccination=vaccination)
+
+# Patient - Show QR-Code of proof_of_vaccination
+@app.route("/patientQR/<int:unique_certificate_identifier>", methods=['POST', 'GET'])
+def open_QR(unique_certificate_identifier):
+    branch = Proof_of_vaccination.query.filter_by(unique_certificate_identifier=unique_certificate_identifier).first()
+    vaccination = Vaccination.query.filter(Proof_of_vaccination.vaccination_id == Vaccination.vaccination_id).first()
+
+    qr = {}
+    img = []
+    file_object = io.BytesIO()
+
+    proof_of_vaccination= {}
+    proof_of_vaccination['unique_certificate_identifier']= branch.unique_certificate_identifier
+    proof_of_vaccination['date_of_vaccination']= branch.date_of_vaccination.strftime('%Y-%m-%d')
+    proof_of_vaccination['vaccine']= branch.vaccine
+    proof_of_vaccination['vaccination_id'] = branch.vaccination_id
+    proof_of_vaccination['vaccine_marketing_authorization_holder']= branch.vaccine_marketing_authorization_holder
+    proof_of_vaccination['batch_number']= branch.batch_number
+    proof_of_vaccination['issued_at']= branch.issued_at.strftime('%Y-%m-%d %H:%M:%S')
+    proof_of_vaccination['unique_patient_identifier']= branch.unique_patient_identifier
+    proof_of_vaccination['unique_issuer_identifier']= branch.unique_issuer_identifier
+
+    print(proof_of_vaccination)
+
+    qr = QRCode(version=1, box_size=6,border=4)
+    qr.add_data(proof_of_vaccination)
+    qr.make()
+        #qr = qrcode.make(proof_of_vaccination)
+    img = qr.make_image (fill = 'black', back_color = 'white')
+    img.save(file_object,'PNG')
+
+    return render_template('patient/patient_show_QR.html', branch = branch, vaccination=vaccination, qr="data:image/png;base64,"+b64encode(file_object.getvalue()).decode('ascii'))
+
+# Patient - Sideeffects route
+@app.route("/patient/sideeffects/<int:unique_certificate_identifier>", methods=['POST', 'GET'])
+@login_required
+def new_sideeffect(unique_certificate_identifier):
+    branch = Proof_of_vaccination.query.filter_by(unique_certificate_identifier=unique_certificate_identifier).first()
+
+    form = AddSideeffects()
+    
+    # If the form is submitted and validated then...
+    if form.is_submitted():
+        unique_entry_identifier = 1
+        while Sideeffects.query.filter_by(unique_entry_identifier=unique_entry_identifier).first() is not None:
+            unique_entry_identifier = unique_entry_identifier + 1
+        # a new patient is added to the database
+        new_sideeffects = Sideeffects(unique_entry_identifier=unique_entry_identifier, unique_certificate_identifier=unique_certificate_identifier ,headache=form.headache.data, arm_hurts=form.arm_hurts.data, rash=form.rash.data, fever=form.fever.data, tummyache=form.tummyache.data, sideeffects=form.sideeffects.data)
+        db.session.add(new_sideeffects)
+        db.session.commit()
+        
+        return redirect(url_for('patient_home'))
+    
+    return render_template('patient/patient_sideeffects.html', branch = branch, form=form )
+
+# Patient - Proof of vaccination entry route
 @app.route("/patient/impfeintrag")
 @login_required
 def patient_vaccination_entry():
     return render_template('patient/patient_vaccination_entry.html')
 
+# Patient - Proof of vaccination manual entry route 
 @app.route("/patient/impfeintrag/manuell", methods=['POST', 'GET'])
 @login_required
 def addVaccination():
@@ -356,9 +411,6 @@ def addVaccination():
         while Proof_of_vaccination.query.filter_by(unique_certificate_identifier=unique_certificate_identifier).first() is not None:
             unique_certificate_identifier = unique_certificate_identifier + 1
 
-        #unique_patient_identifier ?
-        # print(form.vaccine_category.data)
-        #date_of_vaccinaion = datetime.date(form.date_of_vaccination.data)
         new_vaccination = Proof_of_vaccination(unique_certificate_identifier=unique_certificate_identifier, unique_patient_identifier= current_user.unique_patient_identifier, date_of_vaccination = form.date_of_vaccination.data, vaccine = form.vaccine.data, batch_number=form.batch_number.data, vaccination_id=form.vaccination_id.data, unique_issuer_identifier=form.unique_issuer_identifier.data, vaccine_marketing_authorization_holder= "/", issued_at= "1900-01-01 00:00:00")
         db.session.add(new_vaccination)
         db.session.commit()
@@ -368,46 +420,64 @@ def addVaccination():
 
     return render_template('patient/patient_vaccination_manual_entry.html', form=form)
 
+# Patient - Proof of vaccination QR-Code entry route
+@app.route("/patient/impfeintrag/scan",methods =["GET", "POST"])
+@login_required
+def patient_scan():
+    return render_template("/patient/patient_scan.html")
+
+# Patient - QR-Code result route
+@app.route("/patient/impfeintrag/scan-result")
+@login_required
+def patient_qr_result():
+    
+    # Decodes QR-Code when displayed in front of the camera
+    proof_of_vaccination_qr = verify_QR_Code()
+    
+    # Checks if proof_of_vaccination is already existing in the database. If so, then an error message is displayed.
+    if Proof_of_vaccination.query.filter_by(unique_certificate_identifier = proof_of_vaccination_qr["unique_certificate_identifier"]).first():
+        error_message = """Beim Scannen des QR-Codes ist ein Fehler aufgetreten. Dieser QR-Code wurde bereits von Ihrem oder einem anderen Konto
+                        eingescannt."""
+        return render_template("patient/patient_scan_result.html", error_message=error_message)
+    
+    # Checks if first name, last name and birthdate are the same of proof_of_vaccination and the logged in user.
+    else:
+        # If it's the same, then the proof_of_vaccination is added to the database.
+        if proof_of_vaccination_qr['f_name'] == current_user.f_name and proof_of_vaccination_qr['l_name'] == current_user.l_name and proof_of_vaccination_qr['date_of_birth'] == str(current_user.date_of_birth):
+            new_vaccination = Proof_of_vaccination(unique_certificate_identifier = proof_of_vaccination_qr["unique_certificate_identifier"], 
+                                                unique_patient_identifier = current_user.unique_patient_identifier, 
+                                                date_of_vaccination = proof_of_vaccination_qr["date_of_vaccination"], 
+                                                vaccine = proof_of_vaccination_qr["vaccine"], 
+                                                batch_number = proof_of_vaccination_qr["batch_number"], 
+                                                vaccination_id = proof_of_vaccination_qr["vaccination_id"], 
+                                                unique_issuer_identifier = proof_of_vaccination_qr["unique_issuer_identifier"], 
+                                                vaccine_marketing_authorization_holder= proof_of_vaccination_qr["vaccine_marketing_authorization_holder"], 
+                                                issued_at = proof_of_vaccination_qr["issued_at"])
+            db.session.add(new_vaccination)
+            db.session.commit()
+
+            return render_template("patient/patient_scan_result.html", proof_of_vaccination_qr=proof_of_vaccination_qr)
+
+        # If the data is not equal, then an error message is displayed.
+        else:
+            error_message = """Beim Scannen des QR-Codes ist ein Fehler aufgetreten. Sie haben versucht den QR-Code eines Impfnachweises
+                            zu Scannen, welcher nicht für Sie ausgestellt wurde. Bitte überprüfen Sie, mit welchem Konto Sie angemeldet
+                            sind und ob Ihr Impfnachweis die korrekten Daten enthält."""
+            return render_template("patient/patient_scan_result.html", error_message=error_message)
+
+# Patient - Vaccination knowledge route
 @app.route("/patient/impfwissen")
 @login_required
 def patient_impfwissen():
     return render_template("/patient/patient_vaccination_knowledge.html")
 
+# Patient - Calendar route
 @app.route("/patient/kalender")
 @login_required
 def patient_kalender():
     return render_template("/patient/patient_calendar.html")
 
-@app.route("/patient/impfeintrag/scan",methods =["GET", "POST"])
-@login_required
-def patient_scan():
-    form = ScanQRForm()
-    new_entry = {}
-    #form =ImpfnachweisForm()
-    ### open camera
-    cap = cv2.VideoCapture(0)
-    while True:
-        _,frame = cap.read() #### get next frame of the camera
-        decodedObjects = pyzbar.decode(frame) # decode QR-Code 
-        for objects in decodedObjects:
-            bytstr = objects.data
-            dictstr = bytstr.decode('utf-8')
-            certificate_data = ast.literal_eval(dictstr)
-            new_entry = Proof_of_vaccination(unique_certificate_identifier = '3', f_name =certificate_data['f_name'], date_of_vaccination = certificate_data['date_of_vaccination'], vaccine = certificate_data['vaccine'], batch_number=certificate_data['batch_number'], vaccine_category=certificate_data['vaccine_category'], unique_issuer_identifier=certificate_data['certificate_issuer'], disease= certificate_data['disease'], vaccine_marketing_authorization_holder= certificate_data['vaccine_marketing_authorization_holder'], issued_at= certificate_data['issued_at'])
-            print (certificate_data['f_name'])
-        cv2.imshow('Impfnachweis einlesen',frame) # show the frame
-        key = cv2.waitKey(1)
-        if key ==27:
-            break
-        db.session.add(new_entry)
-        db.session.commit()
-        return render_template("/patient/patient_vaccination_certificate.html",form=form)
-
-        #add_certificate_data = Proof_of_vaccination(f_name =form.f_name.data, date_of_vaccination = form.date_of_vaccination.data, vaccine = form.vaccine.data, batch_number=form.batch_number.data, vaccine_category=form.vaccine_category.data, unique_issuer_identifier=form.unique_issuer_identifier.data, disease= "/", vaccine_marketing_authorization_holder= "/", issued_at= "/")
-        #db.session.add(nadd_certificate_data)
-        #db.session.commit()
-    return render_template("/patient/patient_scan.html",form=form)
-
+# Patient - Profile route
 @app.route("/patient/profil", methods =["GET", "POST"])
 @login_required
 def patient_profil():
@@ -439,8 +509,6 @@ def patient_profil():
 # Issuer routes
 #
 
-
-
 # Issuer - Login route
 @app.route("/issuer/login", methods =["GET", "POST"])
 def issuer_login():
@@ -454,7 +522,7 @@ def issuer_login():
     form = IssuerLoginForm()
     
     # If the form is submitted and validated then...
-    if form.validate_on_submit():
+    if form.is_submitted():
         
         # Database is queryed based on the unique_issuer_identifier
         issuer = Issuer.query.filter_by(unique_issuer_identifier=form.unique_issuer_identifier.data).first()
@@ -489,8 +557,7 @@ def issuer_registration():
     
     return render_template('issuer/issuer_registration.html', form=form)
 
-
-# Landing page route
+# Issuer - Landing page route
 @app.route("/issuer", methods =["GET", "POST"])
 @login_required
 def issuer_create_qr():
@@ -508,13 +575,13 @@ def issuer_create_qr():
         proof_of_vaccination= {}
         proof_of_vaccination['f_name']= form.f_name.data
         proof_of_vaccination['l_name'] = form.l_name.data
-        proof_of_vaccination['date_of_birth']=form.date_of_birth.data
-        proof_of_vaccination['date_of_vaccination'] = form.date_of_vaccination.data
+        proof_of_vaccination['date_of_birth'] = form.date_of_birth.data.strftime('%Y-%m-%d')
+        proof_of_vaccination['date_of_vaccination'] = form.date_of_vaccination.data.strftime('%Y-%m-%d')
         proof_of_vaccination['vaccination_id'] = form.vaccination_id.data
         proof_of_vaccination['vaccine'] = form.vaccine.data
         proof_of_vaccination['vaccine_marketing_authorization_holder'] = form.vaccine_marketing_authorization_holder.data
         proof_of_vaccination['batch_number'] = form.batch_number.data
-        proof_of_vaccination['issued_at'] = form.issued_at.data
+        proof_of_vaccination['issued_at'] = form.issued_at.data.strftime('%Y-%m-%d %H:%M:%S')
         proof_of_vaccination['unique_issuer_identifier'] = current_user.unique_issuer_identifier
         proof_of_vaccination['unique_certificate_identifier'] = unique_certificate_identifier
         qr = QRCode(version=1, box_size=3,border=3)
@@ -526,12 +593,13 @@ def issuer_create_qr():
     
     return render_template("/issuer/issuer_create_qr.html", form=form, qr="data:image/png;base64,"+b64encode(file_object.getvalue()).decode('ascii'))
 
-
+# Issuer - Vaccination knowledge route
 @app.route("/issuer/impfwissen")
 @login_required
 def issuer_impfwissen():
     return render_template("issuer/issuer_vaccination_knowledge.html")
 
+# Issuer - Profile route
 @app.route("/issuer/profil", methods =["GET", "POST"])
 @login_required
 def issuer_profil():
@@ -556,25 +624,51 @@ def issuer_profil():
 
     return render_template("/issuer/issuer_profile.html", form=form)
 
-# @app.route('/showvaccination', methods=['POST'])
-# def showvaccination():
-#     if request.method == "POST":
-#         branch = Impfung.query.all()
-#         return render_template('patient_vaccination_certificate.html', branch=branch)
 
-#Neuer manueller Impfeintrag
 
-# @app.route('/addvaccination', methods=['POST'])
-# def addvaccination():
-#     if request.method == "POST":
-#         Impfdatum = request.form['Impfdatum']
-#         Impfstoff = request.form['Impfstoff']
-#         Chargennummer = request.form['Chargennummer']
-#         Impfkategorie = request.form['Impfkategorie']
-#         Medizinische_Einrichtung = request.form['Medizinische_Einrichtung']
-#         state_ = request.form['state_']
-#         data = Impfung(Impfdatum, Impfstoff, Chargennummer, Impfkategorie, Medizinische_Einrichtung)
-#         db.session.add(data)
-#         db.session.commit()
-#         branch = Impfung.query.all()
-#         return render_template('patient_vaccination_certificate.html', branch = branch)
+# 
+# Verifier routes
+#
+
+# Verifier - QR-Code scan route 
+@app.route("/verifier", methods =["GET", "POST"])
+def verifier_qr_scan():
+    return render_template("verifier/verifier_scan.html")
+
+# Verifier - QR-Code result route
+@app.route("/verifier/scan-result")
+def verifier_qr_result():
+    proof_of_vaccination_correct = False
+    patient = None
+    
+    proof_of_vaccination_qr = verify_QR_Code()
+    
+    # Checks if encoded QR-code contains all relevant data
+    if "unique_certificate_identifier" in proof_of_vaccination_qr and "date_of_vaccination" in proof_of_vaccination_qr and "vaccine" in proof_of_vaccination_qr and "vaccine_marketing_authorization_holder" in proof_of_vaccination_qr and "batch_number" in proof_of_vaccination_qr and "issued_at" in proof_of_vaccination_qr and "unique_patient_identifier" in proof_of_vaccination_qr and "unique_issuer_identifier" in proof_of_vaccination_qr and "vaccination_id" in proof_of_vaccination_qr:
+        
+        unique_certificate_identifier = proof_of_vaccination_qr["unique_certificate_identifier"],
+        date_of_vaccination = proof_of_vaccination_qr["date_of_vaccination"],
+        vaccine = proof_of_vaccination_qr["vaccine"],
+        vaccine_marketing_authorization_holder = proof_of_vaccination_qr["vaccine_marketing_authorization_holder"],
+        batch_number = proof_of_vaccination_qr["batch_number"],
+        issued_at = proof_of_vaccination_qr["issued_at"],
+        unique_patient_identifier = proof_of_vaccination_qr["unique_patient_identifier"],
+        unique_issuer_identifier = proof_of_vaccination_qr["unique_issuer_identifier"],
+        vaccination_id = proof_of_vaccination_qr["vaccination_id"]
+        
+        # Checks if proof_of_vaccination exists in the database
+        if Proof_of_vaccination.query.filter_by(unique_certificate_identifier = unique_certificate_identifier,
+                                            date_of_vaccination = date_of_vaccination,
+                                            vaccine = vaccine,
+                                            vaccine_marketing_authorization_holder = vaccine_marketing_authorization_holder,
+                                            batch_number = batch_number,
+                                            issued_at = issued_at,
+                                            unique_patient_identifier = unique_patient_identifier,
+                                            unique_issuer_identifier = unique_issuer_identifier,
+                                            vaccination_id = vaccination_id
+                                            ).first():
+            
+            patient = Patient.query.filter_by(unique_patient_identifier=unique_patient_identifier).first()
+            proof_of_vaccination_correct = True
+
+    return render_template("verifier/verifier_scan_result.html", proof_of_vaccination_correct=proof_of_vaccination_correct, patient=patient)
