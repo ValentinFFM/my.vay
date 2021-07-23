@@ -23,8 +23,8 @@ from qrcode.main import QRCode
 import cv2
 import ast
 import sys
-from pyzbar import pyzbar
-from pyzbar.pyzbar import decode
+#from pyzbar import pyzbar
+#from pyzbar.pyzbar import decode
 
 # Imports for datetime
 from datetime import date, timedelta
@@ -318,7 +318,7 @@ def patient_home(sort='date', search=''):
             branch = Proof_of_vaccination.query.filter(Proof_of_vaccination.unique_patient_identifier == current_user.unique_patient_identifier).paginate(page=page, per_page=5)
             vaccination = Vaccination.query.filter(Vaccination.disease == sort).all()
 
-        elif sort == 'Covid-19':
+        elif sort == 'COVID-19':
             branch = Proof_of_vaccination.query.filter(Proof_of_vaccination.unique_patient_identifier == current_user.unique_patient_identifier).paginate(page=page, per_page=5)
             vaccination = Vaccination.query.filter(Vaccination.disease == sort).all()   
           
