@@ -168,6 +168,7 @@ def check_for_vac_notifications():
     
     return notifications
 
+# Function to deside whether a sideeffect reminder should be shown or not, is called in patient_home
 def show_sideeffect():
     from datetime import date
     today = 0
@@ -176,10 +177,12 @@ def show_sideeffect():
     sf_show = Proof_of_vaccination.query.filter_by(unique_patient_identifier=current_user.unique_patient_identifier).all()
     test = Sideeffects.query.all()
     today = date.today()
+    #get the date of yesterday
     for i in range (1):
             today-= timedelta(days=1)
     today = today.strftime('%Y-%m-%d')
 
+    #checks if a vaccination has the same date as the today variable, because then a reminder should be shown
     for entry in sf_show:
         classifier= False
         if entry.date_of_vaccination.strftime('%Y-%m-%d') == today:
@@ -188,7 +191,9 @@ def show_sideeffect():
                         classifier = True
                         break
             if classifier == False:
+                #sideeffects can only be entered if an entry for this vaccination does not already exist
                 list1.append(entry)
+    # reuturns list of vaccination entries in proof_of_vaccination that fulfill conditions
     return list1
 
 #
@@ -295,21 +300,23 @@ def patient_registration():
 def patient_home(sort='date', search=''):
     
     page = request.args.get('page', 1, type=int)
+    #shows search form
     form = SearchVaccine()
     vaccine_search = False
 
-    # Checks if a search term is used. If yes then patients first and last name are searched for the search term. Otherwise all patients of the doctor are executed
+    # Checks if a search term is used. If yes then only vaccinations are shown that fulfill the vaccine search statement. Otherwise all vaccinations entries for this patient are shown.
     if search:
         vaccine_search = True
         search = '%' + search + '%'
         branch = Proof_of_vaccination.query.filter(Proof_of_vaccination.unique_patient_identifier == current_user.unique_patient_identifier).filter(Proof_of_vaccination.vaccine.like(search)).paginate(page=page, per_page=5)
         vaccination = Vaccination.query.filter(Proof_of_vaccination.vaccination_id == Vaccination.vaccination_id).all()
     else: 
-        # Depending on an argument in the url, the patients are sorted in different ways.
+        # Depending on an argument in the url, the patients are sorted in different ways. The value 'date' is set as the default sort value. All vaccination entries are shown in ordered by date_of_vaccination.
         if sort == 'date':
             branch = Proof_of_vaccination.query.filter_by(unique_patient_identifier=current_user.unique_patient_identifier).order_by(Proof_of_vaccination.date_of_vaccination.desc()).paginate(page=page, per_page=5)
             vaccination = Vaccination.query.filter(Proof_of_vaccination.vaccination_id == Vaccination.vaccination_id).all()
-            
+
+        # Different filter values can be selected through the drop-down-menu   
         elif sort == 'Pneumokokken':
             branch = Proof_of_vaccination.query.filter(Proof_of_vaccination.unique_patient_identifier == current_user.unique_patient_identifier).paginate(page=page, per_page=5)
             vaccination = Vaccination.query.filter(Vaccination.disease == sort).all()
@@ -325,10 +332,11 @@ def patient_home(sort='date', search=''):
         else:
             abort(404)
 
-    # If the validation is correct, then a flash message is displayed and the user is redirected to the login page.
+    # runs if a search value was submitted
     if form.is_submitted():
         return redirect(url_for('patient_home', sort='date', search=form.name.data))
     
+    #call the functions check_for_vac_notifications() and show_sideeffect()
     vac_notifications = check_for_vac_notifications()
     vac_sideeffects = show_sideeffect()
 
@@ -337,6 +345,8 @@ def patient_home(sort='date', search=''):
 # Patient - Show QR-Code of proof_of_vaccination
 @app.route("/patientQR/<int:unique_certificate_identifier>", methods=['POST', 'GET'])
 def open_QR(unique_certificate_identifier):
+
+    # collects the values for the selected vaccination entry so a QR code can be generated
     branch = Proof_of_vaccination.query.filter_by(unique_certificate_identifier=unique_certificate_identifier).first()
     vaccination = Vaccination.query.filter(Proof_of_vaccination.vaccination_id == Vaccination.vaccination_id).first()
 
@@ -344,6 +354,7 @@ def open_QR(unique_certificate_identifier):
     img = []
     file_object = io.BytesIO()
 
+    # save vaccinations values in dictionary
     proof_of_vaccination= {}
     proof_of_vaccination['unique_certificate_identifier']= branch.unique_certificate_identifier
     proof_of_vaccination['date_of_vaccination']= branch.date_of_vaccination.strftime('%Y-%m-%d')
@@ -357,6 +368,7 @@ def open_QR(unique_certificate_identifier):
 
     print(proof_of_vaccination)
 
+    # create QR code with given values
     qr = QRCode(version=1, box_size=6,border=4)
     qr.add_data(proof_of_vaccination)
     qr.make()
@@ -367,19 +379,21 @@ def open_QR(unique_certificate_identifier):
     return render_template('patient/patient_show_QR.html', branch = branch, vaccination=vaccination, qr="data:image/png;base64,"+b64encode(file_object.getvalue()).decode('ascii'))
 
 # Patient - Sideeffects route
+# is only callable if show_sideeffect() function is satisfied
 @app.route("/patient/sideeffects/<int:unique_certificate_identifier>", methods=['POST', 'GET'])
 @login_required
 def new_sideeffect(unique_certificate_identifier):
     branch = Proof_of_vaccination.query.filter_by(unique_certificate_identifier=unique_certificate_identifier).first()
 
+    #shows the form to create a new sideeffect entry
     form = AddSideeffects()
     
-    # If the form is submitted and validated then...
+    # If the form is submitted then...
     if form.is_submitted():
         unique_entry_identifier = 1
         while Sideeffects.query.filter_by(unique_entry_identifier=unique_entry_identifier).first() is not None:
             unique_entry_identifier = unique_entry_identifier + 1
-        # a new patient is added to the database
+        # a new sideeffect is added to the database
         new_sideeffects = Sideeffects(unique_entry_identifier=unique_entry_identifier, unique_certificate_identifier=unique_certificate_identifier ,headache=form.headache.data, arm_hurts=form.arm_hurts.data, rash=form.rash.data, fever=form.fever.data, tummyache=form.tummyache.data, sideeffects=form.sideeffects.data)
         db.session.add(new_sideeffects)
         db.session.commit()
@@ -392,6 +406,7 @@ def new_sideeffect(unique_certificate_identifier):
 @app.route("/patient/impfeintrag")
 @login_required
 def patient_vaccination_entry():
+    #redirects to new html page where a patient can choose between a manual and a scannable entry
     return render_template('patient/patient_vaccination_entry.html')
 
 # Patient - Proof of vaccination manual entry route 
@@ -399,15 +414,19 @@ def patient_vaccination_entry():
 @login_required
 def addVaccination():
 
+    # shows form to create a new vaccination entry - this entry is not verified so no QR code can be displayed for it later
     form = AddVaccination()
     
+    # selects drop-down-choices for the vaccination_id SelectField (vaccine_category and disease are shown in frontend instead of vaccination_id)
     form.vaccination_id.choices = [(int(vaccination.vaccination_id), vaccination.disease + " (" + vaccination.vaccine_category + ")") for vaccination in Vaccination.query.all()]
     
+    # if the form is submitted...
     if form.is_submitted():
+        # the next open unique_certificate_identifier is selected...
         unique_certificate_identifier = 1
         while Proof_of_vaccination.query.filter_by(unique_certificate_identifier=unique_certificate_identifier).first() is not None:
             unique_certificate_identifier = unique_certificate_identifier + 1
-
+        # and a new vaccination entry is added to the database
         new_vaccination = Proof_of_vaccination(unique_certificate_identifier=unique_certificate_identifier, unique_patient_identifier= current_user.unique_patient_identifier, date_of_vaccination = form.date_of_vaccination.data, vaccine = form.vaccine.data, batch_number=form.batch_number.data, vaccination_id=form.vaccination_id.data, unique_issuer_identifier=form.unique_issuer_identifier.data, vaccine_marketing_authorization_holder= "/", issued_at= "1900-01-01 00:00:00")
         db.session.add(new_vaccination)
         db.session.commit()
