@@ -59,10 +59,18 @@
     {% if branch %}    
     {%if vaccination%}
     
+    
     <div class="container my-5">
 
-        
+        {%if branch.issued_at.strftime('%Y-%m-%d %H:%M:%S') == '1900-01-01 00:00:00'%}
+        <h3 style="text-align: center; color: red;" >Für diesen Impeintrag kann kein QR-Code angezeigt werden, da es sich nicht um einen verifizierten Impeintrag handelt!</h3>
+        <h5 style="text-align: center;">Bitte lassen Sie sich den Impfeintrag von einem medizinischen Zentrum ausstellen, um eine Zertifizierung zu erhalten.</h5>   
+        <div class="col" style="text-align: center;">
+                
+            <a href="{{ url_for('patient_home') }}"><button class="btn btn-danger">Zurück</button></a>
+          </div>
     
+        {%else%}
     <div class="row">
         <div class="col-2"></div>
         <div class="col-8">
@@ -104,6 +112,7 @@
         </div>
         <div class="col-2"></div>
     </div>
+    {%endif%}
     
     
     </div>
