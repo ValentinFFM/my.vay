@@ -61,7 +61,7 @@
     
     
     <div class="container my-5">
-
+        <!-- The QR code is only displayed if the vaccination was issed from a verified institution -->
         {%if branch.issued_at.strftime('%Y-%m-%d %H:%M:%S') == '1900-01-01 00:00:00'%}
         <h3 style="text-align: center; color: red;" >Für diesen Impeintrag kann kein QR-Code angezeigt werden, da es sich nicht um einen verifizierten Impeintrag handelt!</h3>
         <h5 style="text-align: center;">Bitte lassen Sie sich den Impfeintrag von einem medizinischen Zentrum ausstellen, um eine Zertifizierung zu erhalten.</h5>   

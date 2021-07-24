@@ -426,7 +426,7 @@ def addVaccination():
         unique_certificate_identifier = 1
         while Proof_of_vaccination.query.filter_by(unique_certificate_identifier=unique_certificate_identifier).first() is not None:
             unique_certificate_identifier = unique_certificate_identifier + 1
-        # and a new vaccination entry is added to the database
+        # and a new vaccination entry is added to the database, issed_at value and vaccine_marketing_authorization_holder get a default value, because the vaccination entry is not verified
         new_vaccination = Proof_of_vaccination(unique_certificate_identifier=unique_certificate_identifier, unique_patient_identifier= current_user.unique_patient_identifier, date_of_vaccination = form.date_of_vaccination.data, vaccine = form.vaccine.data, batch_number=form.batch_number.data, vaccination_id=form.vaccination_id.data, unique_issuer_identifier=form.unique_issuer_identifier.data, vaccine_marketing_authorization_holder= "/", issued_at= "1900-01-01 00:00:00")
         db.session.add(new_vaccination)
         db.session.commit()

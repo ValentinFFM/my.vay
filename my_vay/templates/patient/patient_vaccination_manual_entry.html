@@ -59,7 +59,7 @@
              <div class="col-md-6">
                 <div class="row align-items-center">
                     <div class="col-1" >
-                    
+                        <!-- button to redirect back to landing page  -->
                         <a href="{{ url_for('patient_home') }}"><button class="btn"><svg xmlns="http://www.w3.org/2000/svg" width="25" height="25" fill="#349B73" class="bi bi-caret-left-fill" viewBox="0 0 16 16">
                             <path d="m3.86 8.753 5.482 4.796c.646.566 1.658.106 1.658-.753V3.204a1 1 0 0 0-1.659-.753l-5.48 4.796a1 1 0 0 0 0 1.506z"/>
                           </svg></button></a>
@@ -71,7 +71,7 @@
                 </div>
                 <form method="POST" action= "{{ url_for('addVaccination') }}"> 
 
-                    
+                    <!-- gives form to make a new vaccination entry - entry is not issued from a verified institution so no QR code can be diplayed later -->
                     <fieldset class="form-group">
                    
                         <div class="test">
