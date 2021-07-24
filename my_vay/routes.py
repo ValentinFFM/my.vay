@@ -23,8 +23,8 @@ from qrcode.main import QRCode
 import cv2
 import ast
 import sys
-#from pyzbar import pyzbar
-#from pyzbar.pyzbar import decode
+from pyzbar import pyzbar
+from pyzbar.pyzbar import decode
 
 # Imports for datetime
 from datetime import date, timedelta
