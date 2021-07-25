@@ -456,29 +456,36 @@ def patient_qr_result():
                         eingescannt."""
         return render_template("patient/patient_scan_result.html", error_message=error_message)
     
-    # Checks if first name, last name and birthdate are the same of proof_of_vaccination and the logged in user.
     else:
-        # If it's the same, then the proof_of_vaccination is added to the database.
-        if proof_of_vaccination_qr['f_name'] == current_user.f_name and proof_of_vaccination_qr['l_name'] == current_user.l_name and proof_of_vaccination_qr['date_of_birth'] == str(current_user.date_of_birth):
-            new_vaccination = Proof_of_vaccination(unique_certificate_identifier = proof_of_vaccination_qr["unique_certificate_identifier"], 
-                                                unique_patient_identifier = current_user.unique_patient_identifier, 
-                                                date_of_vaccination = proof_of_vaccination_qr["date_of_vaccination"], 
-                                                vaccine = proof_of_vaccination_qr["vaccine"], 
-                                                batch_number = proof_of_vaccination_qr["batch_number"], 
-                                                vaccination_id = proof_of_vaccination_qr["vaccination_id"], 
-                                                unique_issuer_identifier = proof_of_vaccination_qr["unique_issuer_identifier"], 
-                                                vaccine_marketing_authorization_holder= proof_of_vaccination_qr["vaccine_marketing_authorization_holder"], 
-                                                issued_at = proof_of_vaccination_qr["issued_at"])
-            db.session.add(new_vaccination)
-            db.session.commit()
+        # Checks if the issuer of the certificate is existing in the database
+        if Issuer.query.filter_by(unique_issuer_identifier = proof_of_vaccination_qr["unique_issuer_identifier"]).first():
+            
+            # Checks if first name, last name and birthdate are the same of proof_of_vaccination and the logged in user.
+            if proof_of_vaccination_qr['f_name'] == current_user.f_name and proof_of_vaccination_qr['l_name'] == current_user.l_name and proof_of_vaccination_qr['date_of_birth'] == str(current_user.date_of_birth):
+                # If it's the same, then the proof_of_vaccination is added to the database.
+                new_vaccination = Proof_of_vaccination(unique_certificate_identifier = proof_of_vaccination_qr["unique_certificate_identifier"], 
+                                                    unique_patient_identifier = current_user.unique_patient_identifier, 
+                                                    date_of_vaccination = proof_of_vaccination_qr["date_of_vaccination"], 
+                                                    vaccine = proof_of_vaccination_qr["vaccine"], 
+                                                    batch_number = proof_of_vaccination_qr["batch_number"], 
+                                                    vaccination_id = proof_of_vaccination_qr["vaccination_id"], 
+                                                    unique_issuer_identifier = proof_of_vaccination_qr["unique_issuer_identifier"], 
+                                                    vaccine_marketing_authorization_holder= proof_of_vaccination_qr["vaccine_marketing_authorization_holder"], 
+                                                    issued_at = proof_of_vaccination_qr["issued_at"])
+                db.session.add(new_vaccination)
+                db.session.commit()
 
-            return render_template("patient/patient_scan_result.html", proof_of_vaccination_qr=proof_of_vaccination_qr)
-
-        # If the data is not equal, then an error message is displayed.
+                return render_template("patient/patient_scan_result.html", proof_of_vaccination_qr=proof_of_vaccination_qr)
+            else:
+                # If the data is not equal, then an error message is displayed.
+                error_message = """Beim Scannen des QR-Codes ist ein Fehler aufgetreten. Sie haben versucht den QR-Code eines Impfnachweises
+                                zu Scannen, welcher nicht für Sie ausgestellt wurde. Bitte überprüfen Sie, mit welchem Konto Sie angemeldet
+                                sind und ob Ihr Impfnachweis die korrekten Daten enthält."""
+                return render_template("patient/patient_scan_result.html", error_message=error_message)
         else:
+            # If the issuer is not existing, then an error message is displayed.
             error_message = """Beim Scannen des QR-Codes ist ein Fehler aufgetreten. Sie haben versucht den QR-Code eines Impfnachweises
-                            zu Scannen, welcher nicht für Sie ausgestellt wurde. Bitte überprüfen Sie, mit welchem Konto Sie angemeldet
-                            sind und ob Ihr Impfnachweis die korrekten Daten enthält."""
+                            zu Scannen, welcher nicht von einem verifizierten Issuer ausgestellt wurde."""
             return render_template("patient/patient_scan_result.html", error_message=error_message)
 
 # Patient - Vaccination knowledge route
