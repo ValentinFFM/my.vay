@@ -173,7 +173,7 @@ def show_sideeffect():
     from datetime import date
     today = 0
     test=0
-    list1=[]
+    sideeffects_list=[]
     sf_show = Proof_of_vaccination.query.filter_by(unique_patient_identifier=current_user.unique_patient_identifier).all()
     test = Sideeffects.query.all()
     today = date.today()
@@ -192,9 +192,9 @@ def show_sideeffect():
                         break
             if classifier == False:
                 #sideeffects can only be entered if an entry for this vaccination does not already exist
-                list1.append(entry)
+                sideeffects_list.append(entry)
     # reuturns list of vaccination entries in proof_of_vaccination that fulfill conditions
-    return list1
+    return sideeffects_list
 
 #
 # General routes
