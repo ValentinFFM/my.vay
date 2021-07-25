@@ -63,7 +63,7 @@ class IssuerRegistrationForm(Form):
     
     #validate unique_patient_identifier and check if it's already existing in patient database
     def validate_unique_issuer_identifier(self, unique_issuer_identifier):
-        unique_issuer_identifier = Patient.query.filter_by(unique_issuer_identifier=unique_issuer_identifier.data).first()
+        unique_issuer_identifier = Issuer.query.filter_by(unique_issuer_identifier=unique_issuer_identifier.data).first()
 
         if unique_issuer_identifier:
             raise ValidationError('Diese Nutzer ID ist bereits vergeben.')

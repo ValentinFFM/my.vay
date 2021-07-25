@@ -565,7 +565,7 @@ def issuer_registration():
     form = IssuerRegistrationForm()
     
     if form.validate_on_submit():
-        new_issuer = Issuer(f_name=form.f_name.data, l_name=form.l_name.data, date_of_birth=form.date_of_birth.data, unique_issuer_identifier=form.unique_patient_identifier.data, password=form.password.data)
+        new_issuer = Issuer(f_name=form.f_name.data, l_name=form.l_name.data, date_of_birth=form.date_of_birth.data, unique_issuer_identifier=form.unique_issuer_identifier.data, password=form.password.data)
         db.session.add(new_issuer)
         db.session.commit()
         
