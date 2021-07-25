@@ -35,7 +35,7 @@ from dateutil import relativedelta
 #
 
 # Decoding a QR-Code in a given frame
-def decode(frame):
+def decode_QR_code_from_frame(frame):
     # Decode QR-Code
     decodedObject = pyzbar.decode(frame)
 
@@ -52,19 +52,19 @@ def decode(frame):
         
         return decodedObjectDict
 
-# Calling decode(frame) for every frame of the camera
-def verify_QR_Code():
+# Calling decode_QR_code_from_frame(frame) for every frame of the camera
+def read_in_frame_for_decoding():
     # Instanciation of a camera object
     camera = cv2.VideoCapture(0)
     
-    # For every frame of the camera the function decode() is called, until the decode() function returns a result
+    # For every frame of the camera the function decode_QR_code_from_frame() is called, until the decode_QR_code_from_frame() function returns a result
     while True:
         success, frame = camera.read()
 
         if not success:
             break
         else:
-            decodedObject = decode(frame)
+            decodedObject = decode_QR_code_from_frame(frame)
 
             if decodedObject:
                 break
@@ -447,8 +447,8 @@ def patient_scan():
 @login_required
 def patient_qr_result():
     
-    # Decodes QR-Code when displayed in front of the camera
-    proof_of_vaccination_qr = verify_QR_Code()
+    # Calls read_in_frame_for_decoding(), which returns a dictionary representing the proof of vaccination
+    proof_of_vaccination_qr = read_in_frame_for_decoding()
     
     # Checks if proof_of_vaccination is already existing in the database. If so, then an error message is displayed.
     if Proof_of_vaccination.query.filter_by(unique_certificate_identifier = proof_of_vaccination_qr["unique_certificate_identifier"]).first():
@@ -664,7 +664,7 @@ def verifier_qr_result():
     proof_of_vaccination_correct = False
     patient = None
     
-    proof_of_vaccination_qr = verify_QR_Code()
+    proof_of_vaccination_qr = read_in_frame_for_decoding()
     
     # Checks if encoded QR-code contains all relevant data
     if "unique_certificate_identifier" in proof_of_vaccination_qr and "date_of_vaccination" in proof_of_vaccination_qr and "vaccine" in proof_of_vaccination_qr and "vaccine_marketing_authorization_holder" in proof_of_vaccination_qr and "batch_number" in proof_of_vaccination_qr and "issued_at" in proof_of_vaccination_qr and "unique_patient_identifier" in proof_of_vaccination_qr and "unique_issuer_identifier" in proof_of_vaccination_qr and "vaccination_id" in proof_of_vaccination_qr:
