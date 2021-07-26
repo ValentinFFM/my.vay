@@ -172,10 +172,9 @@ def check_for_vac_notifications():
 def show_sideeffect():
     from datetime import date
     today = 0
-    test=0
     sideeffects_list=[]
     sf_show = Proof_of_vaccination.query.filter_by(unique_patient_identifier=current_user.unique_patient_identifier).all()
-    test = Sideeffects.query.all()
+    sideeffect_check = Sideeffects.query.all()
     today = date.today()
     #get the date of yesterday
     for i in range (1):
@@ -186,7 +185,7 @@ def show_sideeffect():
     for entry in sf_show:
         classifier= False
         if entry.date_of_vaccination.strftime('%Y-%m-%d') == today:
-            for val in test:
+            for val in sideeffect_check:
                     if entry.unique_certificate_identifier == val.unique_certificate_identifier:
                         classifier = True
                         break
