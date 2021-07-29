@@ -106,6 +106,9 @@ class Sideeffects(db.Model):
 # Create tables
 db.create_all()
 
+# 
+# Beim erstmaligen Starten die folgenden Zeilen aus dem Kommentar entfernen.
+#
 
 # vaccination_1 = Vaccination(vaccination_id = 7, disease = 'Pneumokokken', vaccine_category = 'S', beginn_age = 720, distance_to_pre_vaccination = 72, next_vaccination_id = 7)
 # vaccination_2 = Vaccination(vaccination_id = 6, disease = 'Pneumokokken', vaccine_category = 'G3', beginn_age = 11, end_age = 23,  distance_to_pre_vaccination = 6, next_vaccination_id = 7)
