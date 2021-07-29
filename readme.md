@@ -1,6 +1,6 @@
 # my.vay
 
-In diesem Repository finden Sie den vollständigen Quelltext zur prototypischen Implementierung der Impfplattform my.vay. Diese wurde im Rahmen der Seminararbeit "Konzeption und prototypische Implementierung einer Impfplattform my.vay" umgesetzt.
+In diesem Repository finden Sie den vollständigen Quelltext zur prototypischen Implementierung der Impfplattform my.vay. Diese wurde im Rahmen der Seminararbeit "Konzeption und prototypische Implementierung der Impfplattform my.vay" umgesetzt.
 
 # Voraussetzungen
 
